@@ -1,0 +1,38 @@
+name: Deploy
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - dev
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  debug:
+    uses: ./.github/workflows/debug.yml
+    secrets: inherit
+  deploy:
+    needs: debug
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: dist
+          path: dist
+      - name: Deploy
+        uses: exuanbo/actions-deploy-gist@main
+        with:
+          token: ${{ secrets.GIST_TOKEN }}
+          gist_id: fa7b08c6994b555b82b6d22df89f8a31
+          gist_description: " iRingo: 📺 TV app β"
+          file_path: dist/request.js
+      - name: Deploy
+        uses: exuanbo/actions-deploy-gist@main
+        with:
+          token: ${{ secrets.GIST_TOKEN }}
+          gist_id: fa7b08c6994b555b82b6d22df89f8a31
+          gist_description: " iRingo: 📺 TV app β"
+          file_path: dist/response.js
