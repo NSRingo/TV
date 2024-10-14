@@ -14,6 +14,9 @@ log(`⚠ METHOD: ${METHOD}, HOST: ${HOST}, PATH: ${PATH}` , "");
 const FORMAT = ($request.headers?.["Content-Type"] ?? $request.headers?.["content-type"])?.split(";")?.[0];
 log(`⚠ FORMAT: ${FORMAT}`, "");
 !(async () => {
+	/**
+	 * @type {{Settings: import('./interface').Settings}}
+	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	log(`⚠ Settings.Switch: ${Settings?.Switch}`, "");
 	switch (Settings.Switch) {
@@ -157,7 +160,7 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 								case "/uts/v3/canvases/roots/tahoma_watchnow":
 								case "/uts/v3/shelves/uts.col.UpNext":
 									Type = "WatchNow";
-									if (Settings["Third-Party"]) url.searchParams.set("pfm", (Platform === "desktop") ? "appletv" : Platform);
+									if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "appletv" : Platform);
 									break;
 								case "/uts/v3/canvases/Channels/tvs.sbd.4000":
 								case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.4000":
@@ -187,7 +190,7 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 								case "/uts/v3/canvases/Rooms/edt.item.635968ac-89d7-4619-8f5d-8c7890aef813": // NFL THANKSGIVING 2022
 								case "/uts/v3/canvases/Rooms/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2": // Friday Night Baseball - MLB - Apple TV+
 									Type = "Sports";
-									//if (Settings["Third-Party"]) 
+									//if (Settings["ThirdParty"]) 
 									url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									break;
 								case "/uts/v3/canvases/Roots/kids":
@@ -199,11 +202,11 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 									break;
 								case "/uts/v3/canvases/Roots/movies":
 									Type = "Movies";
-									if (Settings["Third-Party"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
+									if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									break;
 								case "/uts/v3/canvases/Roots/tv":
 									Type = "TV";
-									if (Settings["Third-Party"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
+									if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									break;
 								case "/uts/v3/favorite-people":
 								case "/uts/v3/favorite-teams":
@@ -222,10 +225,10 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 								case "/uts/v3/watchlist":
 								case "/uts/v2/watchlist/contains":
 								case "/uts/v2/watchlist/search":
-									if (Settings["Third-Party"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
+									if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									break;
 								default:
-									//if (Settings["Third-Party"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
+									//if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									if (url.searchParams.get("ctx_brand") === "tvs.sbd.4000") Type = "Originals";
 									else if (PATH.includes("/uts/v3/canvases/Channels/")) Type = "Channels";
 									else if (PATH.includes("/uts/v2/brands/")) Type = "Channels";
@@ -233,12 +236,12 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 									else if (PATH.includes("/uts/v3/shows/")) Type = "TV";
 									else if (PATH.includes("/uts/v3/sporting-events/")) {
 										Type = "Sports";
-										//if (Settings["Third-Party"])
+										//if (Settings["ThirdParty"])
 										url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									}
 									else if (PATH.includes("/uts/v3/canvases/Sports/")) {
 										Type = "Sports";
-										//if (Settings["Third-Party"])
+										//if (Settings["ThirdParty"])
 										url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 									}
 									else if (PATH.includes("/uts/v3/canvases/Persons/")) Type = "Persons";

@@ -10,18 +10,17 @@ permissions:
   contents: read
 
 jobs:
-  debug:
-    uses: ./.github/workflows/debug.yml
+  build:
+    uses: ./.github/workflows/build.yml
     secrets: inherit
   deploy:
-    needs: debug
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
         uses: actions/download-artifact@master
         with:
-          name: dist
-          path: dist
+          name: artifact
       - name: Deploy
         uses: exuanbo/actions-deploy-gist@main
         with:

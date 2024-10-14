@@ -12,6 +12,9 @@ log(`⚠ METHOD: ${METHOD}, HOST: ${HOST}, PATH: ${PATH}` , "");
 const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 log(`⚠ FORMAT: ${FORMAT}`, "");
 !(async () => {
+	/**
+	 * @type {{Settings: import('./interface').Settings}}
+	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	log(`⚠ Settings.Switch: ${Settings?.Switch}`, "");
 	switch (Settings.Switch) {
@@ -287,8 +290,8 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 												shelf.items = shelf.items.map(item => {
 													let playable = item?.playable || item?.videos?.shelfVideoTall;
 													let playables = item?.playables;
-													if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.ServerUrl);
-													if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.ServerUrl));
+													if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
+													if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl));
 													return item;
 												});
 											};
@@ -306,8 +309,8 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 										shelf.items = shelf.items.map(item => {
 											let playable = item?.playable || item?.videos?.shelfVideoTall;
 											let playables = item?.playables;
-											if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.ServerUrl);
-											if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.ServerUrl));
+											if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
+											if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl));
 											return item;
 										});
 									};
@@ -330,9 +333,9 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 																	if (shelf?.items) {
 																		shelf.items = shelf.items.map(item => {
 																			let playable = item?.playable || item?.videos?.shelfVideoTall;
-																			if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.ServerUrl);
+																			if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
 																			let playables = item?.playables;
-																			if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.ServerUrl));
+																			if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl));
 																			return item;
 																		});
 																	};
@@ -340,8 +343,8 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 																});
 																body.data.canvas.shelves = shelves;
 															};
-															if (backgroundVideo) backgroundVideo = setPlayable(backgroundVideo, Settings?.HLSUrl, Settings?.ServerUrl);
-															if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.ServerUrl));
+															if (backgroundVideo) backgroundVideo = setPlayable(backgroundVideo, Settings?.HLSUrl, Settings?.FPSUrl);
+															if (playables) Object.keys(playables).forEach(playable => playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl));
 															break;
 													};
 													break;
@@ -392,18 +395,18 @@ log(`⚠ FORMAT: ${FORMAT}`, "");
 	.finally(() => done($response))
 
 /***************** Function *****************/
-function setPlayable(playable, HLSUrl, ServerUrl) {
+function setPlayable(playable, HLSUrl, FPSUrl) {
 	log(`☑️ Set Playable Content`, "");
 	let assets = playable?.assets;
 	let itunesMediaApiData = playable?.itunesMediaApiData;
-	if (assets) assets = setUrl(assets, HLSUrl, ServerUrl);
-	if (itunesMediaApiData?.movieClips) itunesMediaApiData.movieClips = itunesMediaApiData.movieClips.map(movieClip => setUrl(movieClip, HLSUrl, ServerUrl));
-	if (itunesMediaApiData?.offers) itunesMediaApiData.offers = itunesMediaApiData.offers.map(offer => setUrl(offer, HLSUrl, ServerUrl));
-	if (itunesMediaApiData?.personalizedOffers) itunesMediaApiData.personalizedOffers = itunesMediaApiData.personalizedOffers.map(personalizedOffer => setUrl(personalizedOffer, HLSUrl, ServerUrl));
+	if (assets) assets = setUrl(assets, HLSUrl, FPSUrl);
+	if (itunesMediaApiData?.movieClips) itunesMediaApiData.movieClips = itunesMediaApiData.movieClips.map(movieClip => setUrl(movieClip, HLSUrl, FPSUrl));
+	if (itunesMediaApiData?.offers) itunesMediaApiData.offers = itunesMediaApiData.offers.map(offer => setUrl(offer, HLSUrl, FPSUrl));
+	if (itunesMediaApiData?.personalizedOffers) itunesMediaApiData.personalizedOffers = itunesMediaApiData.personalizedOffers.map(personalizedOffer => setUrl(personalizedOffer, HLSUrl, FPSUrl));
 	log(`✅ Set Playable Content`, "");
 	return playable;
 
-	function setUrl(asset, HLSUrl, ServerUrl) {
+	function setUrl(asset, HLSUrl, FPSUrl) {
 		log(`☑️ Set Url`, "");
 		if (asset?.hlsUrl) {
 			let hlsUrl = new URL(asset.hlsUrl);
@@ -446,7 +449,7 @@ function setPlayable(playable, HLSUrl, ServerUrl) {
 		};
 		if (asset?.fpsKeyServerUrl) {
 			let fpsKeyServerUrl = new URL(asset.fpsKeyServerUrl);
-			fpsKeyServerUrl.hostname = ServerUrl || "play-edge.itunes.apple.com";
+			fpsKeyServerUrl.hostname = FPSUrl || "play-edge.itunes.apple.com";
 			switch (fpsKeyServerUrl.hostname) {
 				case "play.itunes.apple.com":
 					fpsKeyServerUrl.pathname = "/WebObjects/MZPlay.woa/wa/fpsRequest";
@@ -459,7 +462,7 @@ function setPlayable(playable, HLSUrl, ServerUrl) {
 		};
 		if (asset?.fpsNonceServerUrl) {
 			let fpsNonceServerUrl = new URL(asset.fpsNonceServerUrl);
-			fpsNonceServerUrl.hostname = ServerUrl || "play.itunes.apple.com";
+			fpsNonceServerUrl.hostname = FPSUrl || "play.itunes.apple.com";
 			switch (fpsNonceServerUrl.hostname) {
 				case "play.itunes.apple.com":
 					fpsNonceServerUrl.pathname = "/WebObjects/MZPlay.woa/wa/checkInNonceRequest";

@@ -1,0 +1,24 @@
+#!name = {{@package 'displayName'}}
+#!desc = {{inline (@package 'description')}}
+#!openUrl = {{@package 'openUrl'}}
+#!author = {{@package 'contributors'}}
+#!homepage = {{@package 'homepage'}}
+#!icon = {{@package 'icon'}}
+#!tag = {{@package 'organizationName'}}
+#!system = {{@package 'system'}}
+#!date = {{now "yyyy-MM-dd HH:mm:ss"}}
+#!version = {{@package 'version'}}
+
+[Argument]
+{{{arguments}}}
+
+[Script]
+http-request ^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ script-path=https://github.com/NSRingo/TV/releases/download/v{{@package 'version'}}/request.js, requires-body=1, tag=📺 TV.uts.request, argument={{{scriptParams}}}
+http-response ^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ script-path=https://github.com/NSRingo/TV/releases/download/v{{@package 'version'}}/response.js, requires-body=1, tag=📺 TV.uts.response, argument={{{scriptParams}}}
+http-request ^https?:\/\/umc-tempo-api\.apple\.com\/(v1|v2|v3)\/ script-path=https://github.com/NSRingo/TV/releases/download/v{{@package 'version'}}/request.js, requires-body=1, tag=📺 TV.umc.request
+
+http-request ^https?:\/\/play(-edge)?\.itunes\.apple\.com\/WebObjects\/MZPlay(Local)?\.woa\/hls(\/(subscription|workout))?\/playlist\.m3u8 script-path=https://github.com/NSRingo/TV/releases/download/v{{@package 'version'}}/request.js, tag=📺 TV.hls.request
+http-request ^https?:\/\/play(-edge)?\.itunes\.apple\.com\/WebObjects\/MZPlay(Local)?\.woa\/wa\/(fpsRequest|checkInNonceRequest) script-path=https://github.com/NSRingo/TV/releases/download/v{{@package 'version'}}/request.js, tag=📺 TV.wa.request
+
+[MITM]
+hostname = uts-api.itunes.apple.com, umc-tempo-api.apple.com
