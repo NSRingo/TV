@@ -73,6 +73,9 @@ Console.info(`FORMAT: ${FORMAT}`);
 				case "application/x-mpegurl":
 				case "application/vnd.apple.mpegurl":
 				case "audio/mpegurl":
+					//body = M3U8.parse($request.body);
+					//Console.debug(`body: ${JSON.stringify(body)}`);
+					//$request.body = M3U8.stringify(body);
 					break;
 				case "text/xml":
 				case "text/html":
@@ -80,9 +83,15 @@ Console.info(`FORMAT: ${FORMAT}`);
 				case "application/xml":
 				case "application/plist":
 				case "application/x-plist":
+					//body = XML.parse($request.body);
+					//Console.debug(`body: ${JSON.stringify(body)}`);
+					//$request.body = XML.stringify(body);
 					break;
 				case "text/vtt":
 				case "application/vtt":
+					//body = VTT.parse($request.body);
+					//Console.debug(`body: ${JSON.stringify(body)}`);
+					//$request.body = VTT.stringify(body);
 					break;
 				case "text/json":
 				case "application/json":
@@ -94,6 +103,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 							switch (url.pathname) {
 								case "/uts/v3/user/settings":
 									Type = "Settings";
+									Console.debug(JSON.stringify(body));
 									break;
 							}
 							break;
@@ -103,6 +113,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 								case "/v3/channels/scoreboard":
 								case "/v3/channels/scoreboard/":
 									Type = "Sports";
+									Console.debug(JSON.stringify(body));
 									break;
 							}
 							break;
@@ -129,6 +140,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 					const Version = Number.parseInt(url.searchParams.get("v"), 10),
 						Platform = url.searchParams.get("pfm"),
 						Caller = url.searchParams.get("caller");
+					Console.debug(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations": {
@@ -136,6 +148,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 							const Region = url.searchParams.get("region"),
 								Country = url.searchParams.get("country"),
 								StoreFrontH = url.searchParams.get("sfh");
+							Console.debug(`Region = ${Region}`, `Country = ${Country}`, `StoreFrontH = ${StoreFrontH}`);
 							if (Settings.CountryCode[Type] !== "AUTO") {
 								if (Region) url.searchParams.set("region", Settings.CountryCode[Type] ?? Region);
 								if (Country) url.searchParams.set("country", Settings.CountryCode[Type] ?? Country);
@@ -282,7 +295,9 @@ Console.info(`FORMAT: ${FORMAT}`);
 	if ($request.headers?.["x-apple-store-front"]) $request.headers["x-apple-store-front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["x-apple-store-front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["x-apple-store-front"];
 	if (StoreFront) url.searchParams.set("sf", Configs.Storefront[Settings.CountryCode[Type]] ?? StoreFront);
 	if (Locale) url.searchParams.set("locale", Configs.Locale.get(Settings.CountryCode[Type]) ?? Locale);
+	Console.debug(`StoreFront = ${url.searchParams.get("sf")}`, `Locale = ${url.searchParams.get("locale")}`);
 	$request.url = url.toString();
+	Console.debug(`$request.url: ${$request.url}`);
 })()
 	.catch(e => Console.error(e))
 	.finally(() => {

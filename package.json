@@ -1,7 +1,5 @@
 {
-	"name": "tv",
-	"version": "3.3.6",
-	"type": "module",
+	"name": "@nsringo/tv",
 	"organizationName": " iRingo",
 	"displayName": " iRingo: 📺 TV app",
 	"description": "全面自定义「TV app」功能",
@@ -16,11 +14,11 @@
 		"iOS",
 		"iPadOS",
 		"tvOS",
-		"macOS",
-		"watchOS"
+		"macOS"
 	],
 	"author": "VirgilClyne",
 	"license": "Apache-2.0",
+	"type": "module",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/NSRingo/TV.git"
@@ -29,8 +27,8 @@
 		"example": "example"
 	},
 	"scripts": {
-		"build": "rollup -c",
-		"build:debug": "rollup --config --configDebug",
+		"build": "rspack build",
+		"build:dev": "rspack build -c rspack.dev.config.js --mode=development",
 		"build:args": "arguments-builder build",
 		"dts": "arguments-builder dts"
 	},
@@ -38,13 +36,13 @@
 		"iOS >= 15"
 	],
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^25.0.7",
-		"@rollup/plugin-json": "^6.1.0",
-		"@rollup/plugin-node-resolve": "^15.2.3",
-		"@rollup/plugin-terser": "^0.4.4",
-		"rollup": "^4.9.6"
+		"@iringo/arguments-builder": "^1.8.5",
+		"@rspack/cli": "^1.1.4",
+		"@rspack/core": "^1.1.4",
+		"node-polyfill-webpack-plugin": "^4.0.0"
 	},
 	"dependencies": {
-		"@iringo/arguments-builder": "^1.7.3"
+		"@nsnanocat/url": "^1.2.4",
+		"@nsnanocat/util": "^1.7.3"
 	}
 }

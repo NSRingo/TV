@@ -1,7 +1,6 @@
 export default {
 	TV: {
 		Settings: {
-			Switch: true,
 			ThirdParty: false,
 			HLSUrl: "play-edge.itunes.apple.com",
 			FPSUrl: "play.itunes.apple.com",
