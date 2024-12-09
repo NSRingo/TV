@@ -12,8 +12,8 @@ export default function setENV(name, platforms, database) {
 	Console.log("☑️ Set Environment Variables");
 	const { Settings, Caches, Configs } = getStorage(name, platforms, database);
 	/***************** Settings *****************/
-	if (!Array.isArray(Settings?.Tabs)) _.set(Settings, "Tabs", (Settings?.Tabs) ? [Settings.Tabs.toString()] : []);
-	Console.debug(`typeof Settings: ${typeof Settings}`, `Settings: ${JSON.stringify(Settings, null, 2)}`);
+	if (!Array.isArray(Settings?.Tabs)) _.set(Settings, "Tabs", Settings?.Tabs ? [Settings.Tabs.toString()] : []);
+	Console.info(`typeof Settings: ${typeof Settings}`, `Settings: ${JSON.stringify(Settings, null, 2)}`);
 	/***************** Caches *****************/
 	//Console.debug(`typeof Caches: ${typeof Caches}`, `Caches: ${JSON.stringify(Caches)}`);
 	/***************** Configs *****************/
@@ -22,4 +22,4 @@ export default function setENV(name, platforms, database) {
 	if (Configs.i18n) for (const type in Configs.i18n) Configs.i18n[type] = new Map(Configs.i18n[type]);
 	Console.log("✅ Set Environment Variables");
 	return { Settings, Caches, Configs };
-};
+}

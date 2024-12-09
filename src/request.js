@@ -17,9 +17,10 @@ const FORMAT = ($request.headers?.["Content-Type"] ?? $request.headers?.["conten
 Console.info(`FORMAT: ${FORMAT}`);
 (async () => {
 	/**
-	 * @type {{Settings: import('./interface').Settings}}
+	 * @type {{Settings: import('./types').Settings}}
 	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
+	Console.logLevel = Settings.LogLevel;
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");
 	const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";

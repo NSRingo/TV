@@ -5,7 +5,6 @@ import setENV from "./function/setENV.mjs";
 // 构造回复数据
 // biome-ignore lint/style/useConst: <explanation>
 let $response = undefined;
-Console.logLevel = "DEBUG";
 /***************** Processing *****************/
 // 解构URL
 const url = new URL($request.url);
@@ -18,9 +17,10 @@ const FORMAT = ($request.headers?.["Content-Type"] ?? $request.headers?.["conten
 Console.info(`FORMAT: ${FORMAT}`);
 (async () => {
 	/**
-	 * @type {{Settings: import('./interface').Settings}}
+	 * @type {{Settings: import('./types').Settings}}
 	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
+	Console.logLevel = Settings.LogLevel;
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");
 	const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";

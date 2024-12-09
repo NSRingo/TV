@@ -4,19 +4,7 @@ export default {
 			ThirdParty: false,
 			HLSUrl: "play-edge.itunes.apple.com",
 			FPSUrl: "play.itunes.apple.com",
-			Tabs: [
-				"WatchNow",
-				"Originals",
-				"MLS",
-				"Sports",
-				"Kids",
-				"Store",
-				"Movies",
-				"TV",
-				"ChannelsAndApps",
-				"Library",
-				"Search",
-			],
+			Tabs: ["WatchNow", "Originals", "MLS", "Sports", "Kids", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
 			CountryCode: {
 				Configs: "AUTO",
 				Settings: "AUTO",
@@ -51,10 +39,7 @@ export default {
 				{
 					title: "主页",
 					type: "WatchNow",
-					universalLinks: [
-						"https://tv.apple.com/watch-now",
-						"https://tv.apple.com/home",
-					],
+					universalLinks: ["https://tv.apple.com/watch-now", "https://tv.apple.com/home"],
 					destinationType: "Target",
 					target: {
 						id: "tahoma_watchnow",
@@ -66,10 +51,7 @@ export default {
 				{
 					title: "Apple TV+",
 					type: "Originals",
-					universalLinks: [
-						"https://tv.apple.com/channel/tvs.sbd.4000",
-						"https://tv.apple.com/atv",
-					],
+					universalLinks: ["https://tv.apple.com/channel/tvs.sbd.4000", "https://tv.apple.com/atv"],
 					destinationType: "Target",
 					target: {
 						id: "tvs.sbd.4000",
@@ -232,6 +214,13 @@ export default {
 					["zh-Hant", "蒐索"],
 				],
 			},
+		},
+	},
+	Default: {
+		Settings: {
+			LogLevel: "WARN",
+		},
+		Configs: {
 			Storefront: {
 				AE: "143481",
 				AF: "143610",

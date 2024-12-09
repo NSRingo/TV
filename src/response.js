@@ -2,7 +2,6 @@ import { Console, done, Lodash as _ } from "@nsnanocat/util";
 import { URL } from "@nsnanocat/url";
 import database from "./function/database.mjs";
 import setENV from "./function/setENV.mjs";
-
 /***************** Processing *****************/
 // 解构URL
 const url = new URL($request.url);
@@ -15,9 +14,10 @@ const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["cont
 Console.info(`FORMAT: ${FORMAT}`);
 (async () => {
 	/**
-	 * @type {{Settings: import('./interface').Settings}}
+	 * @type {{Settings: import('./types').Settings}}
 	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
+	Console.logLevel = Settings.LogLevel;
 	// 创建空数据
 	let body = {};
 	// 格式判断
@@ -169,7 +169,8 @@ Console.info(`FORMAT: ${FORMAT}`);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
-						case "/uts/v3/canvases/Channels/tvs.sbd.7000": { // MLS Season Pass
+						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {
+							// MLS Season Pass
 							let shelves = body?.data?.canvas?.shelves;
 							if (shelves) {
 								shelves = shelves.map(shelf => {
@@ -191,7 +192,8 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/shelves/uts.col.UpNext": // 待播清單
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.4000": // Apple TV+ 待播節目
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.7000": // MLS Season Pass 待播節目
-						case "/uts/v3/shelves/edt.col.62d7229e-d9a1-4f00-98e5-458c11ed3938": { // 精選推薦
+						case "/uts/v3/shelves/edt.col.62d7229e-d9a1-4f00-98e5-458c11ed3938": {
+							// 精選推薦
 							const shelf = body?.data?.shelf;
 							if (shelf?.items) {
 								shelf.items = shelf.items.map(item => {
@@ -213,7 +215,8 @@ Console.info(`FORMAT: ${FORMAT}`);
 												case "movies": // uts/v3/movies/
 												case "shows": // uts/v3/shows/
 												case "episodes": // uts/v3/episodes/
-												case "sporting-events": { // uts/v3/sporting-events/
+												case "sporting-events": {
+													// uts/v3/sporting-events/
 													let shelves = body?.data?.canvas?.shelves;
 													let backgroundVideo = body?.data?.content?.backgroundVideo;
 													const playables = body?.data?.playables;
