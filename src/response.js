@@ -52,8 +52,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 					const Version = Number.parseInt(url.searchParams.get("v"), 10),
 						Platform = url.searchParams.get("pfm"),
 						Caller = url.searchParams.get("caller");
+					Console.info(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
 					const StoreFront = url.searchParams.get("sf");
 					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
+					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
@@ -64,11 +66,14 @@ Console.info(`FORMAT: ${FORMAT}`);
 									Settings.Tabs.forEach(type => {
 										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {
 											const tab = body.data.applicationProps.tabs.find(Tab => Tab?.type === type);
+											Console.debug(`oTab: ${JSON.stringify(tab)}`);
 											const index = body.data.applicationProps.tabs.findIndex(Tab => Tab?.type === type);
+											Console.debug(`oIndex: ${index}`);
 											if (index === 0) newTabs.unshift(tab);
 											else newTabs.push(tab);
 										} else if (Configs.Tabs.some(Tab => Tab?.type === type)) {
 											const tab = Configs.Tabs.find(Tab => Tab?.type === type);
+											Console.debug(`aTab: ${JSON.stringify(tab)}`);
 											switch (tab?.destinationType) {
 												// biome-ignore lint/suspicious/noFallthroughSwitchClause: <explanation>
 												case "SubTabs":
@@ -87,23 +92,15 @@ Console.info(`FORMAT: ${FORMAT}`);
 													newTabs.push(tab);
 													break;
 												case "Store":
-													if (Version >= 54) {
-														if (Version >= 74) {
-															tab.destinationType = "Target";
-															tab.target = { id: "tahoma_store", type: "Root", url: "https://tv.apple.com/store" };
-															tab.universalLinks = ["https://tv.apple.com/store", "https://tv.apple.com/movies", "https://tv.apple.com/tv-shows"];
-															delete tab?.subTabs;
-														}
-														newTabs.push(tab);
-													}
+													if (Version >= 54) newTabs.push(tab);
 													break;
 												case "Movies":
 												case "TV":
-													if (Version < 54) tab.secondaryEnabled = true;
+													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
 													if (Version < 54) newTabs.push(tab);
 													break;
 												case "MLS":
-													if (Version >= 64) {
+													if (Version >= 64)
 														switch (Platform) {
 															case "atv":
 															case "ipad":
@@ -115,11 +112,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 															case "iphone":
 																return;
 														}
-													}
 													break;
 												case "Sports":
 												case "Kids":
-													if (Version < 54) tab.secondaryEnabled = true;
+													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
 													if (Version < 54) newTabs.push(tab);
 													else {
 														switch (Platform) {
@@ -136,11 +132,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 													}
 													break;
 												case "Search":
-													if (Version >= 74) tab.target.id = "tahoma_searchlanding";
 													newTabs.push(tab);
 													break;
 												case "ChannelsAndApps":
-													if (Version >= 74) {
+													if (Version >= 74)
 														switch (Platform) {
 															case "atv":
 															case "ipad":
@@ -152,7 +147,6 @@ Console.info(`FORMAT: ${FORMAT}`);
 															default:
 																break;
 														}
-													}
 													break;
 												case "Library":
 												default:
@@ -161,6 +155,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 											}
 										}
 									});
+									Console.debug(`newTabs: ${JSON.stringify(newTabs, null, 2)}`);
 									body.data.applicationProps.tabs = newTabs;
 								}
 							}

@@ -61,10 +61,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 					const Version = Number.parseInt(url.searchParams.get("v"), 10),
 						Platform = url.searchParams.get("pfm"),
 						Caller = url.searchParams.get("caller");
-					Console.debug(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
+					Console.info(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
 					const StoreFront = url.searchParams.get("sf");
 					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
-					Console.debug(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
+					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
@@ -103,23 +103,23 @@ Console.info(`FORMAT: ${FORMAT}`);
 													newTabs.push(tab);
 													break;
 												case "Store":
-													if (Version >= 54) {
-														if (Version >= 74) {
-															tab.destinationType = "Target";
-															tab.target = { id: "tahoma_store", type: "Root", url: "https://tv.apple.com/store" };
-															tab.universalLinks = ["https://tv.apple.com/store", "https://tv.apple.com/movies", "https://tv.apple.com/tv-shows"];
-															delete tab?.subTabs;
-														}
-														newTabs.push(tab);
+													/*
+													if (Version >= 74) {
+														tab.destinationType = "Target";
+														tab.target = { id: "tahoma_store", type: "Root", url: "https://tv.apple.com/store" };
+														tab.universalLinks = ["https://tv.apple.com/store", "https://tv.apple.com/movies", "https://tv.apple.com/tv-shows"];
+														delete tab?.subTabs;
 													}
+													*/
+													if (Version >= 54) newTabs.push(tab);
 													break;
 												case "Movies":
 												case "TV":
-													if (Version < 54) tab.secondaryEnabled = true;
+													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
 													if (Version < 54) newTabs.push(tab);
 													break;
 												case "MLS":
-													if (Version >= 64) {
+													if (Version >= 64)
 														switch (Platform) {
 															case "atv":
 															case "ipad":
@@ -131,11 +131,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 															case "iphone":
 																return;
 														}
-													}
 													break;
 												case "Sports":
 												case "Kids":
-													if (Version < 54) tab.secondaryEnabled = true;
+													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
 													if (Version < 54) newTabs.push(tab);
 													else {
 														switch (Platform) {
@@ -152,11 +151,11 @@ Console.info(`FORMAT: ${FORMAT}`);
 													}
 													break;
 												case "Search":
-													if (Version >= 74) tab.target.id = "tahoma_searchlanding";
+													// if (Version >= 74) tab.target.id = "tahoma_searchlanding";
 													newTabs.push(tab);
 													break;
 												case "ChannelsAndApps":
-													if (Version >= 74) {
+													if (Version >= 74)
 														switch (Platform) {
 															case "atv":
 															case "ipad":
@@ -168,7 +167,6 @@ Console.info(`FORMAT: ${FORMAT}`);
 															default:
 																break;
 														}
-													}
 													break;
 												case "Library":
 												default:
@@ -177,7 +175,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 											}
 										}
 									});
-									Console.debug(`newTabs: ${JSON.stringify(newTabs)}`);
+									Console.debug(`newTabs: ${JSON.stringify(newTabs, null, 2)}`);
 									body.data.applicationProps.tabs = newTabs;
 									/*
 									body.data.applicationProps.tabs = Configs.Tabs.map((tab, index) => {
