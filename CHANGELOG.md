@@ -1,15 +1,8 @@
 ### 🛠️ Bug Fixes
-  * 修复 `$argument` 和 `$persistentStore` 载入顺序颠倒的问题
-    * 正确顺序为先读取 `$argument` 再读取 `$persistentStore (BoxJs)`
-    * 即，有相同键名时，`$persistentStore (BoxJs)` 的值会覆盖 `$argument` 的值
+  * 修复`体育节目`分区页面加载问题
+  * 修复`儿童`分区页面加载问题
+  * 更新`商店`分区页面标签页
 
 ### 🔣 Dependencies
   * 升级了 `@nsnanocat/util`
-    * `util` 由 `submodule` 更改为 `package`
-    * `$platform` 改为 `$app`
-    * 使用了全新的 `Console` polyfill
   * 升级了 `@nsnanocat/url`
-    * 使用了全新的 `URL` 和 `URLSearchParams` polyfill
-
-### 🔄 Other Changes
-  * 打包器由 `rollup` 更改为 `rspack`

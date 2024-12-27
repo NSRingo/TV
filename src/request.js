@@ -24,7 +24,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");
 	const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
-	Console.debug(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
+	Console.info(`StoreFront: ${StoreFront}`, `Locale: ${Locale}`);
 	// 创建空数据
 	let body = {};
 	// 设置默认类型
@@ -96,6 +96,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 							switch (url.pathname) {
 								case "/uts/v3/user/settings":
 									Type = "Settings";
+									Console.debug(JSON.stringify(body));
 									break;
 							}
 							break;
@@ -105,6 +106,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 								case "/v3/channels/scoreboard":
 								case "/v3/channels/scoreboard/":
 									Type = "Sports";
+									Console.debug(JSON.stringify(body));
 									break;
 							}
 							break;
@@ -128,9 +130,10 @@ Console.info(`FORMAT: ${FORMAT}`);
 			// 主机判断
 			switch (url.hostname) {
 				case "uts-api.itunes.apple.com": {
-					const Version = Number.parseInt(url.searchParams.get("v"), 10),
+					const Caller = url.searchParams.get("caller"),
 						Platform = url.searchParams.get("pfm"),
-						Caller = url.searchParams.get("caller");
+						Version = Number.parseInt(url.searchParams.get("v"), 10);
+					Console.info(`Caller: ${Caller}`, `Platform: ${Platform}`, `Version: ${Version}`);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations": {
@@ -138,6 +141,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 							const Region = url.searchParams.get("region"),
 								Country = url.searchParams.get("country"),
 								StoreFrontH = url.searchParams.get("sfh");
+							Console.info(`Region: ${Region}`, `Country: ${Country}`, `StoreFrontH: ${StoreFrontH}`);
 							if (Settings.CountryCode[Type] !== "AUTO") {
 								if (Region) url.searchParams.set("region", Settings.CountryCode[Type] ?? Region);
 								if (Country) url.searchParams.set("country", Settings.CountryCode[Type] ?? Country);
@@ -152,7 +156,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/canvases/roots/tahoma_watchnow":
 						case "/uts/v3/shelves/uts.col.UpNext":
 							Type = "WatchNow";
-							if (Settings.ThirdParty) url.searchParams.set("pfm", Platform === "desktop" ? "appletv" : Platform);
+							if (Settings.ThirdParty) if (Platform === "desktop") url.searchParams.set("pfm", "appletv");
 							break;
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000":
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.4000":
@@ -169,6 +173,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 							Type = "Channels";
 							break;
 						case "/uts/v3/canvases/Roots/sports":
+						case "/uts/v3/canvases/Roots/tahoma_sports":
 						case "/uts/v3/shelves/uts.col.PersonalizedLiveSports":
 						case "/uts/v3/clock-scores":
 						case "/uts/v3/leagues":
@@ -182,11 +187,16 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/canvases/Rooms/edt.item.635968ac-89d7-4619-8f5d-8c7890aef813": // NFL THANKSGIVING 2022
 						case "/uts/v3/canvases/Rooms/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2": // Friday Night Baseball - MLB - Apple TV+
 							Type = "Sports";
-							//if (Settings["ThirdParty"])
-							url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+							if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							break;
 						case "/uts/v3/canvases/Roots/kids":
+						case "/uts/v3/canvases/Roots/tahoma_kids":
 							Type = "Kids";
+							//if (Platform === "desktop") url.searchParams.set("caller", "js");
+							break;
+						case "/uts/v3/canvases/Roots/kids/tahoma_kids":
+							Type = "Kids";
+							url.pathname = "/uts/v3/canvases/Roots/tahoma_kids";
 							break;
 						case "/uts/v3/canvases/Roots/store":
 						case "/uts/v3/canvases/Roots/tahoma_store":
@@ -194,11 +204,11 @@ Console.info(`FORMAT: ${FORMAT}`);
 							break;
 						case "/uts/v3/canvases/Roots/movies":
 							Type = "Movies";
-							if (Settings.ThirdParty) url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+							if (Settings.ThirdParty) if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							break;
 						case "/uts/v3/canvases/Roots/tv":
 							Type = "TV";
-							if (Settings.ThirdParty) url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+							if (Settings.ThirdParty) if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							break;
 						case "/uts/v3/favorite-people":
 						case "/uts/v3/favorite-teams":
@@ -217,7 +227,7 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/watchlist":
 						case "/uts/v2/watchlist/contains":
 						case "/uts/v2/watchlist/search":
-							if (Settings.ThirdParty) url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+							if (Settings.ThirdParty) if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							break;
 						default:
 							//if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
@@ -229,11 +239,11 @@ Console.info(`FORMAT: ${FORMAT}`);
 							else if (url.pathname.includes("/uts/v3/sporting-events/")) {
 								Type = "Sports";
 								//if (Settings["ThirdParty"])
-								url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+								if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							} else if (url.pathname.includes("/uts/v3/canvases/Sports/")) {
 								Type = "Sports";
 								//if (Settings["ThirdParty"])
-								url.searchParams.set("pfm", Platform === "desktop" ? "ipad" : Platform);
+								if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							} else if (url.pathname.includes("/uts/v3/canvases/Persons/")) Type = "Persons";
 							else if (url.pathname.includes("/uts/v3/canvases/Rooms/")) Type = "Others";
 							//else if (url.pathname.includes("/uts/v3/playables/")) Type = "Others";
@@ -284,7 +294,9 @@ Console.info(`FORMAT: ${FORMAT}`);
 	if ($request.headers?.["x-apple-store-front"]) $request.headers["x-apple-store-front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["x-apple-store-front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["x-apple-store-front"];
 	if (StoreFront) url.searchParams.set("sf", Configs.Storefront[Settings.CountryCode[Type]] ?? StoreFront);
 	if (Locale) url.searchParams.set("locale", Configs.Locale.get(Settings.CountryCode[Type]) ?? Locale);
+	Console.info(`StoreFront: ${url.searchParams.get("sf")}`, `Locale = ${url.searchParams.get("locale")}`);
 	$request.url = url.toString();
+	Console.debug(`$request.url: ${$request.url}`);
 })()
 	.catch(e => Console.error(e))
 	.finally(() => {
