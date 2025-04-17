@@ -8,35 +8,13 @@ export interface Settings {
      */
     ThirdParty?: boolean;
     /**
-     * [主机名] HTTP实时流(HLS)地址
+     * 启用绕过 SSL 证书固定校验
      *
-     * 因为FPS服务域名禁止MitM，修改此地址可以分离HLS与FPS的域名，从而恢复对DualSubs的双语字幕支持。
+     * 是否绕过播放列表所使用域名的证书固定校验功能，从而恢复对DualSubs的双语字幕支持。
      *
-     * @remarks
-     *
-     * Possible values:
-     * - `''` - OFF(不修改)
-     * - `'play.itunes.apple.com'` - play.itunes.apple.com (不推荐，与播放服务域名重叠)
-     * - `'play-edge.itunes.apple.com'` - play-edge.itunes.apple.com (默认)
-     *
-     * @defaultValue "play-edge.itunes.apple.com"
+     * @defaultValue true
      */
-    HLSUrl?: '' | 'play.itunes.apple.com' | 'play-edge.itunes.apple.com';
-    /**
-     * [主机名] FairPlay流(FPS)地址
-     *
-     * 因为FPS服务域名禁止MitM，修改此地址可以分离HLS与FPS的域名，从而恢复对DualSubs的双语字幕支持。
-     *
-     * @remarks
-     *
-     * Possible values:
-     * - `''` - OFF(不修改)
-     * - `'play.itunes.apple.com'` - play.itunes.apple.com (默认)
-     * - `'play-edge.itunes.apple.com'` - play-edge.itunes.apple.com (不推荐，与播放服务域名重叠)
-     *
-     * @defaultValue "play.itunes.apple.com"
-     */
-    FPSUrl?: '' | 'play.itunes.apple.com' | 'play-edge.itunes.apple.com';
+    isWorkaroundSSLPinning?: boolean;
     /**
      * [调试] 日志等级
      *
@@ -45,7 +23,7 @@ export interface Settings {
      * @remarks
      *
      * Possible values:
-     * - `'OFF'` - 关闭
+     * - `'OFF'` - 🔴 关闭
      * - `'ERROR'` - ❌ 错误
      * - `'WARN'` - ⚠️ 警告
      * - `'INFO'` - ℹ️ 信息

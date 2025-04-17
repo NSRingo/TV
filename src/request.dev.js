@@ -274,23 +274,31 @@ Console.info(`FORMAT: ${FORMAT}`);
 							break;
 					}
 					break;
+				/*
 				case "play.itunes.apple.com":
 					// 路径判断
 					switch (url.pathname) {
-						case "/WebObjects/MZPlay.woa/hls/subscription/playlist.m3u8": // 仅存在于 play-edge.itunes.apple.com
+						case "/WebObjects/MZPlay.woa/hls/subscription/playlist.m3u8":
 							url.hostname = "play-edge.itunes.apple.com";
-							url.pathname = "/WebObjects/MZPlayLocal.woa/hls/subscription/playlist.m3u8";
+							url.pathname = "/WebObjects/MZPlayLocal.woa/hls/subscription/playlist.m3u8"; // 仅存在于 play-edge.itunes.apple.com
 							break;
 					}
 					break;
 				case "play-edge.itunes.apple.com":
 					// 路径判断
 					switch (url.pathname) {
-						case "/WebObjects/MZPlayLocal.woa/hls/playlist.m3u8": // 仅存在于 play.itunes.apple.com
+						case "/WebObjects/MZPlayLocal.woa/hls/playlist.m3u8":
 							url.hostname = "play.itunes.apple.com";
-							url.pathname = "/WebObjects/MZPlay.woa/hls/playlist.m3u8";
+							url.pathname = "/WebObjects/MZPlay.woa/hls/playlist.m3u8"; // 仅存在于 play.itunes.apple.com
 							break;
 					}
+					break;
+				*/
+				case "play-cdn.itunes.apple.com":
+					url.hostname = "play.itunes.apple.com";
+					break;
+				case "play-edge-cdn.itunes.apple.com":
+					url.hostname = "play-edge.itunes.apple.com";
 					break;
 			}
 			Console.info(`Type = ${Type}, CC = ${Settings.CountryCode[Type]}`);

@@ -2,8 +2,7 @@ export default {
 	TV: {
 		Settings: {
 			ThirdParty: false,
-			HLSUrl: "play-edge.itunes.apple.com",
-			FPSUrl: "play.itunes.apple.com",
+			isWorkaroundSSLPinning: true,
 			Tabs: ["WatchNow", "Originals", "MLS", "Sports", "Kids", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
 			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},

@@ -166,21 +166,23 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {
 							// MLS Season Pass
-							let shelves = body?.data?.canvas?.shelves;
-							if (shelves) {
-								shelves = shelves.map(shelf => {
-									if (shelf?.items) {
-										shelf.items = shelf.items.map(item => {
-											let playable = item?.playable || item?.videos?.shelfVideoTall;
-											const playables = item?.playables;
-											if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
-											if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
-											return item;
-										});
-									}
-									return shelf;
-								});
-								body.data.canvas.shelves = shelves;
+							if (Settings?.isWorkaroundSSLPinning) {
+								let shelves = body?.data?.canvas?.shelves;
+								if (shelves) {
+									shelves = shelves.map(shelf => {
+										if (shelf?.items) {
+											shelf.items = shelf.items.map(item => {
+												let playable = item?.playable || item?.videos?.shelfVideoTall;
+												const playables = item?.playables;
+												if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
+												if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
+												return item;
+											});
+										}
+										return shelf;
+									});
+									body.data.canvas.shelves = shelves;
+								}
 							}
 							break;
 						}
@@ -189,15 +191,17 @@ Console.info(`FORMAT: ${FORMAT}`);
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.7000": // MLS Season Pass 待播節目
 						case "/uts/v3/shelves/edt.col.62d7229e-d9a1-4f00-98e5-458c11ed3938": {
 							// 精選推薦
-							const shelf = body?.data?.shelf;
-							if (shelf?.items) {
-								shelf.items = shelf.items.map(item => {
-									let playable = item?.playable || item?.videos?.shelfVideoTall;
-									const playables = item?.playables;
-									if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
-									if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
-									return item;
-								});
+							if (Settings?.isWorkaroundSSLPinning) {
+								const shelf = body?.data?.shelf;
+								if (shelf?.items) {
+									shelf.items = shelf.items.map(item => {
+										let playable = item?.playable || item?.videos?.shelfVideoTall;
+										const playables = item?.playables;
+										if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
+										if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
+										return item;
+									});
+								}
 							}
 							break;
 						}
@@ -212,26 +216,28 @@ Console.info(`FORMAT: ${FORMAT}`);
 												case "episodes": // uts/v3/episodes/
 												case "sporting-events": {
 													// uts/v3/sporting-events/
-													let shelves = body?.data?.canvas?.shelves;
-													let backgroundVideo = body?.data?.content?.backgroundVideo;
-													const playables = body?.data?.playables;
-													if (shelves) {
-														shelves = shelves.map(shelf => {
-															if (shelf?.items) {
-																shelf.items = shelf.items.map(item => {
-																	let playable = item?.playable || item?.videos?.shelfVideoTall;
-																	if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
-																	const playables = item?.playables;
-																	if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
-																	return item;
-																});
-															}
-															return shelf;
-														});
-														body.data.canvas.shelves = shelves;
+													if (Settings?.isWorkaroundSSLPinning) {
+														let shelves = body?.data?.canvas?.shelves;
+														let backgroundVideo = body?.data?.content?.backgroundVideo;
+														const playables = body?.data?.playables;
+														if (shelves) {
+															shelves = shelves.map(shelf => {
+																if (shelf?.items) {
+																	shelf.items = shelf.items.map(item => {
+																		let playable = item?.playable || item?.videos?.shelfVideoTall;
+																		if (playable) playable = setPlayable(playable, Settings?.HLSUrl, Settings?.FPSUrl);
+																		const playables = item?.playables;
+																		if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
+																		return item;
+																	});
+																}
+																return shelf;
+															});
+															body.data.canvas.shelves = shelves;
+														}
+														if (backgroundVideo) backgroundVideo = setPlayable(backgroundVideo, Settings?.HLSUrl, Settings?.FPSUrl);
+														if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
 													}
-													if (backgroundVideo) backgroundVideo = setPlayable(backgroundVideo, Settings?.HLSUrl, Settings?.FPSUrl);
-													if (playables) Object.keys(playables).forEach(playable => (playables[playable] = setPlayable(playables[playable], Settings?.HLSUrl, Settings?.FPSUrl)));
 													break;
 												}
 											}
@@ -282,72 +288,19 @@ function setPlayable(playable, HLSUrl, FPSUrl) {
 	Console.log("✅ Set Playable Content");
 	return playable;
 
-	function setUrl(asset, HLSUrl, FPSUrl) {
+	function setUrl(asset) {
 		Console.log("☑️ Set Url");
 		if (asset?.hlsUrl) {
 			const hlsUrl = new URL(asset.hlsUrl);
-			switch (hlsUrl.pathname) {
-				case "/WebObjects/MZPlay.woa/hls/playlist.m3u8":
-					hlsUrl.hostname = HLSUrl || "play.itunes.apple.com";
-					switch (hlsUrl.hostname) {
-						case "play.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlay.woa/hls/playlist.m3u8";
-							break;
-						case "play-edge.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlayLocal.woa/hls/playlist.m3u8";
-							break;
-					}
+			switch (hlsUrl.hostname) {
+				case "play.itunes.apple.com":
+					hlsUrl.hostname = "play-cdn.itunes.apple.com";
 					break;
-				case "/WebObjects/MZPlayLocal.woa/hls/subscription/playlist.m3u8":
-					hlsUrl.hostname = HLSUrl || "play-edge.itunes.apple.com";
-					switch (hlsUrl.hostname) {
-						case "play.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlay.woa/hls/subscription/playlist.m3u8";
-							break;
-						case "play-edge.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlayLocal.woa/hls/subscription/playlist.m3u8";
-							break;
-					}
-					break;
-				case "/WebObjects/MZPlay.woa/hls/workout/playlist.m3u8":
-					hlsUrl.hostname = HLSUrl || "play.itunes.apple.com";
-					switch (hlsUrl.hostname) {
-						case "play.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlay.woa/hls/workout/playlist.m3u8";
-							break;
-						case "play-edge.itunes.apple.com":
-							hlsUrl.pathname = "/WebObjects/MZPlayLocal.woa/hls/workout/playlist.m3u8";
-							break;
-					}
+				case "play-edge.itunes.apple.com":
+					hlsUrl.hostname = "play-edge-cdn.itunes.apple.com";
 					break;
 			}
 			asset.hlsUrl = hlsUrl.toString();
-		}
-		if (asset?.fpsKeyServerUrl) {
-			const fpsKeyServerUrl = new URL(asset.fpsKeyServerUrl);
-			fpsKeyServerUrl.hostname = FPSUrl || "play-edge.itunes.apple.com";
-			switch (fpsKeyServerUrl.hostname) {
-				case "play.itunes.apple.com":
-					fpsKeyServerUrl.pathname = "/WebObjects/MZPlay.woa/wa/fpsRequest";
-					break;
-				case "play-edge.itunes.apple.com":
-					fpsKeyServerUrl.pathname = "/WebObjects/MZPlayLocal.woa/wa/fpsRequest";
-					break;
-			}
-			asset.fpsKeyServerUrl = fpsKeyServerUrl.toString();
-		}
-		if (asset?.fpsNonceServerUrl) {
-			const fpsNonceServerUrl = new URL(asset.fpsNonceServerUrl);
-			fpsNonceServerUrl.hostname = FPSUrl || "play.itunes.apple.com";
-			switch (fpsNonceServerUrl.hostname) {
-				case "play.itunes.apple.com":
-					fpsNonceServerUrl.pathname = "/WebObjects/MZPlay.woa/wa/checkInNonceRequest";
-					break;
-				case "play-edge.itunes.apple.com":
-					fpsNonceServerUrl.pathname = "/WebObjects/MZPlayLocal.woa/wa/checkInNonceRequest";
-					break;
-			}
-			asset.fpsNonceServerUrl = fpsNonceServerUrl.toString();
 		}
 		Console.log("✅ Set Url");
 		return asset;

@@ -40,9 +40,17 @@ export default defineConfig({
 			description: "是否将桌面版/macOS版/app版等平台的 TV app 转换至 iPad 版，以启用第三方 App 与 TV app 关联功能(如: Disney+, Prime Video 等)。",
 		},
 		{
+			key: "isWorkaroundSSLPinning",
+			name: "启用绕过 SSL 证书固定校验",
+			defaultValue: true,
+			type: "boolean",
+			description: "是否绕过播放列表所使用域名的证书固定校验功能，从而恢复对DualSubs的双语字幕支持。",
+		},
+		/*
+		{
 			key: "HLSUrl",
 			name: "[主机名] HTTP实时流(HLS)地址",
-			defaultValue: "play-edge.itunes.apple.com",
+			defaultValue: "play-edge-cdn.itunes.apple.com",
 			type: "string",
 			description: "因为FPS服务域名禁止MitM，修改此地址可以分离HLS与FPS的域名，从而恢复对DualSubs的双语字幕支持。",
 			options: [
@@ -56,10 +64,16 @@ export default defineConfig({
 				},
 				{
 					key: "play-edge.itunes.apple.com",
-					label: "play-edge.itunes.apple.com (默认)",
+					label: "play-edge.itunes.apple.com",
+				},
+				{
+					key: "play-edge-cdn.itunes.apple.com",
+					label: "play-edge-cdn.itunes.apple.com (默认)",
 				},
 			],
 		},
+		*/
+		/*
 		{
 			key: "FPSUrl",
 			name: "[主机名] FairPlay流(FPS)地址",
@@ -81,6 +95,7 @@ export default defineConfig({
 				},
 			],
 		},
+		*/
 		{
 			key: "LogLevel",
 			name: "[调试] 日志等级",
