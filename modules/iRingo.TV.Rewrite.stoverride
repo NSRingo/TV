@@ -1,0 +1,24 @@
+name: " iRingo: 📺 TV app (Rewrite)"
+desc: |-
+  全面自定义「TV app」功能
+author: |-
+  VirgilClyne[https://github.com/VirgilClyne]
+homepage: "https://NSRingo.github.io/guide/apple-tv"
+icon: "https://developer.apple.com/assets/elements/icons/apple-tv/apple-tv-128x128.png"
+category: " iRingo"
+date: "2026-10-30 23:38:46"
+
+rules:
+  - DOMAIN,known-issues.apple.com,REJECT-DROP
+
+http:
+  mitm:
+    - "uts-api.itunes.apple.com"
+    - "umc-tempo-api.apple.com"
+    - "play-cdn.itunes.apple.com"
+    - "play-edge-cdn.itunes.apple.com"
+  url-rewrite:
+    - ^https?:\/\/play-cdn\.itunes\.apple\.com https://play.itunes.apple.com header
+    - ^https?:\/\/play-edge-cdn\.itunes\.apple\.com https://play-edge.itunes.apple.com header
+    - ^https?:\/\/uts-api\.itunes\.apple\.com\/(uts\/(?:v1|v2|v3)\/.*) https://uts-api-itunes.pages.dev/$1 transparent
+    - ^https?:\/\/umc-tempo-api\.apple\.com\/((?:v1|v2|v3)\/.*) https://uts-api-itunes.pages.dev/$1 transparent

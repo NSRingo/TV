@@ -1,0 +1,23 @@
+#!name = {{@package 'displayName'}} (Rewrite)
+#!desc = {{inline (@package 'description')}}
+#!author = {{@package 'contributors'}}
+#!homepage = {{@package 'homepage'}}
+#!icon = {{@package 'icon'}}
+#!category = {{@package 'organizationName'}}
+#!date = {{now "yyyy-MM-dd HH:mm:ss"}}
+
+#!arguments = {{{arguments}}}
+#!arguments-desc = {{{argumentsDesc}}}
+
+[Rule]
+DOMAIN,known-issues.apple.com,REJECT-DROP
+
+[URL Rewrite]
+^https?:\/\/play-cdn\.itunes\.apple\.com https://play.itunes.apple.com header
+^https?:\/\/play-edge-cdn\.itunes\.apple\.com https://play-edge.itunes.apple.com header
+
+^https?:\/\/uts-api\.itunes\.apple\.com\/(uts\/(?:v1|v2|v3)\/.*) https://\{{{endpoint}}}/$1 header
+^https?:\/\/umc-tempo-api\.apple\.com\/((?:v1|v2|v3)\/.*) https://\{{{endpoint}}}/$1 header
+
+[MITM]
+hostname = %APPEND% uts-api.itunes.apple.com, umc-tempo-api.apple.com, play-cdn.itunes.apple.com, play-edge-cdn.itunes.apple.com

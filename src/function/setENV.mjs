@@ -1,4 +1,5 @@
-import { Console, getStorage, Lodash as _ } from "@nsnanocat/util";
+import getStorage from "@nsnanocat/util/getStorage.mjs";
+import { Console, Lodash as _, qs } from "@nsnanocat/util";
 
 /**
  * Set Environment Variables
@@ -8,9 +9,17 @@ import { Console, getStorage, Lodash as _ } from "@nsnanocat/util";
  * @param {Object} database - Default DataBase
  * @return {Object} { Settings, Caches, Configs }
  */
-export default function setENV(name, platforms, database) {
+export default function setENV(name, platforms, database, argument = globalThis.$argument) {
 	Console.log("☑️ Set Environment Variables");
-	const { Settings, Caches, Configs } = getStorage(name, platforms, database);
+	const previousArgument = globalThis.$argument;
+	let profile;
+	try {
+		globalThis.$argument = qs.parse(argument);
+		profile = getStorage(name, platforms, JSON.parse(JSON.stringify(database)));
+	} finally {
+		globalThis.$argument = previousArgument;
+	}
+	const { Settings, Caches, Configs } = profile;
 	/***************** Settings *****************/
 	if (!Array.isArray(Settings?.Tabs)) _.set(Settings, "Tabs", Settings?.Tabs ? [Settings.Tabs.toString()] : []);
 	Console.info(`typeof Settings: ${typeof Settings}`, `Settings: ${JSON.stringify(Settings, null, 2)}`);

@@ -1,0 +1,6 @@
+{
+	"name": "uts-api-itunes",
+	"compatibility_date": "2025-11-21",
+	"compatibility_flags": ["nodejs_compat"],
+	"pages_build_output_dir": "./pages"
+}

@@ -1,0 +1,14 @@
+{
+	"name": "uts-api-itunes",
+	"main": "src/Hono.js",
+	"compatibility_date": "2025-11-21",
+	"compatibility_flags": ["nodejs_compat"],
+	"routes": [{ "pattern": "uts-api-itunes.nanocat.cloud", "custom_domain": true }],
+	"observability": {
+		"enabled": false,
+		"head_sampling_rate": 1,
+		"logs": { "enabled": true, "head_sampling_rate": 1, "persist": true, "invocation_logs": true },
+		"traces": { "enabled": true, "persist": true, "head_sampling_rate": 1 }
+	},
+	"placement": { "mode": "smart" }
+}

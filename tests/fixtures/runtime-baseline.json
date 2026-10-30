@@ -1,0 +1,2659 @@
+{
+	"commit": "084eff98931d7b85392f47e779645ecc10bed7f2",
+	"util": "1.8.9",
+	"url": "1.2.4",
+	"cases": [
+		{
+			"name": "config-defaults",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=80&sf=143470&region=SG&country=SG&sfh=143470-1",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/configurations",
+				"query": {
+					"pfm": "desktop",
+					"v": "80",
+					"sf": "143470",
+					"region": "SG",
+					"country": "SG",
+					"sfh": "143470-1",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "third-party",
+			"phase": "request",
+			"argument": "ThirdParty=true",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/watchNow?pfm=desktop&sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/watchNow",
+				"query": {
+					"pfm": "appletv",
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "sports",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/sports?sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/sports",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1"
+				}
+			}
+		},
+		{
+			"name": "kids",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/kids/tahoma_kids?pfm=desktop&sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/tahoma_kids",
+				"query": {
+					"pfm": "desktop",
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1"
+				}
+			}
+		},
+		{
+			"name": "movies",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test?sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/movies/test",
+				"query": {
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "persons",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Persons/test?sf=143441",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Persons/test",
+				"query": {
+					"sf": "143464",
+					"locale": "zh-Hans"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143464-1"
+				}
+			}
+		},
+		{
+			"name": "settings-post",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/user/settings?sf=143470",
+				"method": "POST",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/json"
+				},
+				"body": "{\"enabled\":true}"
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/user/settings",
+				"query": {
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/json"
+				},
+				"body": "{\"enabled\":true}"
+			}
+		},
+		{
+			"name": "favorites-post",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v2/favorites/add?sf=143470",
+				"method": "POST",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				"body": "sf=143470&id=team"
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v2/favorites/add",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1",
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				"body": "sf=143441&id=team"
+			}
+		},
+		{
+			"name": "umc-scoreboard",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://umc-tempo-api.apple.com/v3/channels/scoreboard?sf=143470",
+				"method": "GET",
+				"headers": {}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://umc-tempo-api.apple.com",
+				"path": "/v3/channels/scoreboard",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {}
+			}
+		},
+		{
+			"name": "playlist-host",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://play-edge-cdn.itunes.apple.com/hls/playlist.m3u8?x=1",
+				"method": "GET",
+				"headers": {}
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://play-edge.itunes.apple.com",
+				"path": "/hls/playlist.m3u8",
+				"query": {
+					"x": "1",
+					"locale": "zh"
+				},
+				"headers": {}
+			}
+		},
+		{
+			"name": "fps",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://play.itunes.apple.com/WebObjects/MZPlay.woa/wa/fpsRequest",
+				"method": "POST",
+				"headers": {
+					"Content-Type": "text/plain"
+				},
+				"body": "nonce=test"
+			},
+			"variant": "release",
+			"expected": {
+				"origin": "https://play-edge.itunes.apple.com",
+				"path": "/WebObjects/MZPlayLocal.woa/wa/fpsRequest",
+				"query": {
+					"locale": "zh"
+				},
+				"headers": {
+					"Content-Type": "text/plain"
+				},
+				"body": "nonce=test"
+			}
+		},
+		{
+			"name": "tabs-iphone-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-iphone-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-iphone-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "ChannelsAndApps",
+					"title": "频道和 App"
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "release",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "ChannelsAndApps",
+					"title": "频道和 App"
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "wta-pass-through",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=wta&pfm=desktop&v=80",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[]}}}"
+			},
+			"variant": "release",
+			"expected": {
+				"data": {
+					"applicationProps": {
+						"tabs": []
+					}
+				}
+			}
+		},
+		{
+			"name": "playable-enabled",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"playables\":{\"movie\":{\"assets\":{\"hlsUrl\":\"https://play.itunes.apple.com/hls/test.m3u8?a=1\",\"fpsKeyServerUrl\":\"https://play.itunes.apple.com/fps\",\"fpsNonceServerUrl\":\"https://play.itunes.apple.com/nonce\"}}}}}"
+			},
+			"variant": "release",
+			"expected": {
+				"data": {
+					"playables": {
+						"movie": {
+							"assets": {
+								"hlsUrl": "https://play-cdn.itunes.apple.com/hls/test.m3u8?a=1",
+								"fpsKeyServerUrl": "https://play.itunes.apple.com/fps",
+								"fpsNonceServerUrl": "https://play.itunes.apple.com/nonce"
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "playable-disabled",
+			"phase": "response",
+			"argument": "isWorkaroundSSLPinning=false",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"playables\":{\"movie\":{\"assets\":{\"hlsUrl\":\"https://play.itunes.apple.com/hls/test.m3u8?a=1\",\"fpsKeyServerUrl\":\"https://play.itunes.apple.com/fps\",\"fpsNonceServerUrl\":\"https://play.itunes.apple.com/nonce\"}}}}}"
+			},
+			"variant": "release",
+			"expected": {
+				"data": {
+					"playables": {
+						"movie": {
+							"assets": {
+								"hlsUrl": "https://play.itunes.apple.com/hls/test.m3u8?a=1",
+								"fpsKeyServerUrl": "https://play.itunes.apple.com/fps",
+								"fpsNonceServerUrl": "https://play.itunes.apple.com/nonce"
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "config-defaults",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=80&sf=143470&region=SG&country=SG&sfh=143470-1",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/configurations",
+				"query": {
+					"pfm": "desktop",
+					"v": "80",
+					"sf": "143470",
+					"region": "SG",
+					"country": "SG",
+					"sfh": "143470-1",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "third-party",
+			"phase": "request",
+			"argument": "ThirdParty=true",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/watchNow?pfm=desktop&sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/watchNow",
+				"query": {
+					"pfm": "appletv",
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "sports",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/sports?sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/sports",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1"
+				}
+			}
+		},
+		{
+			"name": "kids",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/kids/tahoma_kids?pfm=desktop&sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Roots/tahoma_kids",
+				"query": {
+					"pfm": "desktop",
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1"
+				}
+			}
+		},
+		{
+			"name": "movies",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test?sf=143470",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/movies/test",
+				"query": {
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			}
+		},
+		{
+			"name": "persons",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/canvases/Persons/test?sf=143441",
+				"method": "GET",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1"
+				}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/canvases/Persons/test",
+				"query": {
+					"sf": "143464",
+					"locale": "zh-Hans"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143464-1"
+				}
+			}
+		},
+		{
+			"name": "settings-post",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/user/settings?sf=143470",
+				"method": "POST",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/json"
+				},
+				"body": "{\"enabled\":true}"
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v3/user/settings",
+				"query": {
+					"sf": "143470",
+					"locale": "zh"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/json"
+				},
+				"body": "{\"enabled\":true}"
+			}
+		},
+		{
+			"name": "favorites-post",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v2/favorites/add?sf=143470",
+				"method": "POST",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143470-1",
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				"body": "sf=143470&id=team"
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://uts-api.itunes.apple.com",
+				"path": "/uts/v2/favorites/add",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans",
+					"X-Apple-Store-Front": "143441-1",
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				"body": "sf=143441&id=team"
+			}
+		},
+		{
+			"name": "umc-scoreboard",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://umc-tempo-api.apple.com/v3/channels/scoreboard?sf=143470",
+				"method": "GET",
+				"headers": {}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://umc-tempo-api.apple.com",
+				"path": "/v3/channels/scoreboard",
+				"query": {
+					"sf": "143441",
+					"locale": "en-US"
+				},
+				"headers": {}
+			}
+		},
+		{
+			"name": "playlist-host",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://play-edge-cdn.itunes.apple.com/hls/playlist.m3u8?x=1",
+				"method": "GET",
+				"headers": {}
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://play-edge.itunes.apple.com",
+				"path": "/hls/playlist.m3u8",
+				"query": {
+					"x": "1",
+					"locale": "zh"
+				},
+				"headers": {}
+			}
+		},
+		{
+			"name": "fps",
+			"phase": "request",
+			"argument": "",
+			"request": {
+				"url": "https://play.itunes.apple.com/WebObjects/MZPlay.woa/wa/fpsRequest",
+				"method": "POST",
+				"headers": {
+					"Content-Type": "text/plain"
+				},
+				"body": "nonce=test"
+			},
+			"variant": "dev",
+			"expected": {
+				"origin": "https://play-edge.itunes.apple.com",
+				"path": "/WebObjects/MZPlayLocal.woa/wa/fpsRequest",
+				"query": {
+					"locale": "zh"
+				},
+				"headers": {
+					"Content-Type": "text/plain"
+				},
+				"body": "nonce=test"
+			}
+		},
+		{
+			"name": "tabs-iphone-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"secondaryEnabled": true,
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-iphone-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-iphone-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=iphone&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-ipad-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=ipad&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "ChannelsAndApps",
+					"title": "频道和 App"
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-desktop-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=desktop&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-50",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=50&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Movies",
+					"title": "电影",
+					"target": {
+						"id": "tahoma_movies",
+						"type": "Root",
+						"url": "https://tv.apple.com/movies"
+					}
+				},
+				{
+					"type": "TV",
+					"title": "电视节目",
+					"target": {
+						"id": "tahoma_tvshows",
+						"type": "Root",
+						"url": "https://tv.apple.com/tv-shows"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-65",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=65&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "tabs-appletv-80",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?pfm=appletv&v=80&sf=143470",
+				"headers": {
+					"X-Apple-I-Locale": "zh_Hans"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[{\"type\":\"WatchNow\",\"title\":\"Home\"},{\"type\":\"Library\",\"title\":\"Library\"}]}}}"
+			},
+			"variant": "dev",
+			"expected": [
+				{
+					"type": "WatchNow",
+					"title": "Home"
+				},
+				{
+					"type": "Originals",
+					"title": "Apple TV+",
+					"target": {
+						"id": "tvs.sbd.4000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.4000"
+					}
+				},
+				{
+					"type": "MLS",
+					"title": "MLS",
+					"target": {
+						"id": "tvs.sbd.7000",
+						"type": "Brand",
+						"url": "https://tv.apple.com/us/channel/tvs.sbd.7000"
+					}
+				},
+				{
+					"type": "Sports",
+					"title": "体育节目",
+					"target": {
+						"id": "tahoma_sports",
+						"type": "Root",
+						"url": "https://tv.apple.com/sports"
+					}
+				},
+				{
+					"type": "Kids",
+					"title": "儿童",
+					"target": {
+						"id": "tahoma_kids",
+						"type": "Root",
+						"url": "https://tv.apple.com/kids"
+					}
+				},
+				{
+					"type": "Store",
+					"title": "商店",
+					"target": {
+						"id": "tahoma_store",
+						"type": "Root",
+						"url": "https://tv.apple.com/store"
+					}
+				},
+				{
+					"type": "ChannelsAndApps",
+					"title": "频道和 App"
+				},
+				{
+					"type": "Library",
+					"title": "Library"
+				},
+				{
+					"type": "Search",
+					"title": "搜索",
+					"target": {
+						"id": "tahoma_searchlanding",
+						"type": "Root",
+						"url": "https://tv.apple.com/search"
+					}
+				}
+			]
+		},
+		{
+			"name": "wta-pass-through",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=wta&pfm=desktop&v=80",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"applicationProps\":{\"tabs\":[]}}}"
+			},
+			"variant": "dev",
+			"expected": {
+				"data": {
+					"applicationProps": {
+						"tabs": []
+					}
+				}
+			}
+		},
+		{
+			"name": "playable-enabled",
+			"phase": "response",
+			"argument": "",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"playables\":{\"movie\":{\"assets\":{\"hlsUrl\":\"https://play.itunes.apple.com/hls/test.m3u8?a=1\",\"fpsKeyServerUrl\":\"https://play.itunes.apple.com/fps\",\"fpsNonceServerUrl\":\"https://play.itunes.apple.com/nonce\"}}}}}"
+			},
+			"variant": "dev",
+			"expected": {
+				"data": {
+					"playables": {
+						"movie": {
+							"assets": {
+								"hlsUrl": "https://play-cdn.itunes.apple.com/hls/test.m3u8?a=1",
+								"fpsKeyServerUrl": "https://play.itunes.apple.com/fps",
+								"fpsNonceServerUrl": "https://play.itunes.apple.com/nonce"
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "playable-disabled",
+			"phase": "response",
+			"argument": "isWorkaroundSSLPinning=false",
+			"request": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/movies/test",
+				"headers": {}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"data\":{\"playables\":{\"movie\":{\"assets\":{\"hlsUrl\":\"https://play.itunes.apple.com/hls/test.m3u8?a=1\",\"fpsKeyServerUrl\":\"https://play.itunes.apple.com/fps\",\"fpsNonceServerUrl\":\"https://play.itunes.apple.com/nonce\"}}}}}"
+			},
+			"variant": "dev",
+			"expected": {
+				"data": {
+					"playables": {
+						"movie": {
+							"assets": {
+								"hlsUrl": "https://play.itunes.apple.com/hls/test.m3u8?a=1",
+								"fpsKeyServerUrl": "https://play.itunes.apple.com/fps",
+								"fpsNonceServerUrl": "https://play.itunes.apple.com/nonce"
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}

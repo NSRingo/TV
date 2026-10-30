@@ -1,0 +1,33 @@
+name: ' iRingo: 📺 TV app (Rewrite)'
+description: 全面自定义「TV app」功能
+compat_arguments:
+  endpoint: uts-api-itunes.pages.dev
+compat_arguments_desc: |
+  endpoint: [重写] 服务端点
+      ├ uts-api-itunes.pages.dev: 首选；直连；无需代理
+      ├ dev.uts-api-itunes.pages.dev: 开发版
+      └ uts-api-itunes.nanocat.cloud: Worker 版；需要代理
+author: VirgilClyne[https://github.com/VirgilClyne]
+homepage: https://NSRingo.github.io/guide/apple-tv
+icon: https://developer.apple.com/assets/elements/icons/apple-tv/apple-tv-128x128.png
+dns: {}
+rules:
+- domain:
+    match: known-issues.apple.com
+    policy: REJECT-DROP
+url_rewrites:
+- match: ^https?:\/\/play-cdn\.itunes\.apple\.com
+  location: https://play.itunes.apple.com
+- match: ^https?:\/\/play-edge-cdn\.itunes\.apple\.com
+  location: https://play-edge.itunes.apple.com
+- match: ^https?:\/\/uts-api\.itunes\.apple\.com\/(uts\/(?:v1|v2|v3)\/.*)
+  location: https://{{{endpoint}}}/$1
+- match: ^https?:\/\/umc-tempo-api\.apple\.com\/((?:v1|v2|v3)\/.*)
+  location: https://{{{endpoint}}}/$1
+mitm:
+  hostnames:
+    includes:
+    - uts-api.itunes.apple.com
+    - umc-tempo-api.apple.com
+    - play-cdn.itunes.apple.com
+    - play-edge-cdn.itunes.apple.com

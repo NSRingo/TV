@@ -1,0 +1,49 @@
+name: "{{@package 'displayName'}} β"
+desc: |-
+  {{#each (split (@package 'description') "\n")}}
+  {{{this}}}
+  {{/each}}
+openUrl: "{{@package 'openUrl'}}.beta"
+author: |-
+  {{#each (@package 'contributors')}}
+  {{{this}}}
+  {{/each}}
+homepage: "{{@package 'homepage'}}"
+icon: "{{@package 'icon'}}"
+category: "{{@package 'organizationName'}}"
+date: "{{now "yyyy-MM-dd HH:mm:ss"}}"
+version: "dev"
+
+rules:
+  - DOMAIN,known-issues.apple.com,REJECT-DROP
+
+http:
+  mitm:
+    - "uts-api.itunes.apple.com"
+    - "umc-tempo-api.apple.com"
+    - "play-cdn.itunes.apple.com"
+    - "play-edge-cdn.itunes.apple.com"
+  url-rewrite:
+    - ^https?:\/\/play-cdn\.itunes\.apple\.com https://play.itunes.apple.com header
+    - ^https?:\/\/play-edge-cdn\.itunes\.apple\.com https://play-edge.itunes.apple.com header
+  script:
+    - match: https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/
+      name: TV.request
+      type: request
+      require-body: true
+    - match: https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/
+      name: TV.response
+      type: response
+      require-body: true
+    - match: ^https?:\/\/umc-tempo-api\.apple\.com\/(v1|v2|v3)\/
+      name: TV.request
+      type: request
+      require-body: true
+
+script-providers:
+  TV.request:
+    url: https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/request.dev.bundle.js
+    interval: 86400
+  TV.response:
+    url: https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/response.dev.bundle.js
+    interval: 86400

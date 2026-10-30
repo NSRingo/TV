@@ -1,0 +1,19 @@
+#!name = {{@package 'displayName'}} β
+#!desc = {{inline (@package 'description')}}
+#!openUrl = {{@package 'openUrl'}}.beta
+#!author = {{@package 'contributors'}}
+#!homepage = {{@package 'homepage'}}
+#!icon = {{@package 'icon'}}
+#!category = {{@package 'organizationName'}}
+#!date = {{now "yyyy-MM-dd HH:mm:ss"}}
+#!version = dev
+
+#[rewrite_local]
+# 📺 TV UTS
+^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ url script-request-body https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/request.dev.bundle.js
+^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ url script-response-body https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/response.dev.bundle.js
+# 📺 TV UMC
+^https?:\/\/umc-tempo-api\.apple\.com\/(v1|v2|v3)\/ url script-request-body https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/request.dev.bundle.js
+
+#[mitm]
+hostname = uts-api.itunes.apple.com, umc-tempo-api.apple.com, play-cdn.itunes.apple.com, play-edge-cdn.itunes.apple.com

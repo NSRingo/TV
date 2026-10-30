@@ -1,0 +1,5 @@
+{
+	"version": 1,
+	"include": ["/", "/uts/*", "/v1/*", "/v2/*", "/v3/*", "/uts-api.itunes.apple.com/*", "/umc-tempo-api.apple.com/*"],
+	"exclude": []
+}

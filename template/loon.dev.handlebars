@@ -1,0 +1,28 @@
+#!name = {{@package 'displayName'}} β
+#!desc = {{inline (@package 'description')}}
+#!openUrl = {{@package 'openUrl'}}.beta
+#!author = {{@package 'contributors'}}
+#!homepage = {{@package 'homepage'}}
+#!icon = {{@package 'icon'}}
+#!tag = {{@package 'organizationName'}}
+#!system = {{@package 'system'}}
+#!date = {{now "yyyy-MM-dd HH:mm:ss"}}
+#!version = dev
+
+[Argument]
+{{{arguments}}}
+
+[Rule]
+DOMAIN,known-issues.apple.com,REJECT-DROP
+
+[Rewrite]
+^https?:\/\/play-cdn\.itunes\.apple\.com header https://play.itunes.apple.com
+^https?:\/\/play-edge-cdn\.itunes\.apple\.com header https://play-edge.itunes.apple.com
+
+[Script]
+http-request ^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ script-path=https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/request.dev.bundle.js, requires-body=1, tag=📺 TV.uts.request, argument={{{scriptParams}}}
+http-response ^https?:\/\/uts-api\.itunes\.apple\.com\/uts\/(v1|v2|v3)\/ script-path=https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/response.dev.bundle.js, requires-body=1, tag=📺 TV.uts.response, argument={{{scriptParams}}}
+http-request ^https?:\/\/umc-tempo-api\.apple\.com\/(v1|v2|v3)\/ script-path=https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/request.dev.bundle.js, requires-body=1, tag=📺 TV.umc.request
+
+[MITM]
+hostname = uts-api.itunes.apple.com, umc-tempo-api.apple.com, play-cdn.itunes.apple.com, play-edge-cdn.itunes.apple.com
