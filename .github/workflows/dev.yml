@@ -26,6 +26,7 @@ jobs:
         run: |
           test -s dist/request.dev.bundle.js
           test -s dist/response.dev.bundle.js
+          test -s dist/response.lumen.dev.bundle.js
       - name: Test Runtime and Configuration
         run: npm test
       - name: Check Types

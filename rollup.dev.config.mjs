@@ -1,7 +1,7 @@
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import pkg from "./package.json" with { type: "json" };
 
-export default ["request", "response"].map(name => ({
+export default ["request", "response", "response.lumen"].map(name => ({
 	input: `./src/${name}.dev.js`,
 	output: {
 		file: `./dist/${name}.dev.bundle.js`,

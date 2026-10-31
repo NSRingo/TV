@@ -5,7 +5,7 @@ const mode = process.argv[2];
 assert.ok(["dev", "release"].includes(mode), "Usage: npm run verify:artifacts -- dev|release");
 const suffix = mode === "dev" ? ".dev" : "";
 const files = [`dist/request${suffix}.bundle.js`, `dist/response${suffix}.bundle.js`, ...["sgmodule", "plugin", "snippet", "stoverride"].map(extension => `dist/iRingo.TV${suffix}.${extension}`)];
-if (mode === "dev") files.push("dist/iRingo.TV.dev.boxjs.json");
+if (mode === "dev") files.push("dist/iRingo.TV.dev.boxjs.json", "dist/response.lumen.dev.bundle.js");
 else files.push("dist/iRingo.TV.srmodule", "dist/iRingo.TV.yaml", "template/boxjs.settings.json", ...["sgmodule", "lpx", "srmodule", "stoverride", "yaml"].map(extension => `dist/iRingo.TV.Rewrite.${extension}`));
 
 for (const file of files) {
