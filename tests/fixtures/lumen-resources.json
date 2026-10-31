@@ -1,0 +1,134 @@
+{
+	"source": {
+		"channel_sha256": "360321972a555820fd3f3627be5426e1d609eba0bcf5b7efc0da4d132ebdc9d5",
+		"movie_sha256": "4caf8f7f4e3504f5fc953f8ca3d229b34535a9fe653cc5a7880b89d118ed9af6",
+		"note": "Sanitized structural projections from iOS channel HAR and iOS-UA movie replay; image URLs, content text and playback assets replaced with test values. No credentials or opaque query/cache values."
+	},
+	"channel": {
+		"data": {
+			"canvas": {
+				"id": "edt.cvs.lumen-room",
+				"title": "Lumen",
+				"url": "https://tv.apple.com/us/channel/lumen/tvs.sbd.lumen",
+				"canvasInfo": {
+					"canvasType": "Channel",
+					"entityId": "tvs.sbd.lumen",
+					"promptForLocation": false
+				},
+				"shelves": [
+					{
+						"id": "edt.shelf.lumen-hero",
+						"displayType": "epicStage",
+						"url": "https://tv.apple.com/us/shelf/lumen/hero",
+						"items": [
+							{
+								"id": "umc.cmc.lumen1580066",
+								"type": "Movie"
+							},
+							{
+								"id": "umc.cmc.lumen1452386",
+								"type": "Show"
+							}
+						]
+					},
+					{
+						"id": "edt.col.lumen-lib-284",
+						"displayType": "lockup",
+						"title": "其他剧集",
+						"url": "https://tv.apple.com/us/collection/lumen/edt.col.lumen-lib-284",
+						"items": [
+							{
+								"id": "umc.cmc.lumen1744332",
+								"type": "Show"
+							},
+							{
+								"id": "umc.cmc.lumen1739148",
+								"type": "Show"
+							}
+						]
+					}
+				]
+			},
+			"channels": {
+				"tvs.sbd.lumen": {
+					"id": "tvs.sbd.lumen",
+					"type": "Brand",
+					"title": "Lumen",
+					"url": "https://tv.apple.com/us/channel/lumen/tvs.sbd.lumen",
+					"appName": "Lumen",
+					"appAdamIds": [],
+					"appBundleIds": [],
+					"isApSubscription": false,
+					"isFirstParty": false,
+					"isTvAppBrand": false,
+					"images": {
+						"appIcon": {
+							"height": 768,
+							"width": 1280,
+							"supportsLayeredImage": false,
+							"url": "https://images.example.test/lumen/appIcon/{w}x{h}.{f}"
+						},
+						"logoGlyph": {
+							"height": 335,
+							"width": 1764,
+							"supportsLayeredImage": false,
+							"url": "https://images.example.test/lumen/logoGlyph/{w}x{h}.{f}"
+						},
+						"whiteLogo": {
+							"height": 335,
+							"width": 1764,
+							"supportsLayeredImage": false,
+							"url": "https://images.example.test/lumen/whiteLogo/{w}x{h}.{f}"
+						}
+					}
+				}
+			}
+		}
+	},
+	"movie": {
+		"data": {
+			"canvas": {
+				"id": "edt.cvs.lumen1580066",
+				"url": "https://tv.apple.com/us/movie/lumen-1580066/umc.cmc.lumen1580066",
+				"shelves": []
+			},
+			"content": {
+				"id": "umc.cmc.lumen1580066",
+				"type": "Movie",
+				"title": "Movie fixture",
+				"description": "Movie description fixture",
+				"duration": 9625,
+				"url": "https://tv.apple.com/us/movie/lumen-1580066/umc.cmc.lumen1580066"
+			},
+			"howToWatch": [
+				{
+					"channelId": "tvs.sbd.4000",
+					"actions": [
+						{
+							"type": "Play",
+							"playableId": "lumen-test-playable"
+						}
+					]
+				}
+			],
+			"playables": {
+				"lumen-test-playable": {
+					"assets": {
+						"hlsUrl": "https://media.example.test/lumen.m3u8"
+					}
+				}
+			},
+			"smartPlayables": [
+				{
+					"playableId": "lumen-test-playable"
+				}
+			],
+			"channels": {
+				"tvs.sbd.4000": {
+					"id": "tvs.sbd.4000",
+					"title": "Lumen"
+				}
+			}
+		}
+	}
+}
