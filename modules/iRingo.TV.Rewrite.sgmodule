@@ -4,7 +4,7 @@
 #!homepage = https://NSRingo.github.io/guide/apple-tv
 #!icon = https://developer.apple.com/assets/elements/icons/apple-tv/apple-tv-128x128.png
 #!category =  iRingo
-#!date = 2026-10-30 23:38:46
+#!date = 2026-10-30 23:49:47
 
 #!arguments = endpoint:"uts-api-itunes.pages.dev"
 #!arguments-desc = endpoint: [重写] 服务端点\n    ├ uts-api-itunes.pages.dev: 首选；直连；无需代理\n    ├ dev.uts-api-itunes.pages.dev: 开发版\n    └ uts-api-itunes.nanocat.cloud: Worker 版；需要代理\n

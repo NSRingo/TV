@@ -6,7 +6,7 @@ author: |-
 homepage: "https://NSRingo.github.io/guide/apple-tv"
 icon: "https://developer.apple.com/assets/elements/icons/apple-tv/apple-tv-128x128.png"
 category: " iRingo"
-date: "2026-10-30 23:38:46"
+date: "2026-10-30 23:49:47"
 
 rules:
   - DOMAIN,known-issues.apple.com,REJECT-DROP
