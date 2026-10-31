@@ -41,6 +41,8 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
+dev 在 `arguments-builder.dev.config.ts` 中另提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。有值时由 `InjectSearch` 查询 Lumen 并合并到 Apple 搜索结果；留空或只填空白时跳过 Lumen 搜索，包括频道入口和影视结果。此鉴权值只从本次 argument 读取，不参与下表的 BoxJs / Storage 合并，也不写入品牌或响应正文。
+
 Storage 控制设置来源，优先级从高到低：
 
 | Storage | 优先级 |

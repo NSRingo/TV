@@ -41,7 +41,7 @@
 		"build:full-args": "arguments-builder boxjs -c arguments-builder.full.config.ts",
 		"build:args:rewrite": "arguments-builder build -c arguments-builder.rewrite.config.ts",
 		"build:args": "npm-run-all --serial build:release-args build:full-args build:args:rewrite",
-		"dts": "arguments-builder dts -c arguments-builder.full.config.ts",
+		"dts": "arguments-builder dts -c arguments-builder.dev.config.ts",
 		"test": "node --test tests/*.test.mjs",
 		"verify:artifacts": "node scripts/verify-artifacts.mjs"
 	},

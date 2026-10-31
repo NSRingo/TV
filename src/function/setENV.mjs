@@ -7,14 +7,16 @@ import { Console, Lodash as _, qs } from "@nsnanocat/util";
  * @param {String} name - Persistent Store Key
  * @param {Array} platforms - Platform Names
  * @param {Object} database - Default DataBase
- * @return {Object} { Settings, Caches, Configs }
+ * @return {Object} { Settings, Caches, Configs, LumenKey }
  */
 export default function setENV(name, platforms, database, argument = globalThis.$argument) {
 	Console.log("☑️ Set Environment Variables");
+	// 鉴权值仅从本次 argument 读取，不交给会记录配置内容的 getStorage。
+	const { LumenKey, ...settingsArgument } = qs.parse(argument);
 	const previousArgument = globalThis.$argument;
 	let profile;
 	try {
-		globalThis.$argument = qs.parse(argument);
+		globalThis.$argument = settingsArgument;
 		profile = getStorage(name, platforms, JSON.parse(JSON.stringify(database)));
 	} finally {
 		globalThis.$argument = previousArgument;
@@ -30,5 +32,5 @@ export default function setENV(name, platforms, database, argument = globalThis.
 	if (Configs.Locale) Configs.Locale = new Map(Configs.Locale);
 	if (Configs.i18n) for (const type in Configs.i18n) Configs.i18n[type] = new Map(Configs.i18n[type]);
 	Console.log("✅ Set Environment Variables");
-	return { Settings, Caches, Configs };
+	return { Settings, Caches, Configs, LumenKey };
 }

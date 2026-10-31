@@ -13,10 +13,12 @@ const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json
 Console.logLevel = "OFF";
 
 for (const fixture of baseline.cases) {
-	test(`${fixture.variant}: ${fixture.name} matches TV ${baseline.commit.slice(0, 7)}`, async t => {
+	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
+	test(`${fixture.variant}: ${fixture.name} ${injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const request = { ...structuredClone(fixture.request), $argument: `${fixture.argument}&LogLevel=OFF` };
 		let actual;
+		let expected = structuredClone(fixture.expected);
 		if (fixture.phase === "request") {
 			const result = await (fixture.variant === "dev" ? RequestDev : Request)(request);
 			assert.equal(result.$response, undefined);
@@ -25,9 +27,23 @@ for (const fixture of baseline.cases) {
 		} else {
 			const response = await (fixture.variant === "dev" ? ResponseDev : Response)(request, structuredClone(fixture.response));
 			actual = JSON.parse(response.body);
+			if (injectsChannels) {
+				const tab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps");
+				assert.equal(tab.subTabs[0].target.id, "tvs.sbd.lumen");
+				assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
+				if (fixture.name.startsWith("tabs-")) {
+					if (!expected.some(({ type }) => type === "ChannelsAndApps")) {
+						const index = expected.findIndex(({ type }) => type === "Library");
+						expected.splice(index < 0 ? expected.length : index, 0, { type: "ChannelsAndApps", title: "频道和 App" });
+					}
+				} else {
+					actual.data.applicationProps.tabs = actual.data.applicationProps.tabs.filter(({ type }) => type !== "ChannelsAndApps");
+					delete actual.data.channels;
+				}
+			}
 			if (fixture.name.startsWith("tabs-")) actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
 		}
-		assert.deepEqual(actual, fixture.expected);
+		assert.deepEqual(actual, expected);
 	});
 }
 

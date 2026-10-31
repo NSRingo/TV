@@ -1,4 +1,5 @@
 import { Console, fetch, Lodash as _ } from "@nsnanocat/util";
+import InjectChannel from "../class/InjectChannel.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
 /***************** Processing *****************/
@@ -13,9 +14,9 @@ export async function Response($request, $response) {
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
 	/**
-	 * @type {{Settings: import('../types').Settings}}
+	 * @type {{Settings: import('../types').Settings, LumenKey?: string}}
 	 */
-	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Caches, Configs, LumenKey } = setENV("iRingo", "TV", database, $request.$argument);
 	Console.logLevel = Settings.LogLevel;
 	// 创建空数据
 	let body = {};
@@ -64,12 +65,15 @@ export async function Response($request, $response) {
 					const StoreFront = url.searchParams.get("sf");
 					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
 					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
+					const Region = Object.entries(Configs.Storefront).find(([, sf]) => sf === StoreFront)?.[0].toLowerCase() ?? "us";
+					const injectChannel = new InjectChannel();
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
 							if (Caller !== "wta") {
-								// 不修改caller=wta的configurations数据
+								// caller=wta跳过原导航整理，仍注入配置频道
 								if (body?.data?.applicationProps) {
+									_.set(body, "data.applicationProps.tabs", body.data.applicationProps.tabs ?? []);
 									//body.data.applicationProps.requiredParamsMap.WithoutUtsk.locale = "zh_Hans";
 									//body.data.applicationProps.requiredParamsMap.Default.locale = "zh_Hans";
 									const newTabs = [];
@@ -277,10 +281,24 @@ export async function Response($request, $response) {
 									//body.data.userProps.gac = true;
 								}
 							}
+							body = injectChannel.InjectUTSConfigurationChannelsAndApps(body, { platform: Platform, region: Region });
+							break;
+						case "/uts/v3/search/landing":
+						case "/uts/v3/canvases/Roots/tahoma_searchlanding":
+							body = injectChannel.InjectSearchLanding(body, { platform: Platform, region: Region });
+							break;
+						case "/uts/v3/search":
+						case "/uts/v3/shelves/uts.col.search.TR":
+						case "/uts/v3/shelves/uts.col.search.BR":
+							body = await injectChannel.InjectSearch(body, { platform: Platform, region: Region, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
 							break;
 						case "/uts/v3/user/settings":
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
+						case "/uts/v3/canvases/Roots/tahoma_watchnow":
+						// biome-ignore lint/suspicious/noFallthroughSwitchClause: 首页继续执行原播放地址处理
+						case "/uts/v3/canvases/roots/tahoma_watchnow":
+							body = injectChannel.InjectWatchNowLockup(body, { platform: Platform, region: Region });
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {
 							// MLS Season Pass
