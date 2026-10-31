@@ -12,7 +12,7 @@ node node_modules/puppeteer/install.mjs
 npm run dev
 ```
 
-`npm run dev` 同时生成 dev 脚本和模块。正式版构建及验证：
+`npm run dev` 在本地同时生成 dev 脚本和模块。CI 分别使用 `build:dev`、`build:dev-args`，两个 job 固定检出同一触发提交；手动运行 Dev 时选择 dev 分支。正式版构建及验证：
 
 ```sh
 npm run build
@@ -23,7 +23,7 @@ npx tsc --noEmit
 npm run verify:artifacts -- release
 ```
 
-Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions 使用共享 Node Build action 安装依赖和浏览器，再检查测试、类型与产物。
+Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions 使用共享 setup-node action 安装 Node 和依赖。Build、Dev 各自并行运行脚本构建和模块生成，全部成功后汇总为 artifact；只有正式模块生成 job 安装 Chrome、调整 AppArmor。测试、类型与云端入口构建检查在脚本 job 执行。
 
 | 命令 | 用途 |
 | --- | --- |
@@ -86,7 +86,7 @@ npx wrangler pages functions build functions --outdir .wrangler/pages-build
 npx wrangler deploy --dry-run --outdir .wrangler/worker-build --config wrangler.workers.jsonc
 ```
 
-`deploy:pages`、`deploy:workers`、`deploy:vercel` 会执行实际部署。Workers 的两个 GitHub 工作流仅手动触发，使用 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`；普通 dev 推送只发布 Gist。
+`deploy:pages`、`deploy:workers`、`deploy:vercel` 会执行实际部署。GitHub Actions 只构建产物和发布 Gist，不执行 Cloudflare 部署；云端沿用 Cloudflare 端已有的 Git 自动部署配置，dev 推送可能触发对应的自动构建。
 
 ## 回归基线
 

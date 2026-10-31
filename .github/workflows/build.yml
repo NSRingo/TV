@@ -8,39 +8,140 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  scripts:
+    name: Build Scripts
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          submodules: recursive
-          token: ${{ secrets.SUBMODULE_TOKEN }}
-      - name: Set up Node.js
-        uses: actions/setup-node@main
+          ref: ${{ github.sha }}
+      - name: Setup Node and Dependencies
+        uses: ./.github/actions/setup-node
         with:
-          node-version: 'latest'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
-      - name: Update local package.json version from release tag
+          package-token: ${{ secrets.PACKAGE_TOKEN }}
+      - name: Set Package Version from Tag
         if: github.ref_type == 'tag'
         uses: BellCubeDev/update-package-version-by-release-tag@v2
         with:
           version: ${{ github.ref_name }}
-          keep-v: "false" # If set to "true", will not remove any 'v' prefix from the version number.
-          ignore-semver-check: "false" # If set to "true", will not check if the version number is a valid semver version.
-      - name: Build scripts
+          keep-v: "false"
+          ignore-semver-check: "false"
+      - name: Build Scripts
         run: npm run build
-      - name: Generate modules
+      - name: Verify Script Bundles
+        run: |
+          test -s dist/request.bundle.js
+          test -s dist/response.bundle.js
+      - name: Test Runtime and Configuration
+        run: npm test
+      - name: Check Types
+        run: npx tsc --noEmit
+      - name: Build Cloudflare Entrypoints
+        run: |
+          npx wrangler deploy --dry-run --outdir .wrangler/worker-build --config wrangler.workers.jsonc
+          npx wrangler pages functions build functions --outdir .wrangler/pages-build
+      - name: Upload Script Bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: scripts
+          path: dist
+          if-no-files-found: error
+
+  modules:
+    name: Generate Modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup Node and Dependencies
+        uses: ./.github/actions/setup-node
+        with:
+          package-token: ${{ secrets.PACKAGE_TOKEN }}
+      - name: Set Package Version from Tag
+        if: github.ref_type == 'tag'
+        uses: BellCubeDev/update-package-version-by-release-tag@v2
+        with:
+          version: ${{ github.ref_name }}
+          keep-v: "false"
+          ignore-semver-check: "false"
+      - name: Disable AppArmor for Chrome
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Install Puppeteer Chrome
+        run: |
+          node node_modules/puppeteer/install.mjs
+          node --input-type=module -e 'import puppeteer from "puppeteer"; console.log(puppeteer.executablePath())'
+        env:
+          PUPPETEER_CACHE_DIR: ${{ runner.temp }}/puppeteer
+      - name: Generate Modules
         run: npm run build:args
-      - name: Upload artifact
-        uses: actions/upload-artifact@master
+        env:
+          PUPPETEER_CACHE_DIR: ${{ runner.temp }}/puppeteer
+      - name: Verify Generated Modules
+        run: |
+          test -s dist/iRingo.TV.sgmodule
+          test -s dist/iRingo.TV.plugin
+          test -s dist/iRingo.TV.snippet
+          test -s dist/iRingo.TV.stoverride
+          test -s dist/iRingo.TV.srmodule
+          test -s dist/iRingo.TV.yaml
+          test -s dist/iRingo.TV.Rewrite.sgmodule
+          test -s dist/iRingo.TV.Rewrite.lpx
+          test -s dist/iRingo.TV.Rewrite.srmodule
+          test -s dist/iRingo.TV.Rewrite.stoverride
+          test -s dist/iRingo.TV.Rewrite.yaml
+          test -s template/boxjs.settings.json
+      - name: Upload Modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: modules
+          path: dist
+          if-no-files-found: error
+      - name: Upload BoxJs Settings
+        uses: actions/upload-artifact@v4
+        with:
+          name: boxjs-settings
+          path: template/boxjs.settings.json
+          if-no-files-found: error
+
+  package:
+    name: Assemble Artifact
+    needs: [scripts, modules]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Download Script Bundles
+        uses: actions/download-artifact@v4
+        with:
+          name: scripts
+          path: dist
+      - name: Download Modules
+        uses: actions/download-artifact@v4
+        with:
+          name: modules
+          path: dist
+      - name: Download BoxJs Settings
+        uses: actions/download-artifact@v4
+        with:
+          name: boxjs-settings
+          path: template
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+      - name: Verify Complete Artifact
+        run: npm run verify:artifacts -- release
+      - name: Upload Complete Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
+          if-no-files-found: error
           path: |
             CHANGELOG.md
-            rulesets
             dist
+            template/boxjs.settings.json
