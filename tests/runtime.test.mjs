@@ -76,3 +76,20 @@ test("request-specific arguments restore globals and do not leak to subsequent c
 	assert.equal(second.CountryCode.Sports, "US");
 	assert.equal(globalThis.$argument, globalArgument);
 });
+
+test("argument credentials stay outside logged settings and do not leak to subsequent calls", t => {
+	t.mock.method(Storage, "getItem", () => ({}));
+	const logs = [];
+	t.mock.method(Console, "debug", (...values) => logs.push(values));
+	t.mock.method(Console, "info", (...values) => logs.push(values));
+	const previousLevel = Console.logLevel;
+	t.after(() => {
+		Console.logLevel = previousLevel;
+	});
+	const key = "private-test-key+with=padding";
+	const profile = setENV("iRingo", "TV", database, new URLSearchParams({ LumenKey: key, LogLevel: "DEBUG" }).toString());
+	assert.equal(profile.LumenKey, key);
+	assert.equal(Object.hasOwn(profile.Settings, "LumenKey"), false);
+	assert.equal(JSON.stringify(logs).includes(key), false);
+	assert.equal(setENV("iRingo", "TV", database, "LogLevel=OFF").LumenKey, undefined);
+});

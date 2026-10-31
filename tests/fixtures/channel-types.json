@@ -1,0 +1,74 @@
+{
+	"source": "https://github.com/NSRingo/apple.TVKit/blob/f005196331091bf0a554ee37d31aafc1e612f248/verification/lumen/brand-catalog-taxonomy.json",
+	"projection": "STARZ Subscription Channel classification and host fields only; no account state or credentials.",
+	"samples": [
+		{
+			"pfm": "iphone",
+			"reference_brand_id": "tvs.sbd.1000231",
+			"source_sha256": "45967e3fed120667a3c24abdaa3f6a6dd646f221d0241d1544d7a66fa2b44c53",
+			"source_path": "data.channels.tvs.sbd.1000231",
+			"metadata": {
+				"type": "Brand",
+				"isTvAppBrand": false,
+				"isApSubscription": true,
+				"isFirstParty": true,
+				"isAppleTvPlus": false,
+				"isItunes": false,
+				"appAdamIds": ["1174078549"],
+				"appBundleIds": ["com.apple.tv"],
+				"appName": "Apple TV"
+			}
+		},
+		{
+			"pfm": "ipad",
+			"reference_brand_id": "tvs.sbd.1000231",
+			"source_sha256": "f583eeab50854f5c0902bf693f2169359b6663a721184af2643de10fbb3e40d6",
+			"source_path": "data.channels.tvs.sbd.1000231",
+			"metadata": {
+				"type": "Brand",
+				"isTvAppBrand": false,
+				"isApSubscription": true,
+				"isFirstParty": true,
+				"isAppleTvPlus": false,
+				"isItunes": false,
+				"appAdamIds": ["1174078549"],
+				"appBundleIds": ["com.apple.tv"],
+				"appName": "Apple TV"
+			}
+		},
+		{
+			"pfm": "appletv",
+			"reference_brand_id": "tvs.sbd.1000231",
+			"source_sha256": "08a09c1554521fe8aaf0c9a4ddd698bc524a3446fdc19c98217dc5cfcc862584",
+			"source_path": "data.channels.tvs.sbd.1000231",
+			"metadata": {
+				"type": "Brand",
+				"isTvAppBrand": false,
+				"isApSubscription": true,
+				"isFirstParty": true,
+				"isAppleTvPlus": false,
+				"isItunes": false,
+				"appAdamIds": ["1171145244"],
+				"appBundleIds": ["com.apple.TVWatchList"],
+				"appName": "TV"
+			}
+		},
+		{
+			"pfm": "desktop",
+			"reference_brand_id": "tvs.sbd.1000231",
+			"source_sha256": "e497122140adea14392e2b264bd0c9d968fb5937b03215119884265b8d62a14e",
+			"source_path": "data.channels.tvs.sbd.1000231",
+			"metadata": {
+				"type": "Brand",
+				"isTvAppBrand": false,
+				"isApSubscription": true,
+				"isFirstParty": true,
+				"isAppleTvPlus": false,
+				"isItunes": false,
+				"appAdamIds": ["1171145244"],
+				"appBundleIds": ["com.apple.TVWatchList"],
+				"appName": "TV"
+			}
+		}
+	]
+}

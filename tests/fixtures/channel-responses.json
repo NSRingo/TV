@@ -1,0 +1,1352 @@
+{
+	"source": "NSRingo/apple.TVKit verification/lumen; cropped real Taiwan/US responses, with account state and metrics removed. Legacy lockups are synthetic test cases, not device observations.",
+	"home": [
+		{
+			"sf": "143470",
+			"source_pfm": "ipad",
+			"source_page": 3,
+			"source_sha256": "3df899fbf7a09bb8743376a4904faa7b2379ebf8e53618ead9a542769bfef5ba",
+			"source_shelf_index": 3,
+			"source_section_item_count": 2,
+			"projection": "Real shelf/section shape; only Disney+ and HBO Max items retained; account state and metrics omitted.",
+			"body": {
+				"data": {
+					"canvas": {
+						"shelves": [
+							{
+								"cachingPolicy": {
+									"cache": true,
+									"invalidationEvents": [
+										"PURCHASE"
+									],
+									"maxAge": 900,
+									"type": "RefreshWithCanvas"
+								},
+								"displayType": "doorLockupWithSections",
+								"header": {
+									"supportsSeeAllView": false
+								},
+								"id": "uts.col.MyTv.edt.col.6556aa77-20d2-4ed4-be1b-f8356707f1b7",
+								"url": "https://tv.apple.com/tw/collection/uts.col.MyTv.edt.col.6556aa77-20d2-4ed4-be1b-f8356707f1b7?ctx_root=tahoma_watchnow&ctx_cvs=uts.tcvs.home-canvas&ctx_proot=tahoma_watchnow&ctx_shelf=uts.shlf.gen.MyTv",
+								"sections": [
+									{
+										"id": "uts.shlfsect.moretv",
+										"title": "探索頻道和 App",
+										"url": "https://tv.apple.com/tw/section/uts.shlfsect.moretv?ctx_col=uts.col.MyTv.edt.col.6556aa77-20d2-4ed4-be1b-f8356707f1b7",
+										"items": [
+											{
+												"id": "tvs.sbd.1000216",
+												"images": {
+													"shelfItemImage": {
+														"height": 3000,
+														"isP3": false,
+														"joeColor": "b:rgb(15,26,31) p:rgb(205,187,181) s:rgb(134,173,219) t:rgb(167,154,151) q:rgb(110,143,181)",
+														"supportsLayeredImage": false,
+														"url": "https://is1-ssl.mzstatic.com/image/thumb/X4SzuE9bo7T7Etb1FuW3gg/{w}x{h}BDT.TVABC01.{f}?imgCLogo=15w1zuRhclnnB30fTbgsYA&bColor=136878&imgBLogo=DE7IYgeSrN85y7nQql20fA",
+														"width": 2000
+													}
+												},
+												"intents": [
+													"NAVIGATE"
+												],
+												"isPinned": false,
+												"title": "Disney+",
+												"type": "Brand",
+												"url": "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216?ctx_proot=tahoma_watchnow"
+											},
+											{
+												"id": "tvs.sbd.1000566",
+												"images": {
+													"shelfItemImage": {
+														"height": 3000,
+														"isP3": false,
+														"joeColor": "b:rgb(6,4,5) p:rgb(170,197,173) s:rgb(174,196,160) t:rgb(137,159,139) q:rgb(140,158,129)",
+														"supportsLayeredImage": false,
+														"url": "https://is1-ssl.mzstatic.com/image/thumb/n57Sm4QDXuQpwD7JzGPUWg/{w}x{h}BDT.TVABC01.{f}?imgCLogo=NYerc6CBCSoRkWXGYmiycw&bColor=000000&imgBLogo=ni-gU5scWjgbMjMMW_dW8A",
+														"width": 2000
+													}
+												},
+												"intents": [
+													"NAVIGATE"
+												],
+												"isPinned": false,
+												"title": "HBO Max",
+												"type": "Brand",
+												"url": "https://tv.apple.com/tw/channel/hbo-max/tvs.sbd.1000566?ctx_proot=tahoma_watchnow"
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000216": {
+							"id": "tvs.sbd.1000216",
+							"name": "Disney+",
+							"title": "Disney+",
+							"appName": "Disney+",
+							"type": "Brand",
+							"url": "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216?ctx_proot=tahoma_watchnow",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fa/74/2f/fa742f2d-ce8d-f1ab-18b4-c7a775d5ba94/AppIcon-0-0-1x_U007emarketing-0-8-0-0-0-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 58,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/33Pnnbkeyyt-Lhf4uYNnbQ/{w}x{h}.{f}",
+									"width": 110
+								},
+								"squareColorLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/MsCG6padV_hgowHLBX5DOw/{w}x{h}SWL.TVARHBL1.{f}?bColor=136878",
+									"width": 1642
+								},
+								"whiteLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"hexColor": "#136878"
+						},
+						"tvs.sbd.1000566": {
+							"id": "tvs.sbd.1000566",
+							"name": "HBO Max",
+							"title": "HBO Max",
+							"appName": "HBO Max：串流播放電視節目和電影",
+							"type": "Brand",
+							"url": "https://tv.apple.com/tw/channel/hbo-max/tvs.sbd.1000566?ctx_proot=tahoma_watchnow",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/88/b3/cb/88b3cb65-9dd7-8801-bb47-affd72805a82/AppIcon-0-0-1x_U007epad-0-1-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/kEy3Q7bzIY1Q1pWuaU-jIQ/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/H3DMfx7p7-wdcsN0fTCh6g/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2164
+								},
+								"whiteLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ni-gU5scWjgbMjMMW_dW8A/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"hexColor": "#000000"
+						}
+					}
+				}
+			}
+		},
+		{
+			"sf": "143441",
+			"source_pfm": "ipad",
+			"source_page": 3,
+			"source_sha256": "f583eeab50854f5c0902bf693f2169359b6663a721184af2643de10fbb3e40d6",
+			"source_shelf_index": 5,
+			"source_section_item_count": 20,
+			"projection": "Real shelf/section shape; only Disney+ and HBO Max items retained; account state and metrics omitted.",
+			"body": {
+				"data": {
+					"canvas": {
+						"shelves": [
+							{
+								"cachingPolicy": {
+									"cache": true,
+									"invalidationEvents": [
+										"PURCHASE"
+									],
+									"maxAge": 900,
+									"type": "RefreshWithCanvas"
+								},
+								"displayType": "doorLockupWithSections",
+								"header": {
+									"supportsSeeAllView": false
+								},
+								"id": "uts.col.MyTv.edt.col.6556a3ca-c6c9-49f7-beca-fb7b492572a0",
+								"url": "https://tv.apple.com/us/collection/uts.col.MyTv.edt.col.6556a3ca-c6c9-49f7-beca-fb7b492572a0?ctx_root=tahoma_watchnow&ctx_cvs=uts.tcvs.home-canvas&ctx_proot=tahoma_watchnow&ctx_shelf=uts.shlf.gen.MyTv",
+								"sections": [
+									{
+										"id": "uts.shlfsect.moretv",
+										"nextToken": "20",
+										"title": "Explore Channels & Apps",
+										"url": "https://tv.apple.com/us/section/uts.shlfsect.moretv?ctx_col=uts.col.MyTv.edt.col.6556a3ca-c6c9-49f7-beca-fb7b492572a0",
+										"items": [
+											{
+												"id": "tvs.sbd.1000216",
+												"images": {
+													"shelfItemImage": {
+														"height": 3000,
+														"isP3": false,
+														"joeColor": "b:rgb(255,255,255) p:rgb(72,39,17) s:rgb(66,46,40) t:rgb(108,82,65) q:rgb(103,88,83)",
+														"supportsLayeredImage": false,
+														"url": "https://is1-ssl.mzstatic.com/image/thumb/Video221/v4/8b/aa/f3/8baaf3a1-2667-3a63-5d7a-8963bfd284f5/DIS_TOY_STORY_5_TH_ITUNES_BD_TALL_WW_ARTWORK_1680x3636_5H9HF800000DYB.png/{w}x{h}BDT.TVABC01.{f}?imgCLogo=Features221%2Fv4%2F30%2F8b%2F6c%2F308b6c20-89b5-56d4-b9f7-00bd53d732a2%2Faij724611417726399175.png&bColor=136878&imgBLogo=DE7IYgeSrN85y7nQql20fA",
+														"width": 2000
+													}
+												},
+												"intents": [
+													"NAVIGATE"
+												],
+												"isPinned": false,
+												"title": "Disney+",
+												"type": "Brand",
+												"url": "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216?ctx_proot=tahoma_watchnow"
+											},
+											{
+												"id": "tvs.sbd.1000566",
+												"images": {
+													"shelfItemImage": {
+														"height": 3000,
+														"isP3": false,
+														"joeColor": "b:rgb(242,242,242) p:rgb(2,10,25) s:rgb(27,27,27) t:rgb(50,57,68) q:rgb(70,70,70)",
+														"supportsLayeredImage": false,
+														"url": "https://is1-ssl.mzstatic.com/image/thumb/hD44w8HdP2d2W4JHptp1QQ/{w}x{h}BDT.TVABC01.{f}?imgCLogo=zV8jsl0rUwtSE8RMRWR1uw&bColor=000000&imgBLogo=972JE6FzpckxuQ1XcOQjHw",
+														"width": 2000
+													}
+												},
+												"intents": [
+													"NAVIGATE"
+												],
+												"isPinned": false,
+												"title": "HBO Max",
+												"type": "Brand",
+												"url": "https://tv.apple.com/us/channel/hbo-max/tvs.sbd.1000566?ctx_proot=tahoma_watchnow"
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000216": {
+							"id": "tvs.sbd.1000216",
+							"name": "Disney+",
+							"title": "Disney+",
+							"appName": "Disney+",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216?ctx_proot=tahoma_watchnow",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fa/74/2f/fa742f2d-ce8d-f1ab-18b4-c7a775d5ba94/AppIcon-0-0-1x_U007emarketing-0-8-0-0-0-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 58,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/33Pnnbkeyyt-Lhf4uYNnbQ/{w}x{h}.{f}",
+									"width": 110
+								},
+								"squareColorLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/MsCG6padV_hgowHLBX5DOw/{w}x{h}SWL.TVARHBL1.{f}?bColor=136878",
+									"width": 1642
+								},
+								"whiteLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"hexColor": "#136878"
+						},
+						"tvs.sbd.1000566": {
+							"id": "tvs.sbd.1000566",
+							"name": "HBO Max",
+							"title": "HBO Max",
+							"appName": "HBO Max: Stream Movies & TV",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/hbo-max/tvs.sbd.1000566?ctx_proot=tahoma_watchnow",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/88/b3/cb/88b3cb65-9dd7-8801-bb47-affd72805a82/AppIcon-0-0-1x_U007epad-0-1-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/076gJm4JDJ-vE_0zYe6RCg/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/e1DhDZUrGoH9mS5CL-3aqQ/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2164
+								},
+								"whiteLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/972JE6FzpckxuQ1XcOQjHw/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"hexColor": "#000000"
+						}
+					}
+				}
+			}
+		}
+	],
+	"search": [
+		{
+			"case": "landing-143470",
+			"stage": "landing",
+			"sf": "143470",
+			"source_sha256": "4b2b2db0cca33a69bba49f1e7e36d915a76f49393bf0314da644ac3f36466b51",
+			"cropping": "First browse shelf; all initial Brand cards plus one real Room; account/metrics removed. Other genre cards omitted.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "edt.cvs.5f7e1db2-9141-4dd9-856f-b3fada30d1e5",
+						"shelves": [
+							{
+								"displayType": "brick",
+								"header": {
+									"supportsSeeAllView": false,
+									"title": "瀏覽"
+								},
+								"id": "edt.col.5f722d3f-812b-49bd-a2a4-dd1553f4838c",
+								"isGrid": true,
+								"url": "https://tv.apple.com/tw/collection/%E7%80%8F%E8%A6%BD/edt.col.5f722d3f-812b-49bd-a2a4-dd1553f4838c?ctx_root=tahoma_searchlanding&ctx_cvs=edt.cvs.5f7e1db2-9141-4dd9-856f-b3fada30d1e5&ctx_proot=tahoma_searchlanding&ctx_shelf=edt.shelf.5f7e1db2-c5db-4320-944b-b81d3fe5cb5b",
+								"items": [
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.4000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(32,23,30) p:rgb(232,229,229) s:rgb(215,170,144) t:rgb(192,188,189) q:rgb(178,140,121)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/d6/de/ec/d6deeceb-dbdc-8672-9486-fb9f970d0a14/1b67f27d-5a61-4bfb-a205-8c26a8db67ee.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Apple TV",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.7000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(233,130,33) p:rgb(12,6,1) s:rgb(9,17,39) t:rgb(56,31,8) q:rgb(54,40,38)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/79/29/21/79292130-a276-2bcc-06ff-282811d16e37/b08c19c1-5c55-43fd-add4-bc8af491d4a5.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "MLS",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "Heading2",
+										"id": "edt.item.5c3e706a-1616-434e-a898-82a652a0fe35",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(0,88,160) p:rgb(242,246,250) s:rgb(229,238,245) t:rgb(193,215,232) q:rgb(183,208,228)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/ec/ad/a3/ecada38b-1f21-14d9-946c-cb5aa5a4c5f1/96a97ad3-a271-44a2-a2c3-166b041b3d35.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"title": "4K HDR",
+										"type": "Room",
+										"url": "https://tv.apple.com/tw/room/4k-hdr/edt.item.5c3e706a-1616-434e-a898-82a652a0fe35?ctx_proot=tahoma_searchlanding"
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.4000": {
+							"id": "tvs.sbd.4000",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"blackLogo": {
+									"height": 1483,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Aszi6l3ojodS-VY0K0_xFw/{w}x{h}.{f}",
+									"width": 2983
+								},
+								"colorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ep5p_iruUEPRCp9E7RCLOA/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"coverArt": {
+									"height": 1728,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/cx6uAQf2vJTyCdq3e_Otlw/{w}x{h}.{f}",
+									"width": 2880
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/WaKZAjYkuEvOizdGGTljxg/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/rHiThi7uam2qAiJlhosA4g/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 3000
+								},
+								"whiteLogo": {
+									"height": 1483,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/PC1Kf2TS2__FzsGmQOd4Mg/{w}x{h}.{f}",
+									"width": 2983
+								}
+							},
+							"name": "Apple TV",
+							"title": "Apple TV"
+						},
+						"tvs.sbd.7000": {
+							"id": "tvs.sbd.7000",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"blackLogo": {
+									"height": 2988,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ZEvYpFE1EoNYhZmh6GTUhQ/{w}x{h}.{f}",
+									"width": 2802
+								},
+								"colorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/OMtZIPVxM030bG18Buj5gw/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"coverArt": {
+									"height": 2160,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/isvIdExhLoORqDfxoTEhHQ/{w}x{h}.{f}",
+									"width": 3840
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/_n3Zeia0obt4SDPsRCY3cA/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 2802,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/1DxKCeYYsjBZyxFm5SYgUg/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2802
+								},
+								"whiteLogo": {
+									"height": 2988,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Kc1Xx3Z1QBOuXe1EHDu4TA/{w}x{h}.{f}",
+									"width": 2802
+								}
+							},
+							"name": "MLS",
+							"title": "MLS"
+						}
+					}
+				}
+			}
+		},
+		{
+			"case": "brand-143470-Disney",
+			"stage": "results",
+			"sf": "143470",
+			"searchTerm": "Disney",
+			"source_sha256": "8a65a1b01954cb6f1fa78e4871f508d918b1974e2ad260420f1414708fcc351c",
+			"cropping": "Real shelf headers/order retained; only the matching Brand items and its public brand metadata kept. Other result items/account/metrics removed.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "uts.cvs.search",
+						"title": "",
+						"shelves": [
+							{
+								"displayType": "cardLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "熱門搜尋結果",
+									"url": "https://tv.apple.com/tw/shelf/%E7%86%B1%E9%96%80%E6%90%9C%E5%B0%8B%E7%B5%90%E6%9E%9C/uts.col.search.TR?searchTerm=Disney"
+								},
+								"id": "uts.col.search.TR",
+								"url": "https://tv.apple.com/tw/collection/%E7%86%B1%E9%96%80%E6%90%9C%E5%B0%8B%E7%B5%90%E6%9E%9C/uts.col.search.TR?searchTerm=Disney",
+								"items": [
+									{
+										"id": "tvs.sbd.1000216",
+										"images": {
+											"shelfItemImage": {
+												"height": 1642,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Disney+",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216"
+									}
+								]
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "電影",
+									"url": "https://tv.apple.com/tw/shelf/%E9%9B%BB%E5%BD%B1/uts.col.search.MV?searchTerm=Disney"
+								},
+								"id": "uts.col.search.MV",
+								"url": "https://tv.apple.com/tw/collection/%E9%9B%BB%E5%BD%B1/uts.col.search.MV?searchTerm=Disney",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "電視節目",
+									"url": "https://tv.apple.com/tw/shelf/%E9%9B%BB%E8%A6%96%E7%AF%80%E7%9B%AE/uts.col.search.SH?searchTerm=Disney"
+								},
+								"id": "uts.col.search.SH",
+								"url": "https://tv.apple.com/tw/collection/%E9%9B%BB%E8%A6%96%E7%AF%80%E7%9B%AE/uts.col.search.SH?searchTerm=Disney",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "頻道和 App",
+									"url": "https://tv.apple.com/tw/shelf/%E9%A0%BB%E9%81%93%E5%92%8C-app/uts.col.search.BR?searchTerm=Disney"
+								},
+								"id": "uts.col.search.BR",
+								"url": "https://tv.apple.com/tw/collection/%E9%A0%BB%E9%81%93%E5%92%8C-app/uts.col.search.BR?searchTerm=Disney",
+								"items": [
+									{
+										"id": "tvs.sbd.1000216",
+										"images": {
+											"shelfItemImage": {
+												"height": 1642,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Disney+",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216"
+									}
+								]
+							},
+							{
+								"displayType": "personLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "卡司和團隊",
+									"url": "https://tv.apple.com/tw/shelf/%E5%8D%A1%E5%8F%B8%E5%92%8C%E5%9C%98%E9%9A%8A/uts.col.search.PN?searchTerm=Disney"
+								},
+								"id": "uts.col.search.PN",
+								"url": "https://tv.apple.com/tw/collection/%E5%8D%A1%E5%8F%B8%E5%92%8C%E5%9C%98%E9%9A%8A/uts.col.search.PN?searchTerm=Disney",
+								"items": []
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000216": {
+							"id": "tvs.sbd.1000216",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fa/74/2f/fa742f2d-ce8d-f1ab-18b4-c7a775d5ba94/AppIcon-0-0-1x_U007emarketing-0-8-0-0-0-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 58,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/33Pnnbkeyyt-Lhf4uYNnbQ/{w}x{h}.{f}",
+									"width": 110
+								},
+								"shelfImage": {
+									"height": 1642,
+									"isP3": false,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+									"width": 3000
+								},
+								"squareColorLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/MsCG6padV_hgowHLBX5DOw/{w}x{h}SWL.TVARHBL1.{f}?bColor=136878",
+									"width": 1642
+								},
+								"whiteLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"name": "Disney+",
+							"title": "Disney+"
+						}
+					},
+					"searchTerm": "Disney"
+				}
+			}
+		},
+		{
+			"case": "brand-143470-HBO",
+			"stage": "results",
+			"sf": "143470",
+			"searchTerm": "HBO",
+			"source_sha256": "706eaefe9a1db2961e80bfedd5773fbb6af2ccbc6e7cf8f94862c1c6a92cbf83",
+			"cropping": "Real shelf headers/order retained; only the matching Brand items and its public brand metadata kept. Other result items/account/metrics removed.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "uts.cvs.search",
+						"title": "",
+						"shelves": [
+							{
+								"displayType": "cardLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "熱門搜尋結果",
+									"url": "https://tv.apple.com/tw/shelf/%E7%86%B1%E9%96%80%E6%90%9C%E5%B0%8B%E7%B5%90%E6%9E%9C/uts.col.search.TR?searchTerm=HBO"
+								},
+								"id": "uts.col.search.TR",
+								"url": "https://tv.apple.com/tw/collection/%E7%86%B1%E9%96%80%E6%90%9C%E5%B0%8B%E7%B5%90%E6%9E%9C/uts.col.search.TR?searchTerm=HBO",
+								"items": [
+									{
+										"id": "tvs.sbd.1000566",
+										"images": {
+											"shelfItemImage": {
+												"height": 2164,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/ni-gU5scWjgbMjMMW_dW8A/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "HBO Max",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/hbo-max/tvs.sbd.1000566"
+									}
+								]
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "電視節目",
+									"url": "https://tv.apple.com/tw/shelf/%E9%9B%BB%E8%A6%96%E7%AF%80%E7%9B%AE/uts.col.search.SH?searchTerm=HBO"
+								},
+								"id": "uts.col.search.SH",
+								"url": "https://tv.apple.com/tw/collection/%E9%9B%BB%E8%A6%96%E7%AF%80%E7%9B%AE/uts.col.search.SH?searchTerm=HBO",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "電影",
+									"url": "https://tv.apple.com/tw/shelf/%E9%9B%BB%E5%BD%B1/uts.col.search.MV?searchTerm=HBO"
+								},
+								"id": "uts.col.search.MV",
+								"url": "https://tv.apple.com/tw/collection/%E9%9B%BB%E5%BD%B1/uts.col.search.MV?searchTerm=HBO",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "頻道和 App",
+									"url": "https://tv.apple.com/tw/shelf/%E9%A0%BB%E9%81%93%E5%92%8C-app/uts.col.search.BR?searchTerm=HBO"
+								},
+								"id": "uts.col.search.BR",
+								"url": "https://tv.apple.com/tw/collection/%E9%A0%BB%E9%81%93%E5%92%8C-app/uts.col.search.BR?searchTerm=HBO",
+								"items": [
+									{
+										"id": "tvs.sbd.1000566",
+										"images": {
+											"shelfItemImage": {
+												"height": 2164,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/ni-gU5scWjgbMjMMW_dW8A/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "HBO Max",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/hbo-max/tvs.sbd.1000566"
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000566": {
+							"id": "tvs.sbd.1000566",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/88/b3/cb/88b3cb65-9dd7-8801-bb47-affd72805a82/AppIcon-0-0-1x_U007epad-0-1-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/kEy3Q7bzIY1Q1pWuaU-jIQ/{w}x{h}.{f}",
+									"width": 960
+								},
+								"shelfImage": {
+									"height": 2164,
+									"isP3": false,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ni-gU5scWjgbMjMMW_dW8A/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+									"width": 3000
+								},
+								"squareColorLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/H3DMfx7p7-wdcsN0fTCh6g/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2164
+								},
+								"whiteLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ni-gU5scWjgbMjMMW_dW8A/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"name": "HBO Max",
+							"title": "HBO Max"
+						}
+					},
+					"searchTerm": "HBO"
+				}
+			}
+		},
+		{
+			"case": "landing-143441",
+			"stage": "landing",
+			"sf": "143441",
+			"source_sha256": "eb1bd158b366534dcf1100725e1595e14ed51c3108d128c726dd606041c04518",
+			"cropping": "First browse shelf; all initial Brand cards plus one real Room; account/metrics removed. Other genre cards omitted.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "edt.cvs.5f7e147a-5c8e-4124-b00a-5efc45e45ccb",
+						"shelves": [
+							{
+								"displayType": "brick",
+								"header": {
+									"supportsSeeAllView": false,
+									"title": "Browse"
+								},
+								"id": "edt.col.692f7527-c1cb-4fbf-b8b8-faab21a353bd",
+								"isGrid": true,
+								"url": "https://tv.apple.com/us/collection/browse/edt.col.692f7527-c1cb-4fbf-b8b8-faab21a353bd?ctx_root=tahoma_searchlanding&ctx_cvs=edt.cvs.5f7e147a-5c8e-4124-b00a-5efc45e45ccb&ctx_proot=tahoma_searchlanding&ctx_shelf=edt.shelf.682671f2-961d-4713-9a2e-09dba34a6355",
+								"items": [
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.4000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(32,23,30) p:rgb(232,229,229) s:rgb(215,170,144) t:rgb(192,188,189) q:rgb(178,140,121)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/d6/de/ec/d6deeceb-dbdc-8672-9486-fb9f970d0a14/1b67f27d-5a61-4bfb-a205-8c26a8db67ee.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Apple TV",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.241000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(210,220,227) p:rgb(12,9,9) s:rgb(89,8,2) t:rgb(52,51,53) q:rgb(113,51,47)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/77/d6/14/77d6147d-dc6f-7f81-dd9f-1ecd0a4a8f01/4998f63d-417f-464b-9b88-0cd8881413e4.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Formula 1",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.7000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(233,130,33) p:rgb(12,6,1) s:rgb(9,17,39) t:rgb(56,31,8) q:rgb(54,40,38)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/79/29/21/79292130-a276-2bcc-06ff-282811d16e37/b08c19c1-5c55-43fd-add4-bc8af491d4a5.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "MLS",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(6,20,57) p:rgb(209,216,226) s:rgb(177,199,238) t:rgb(168,177,192) q:rgb(143,163,202)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/fa/94/aa/fa94aa98-9f7b-0aa4-015a-bb32e2a3dfae/85c676d3-0350-4357-abba-c378686b1074.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"title": "Major League Baseball on Apple TV",
+										"type": "Room",
+										"url": "https://tv.apple.com/us/room/major-league-baseball-on-apple-tv/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2?ctx_proot=tahoma_searchlanding"
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.4000": {
+							"id": "tvs.sbd.4000",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"blackLogo": {
+									"height": 1483,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Aszi6l3ojodS-VY0K0_xFw/{w}x{h}.{f}",
+									"width": 2983
+								},
+								"colorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ep5p_iruUEPRCp9E7RCLOA/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"coverArt": {
+									"height": 1728,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/cx6uAQf2vJTyCdq3e_Otlw/{w}x{h}.{f}",
+									"width": 2880
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/WaKZAjYkuEvOizdGGTljxg/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/rHiThi7uam2qAiJlhosA4g/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 3000
+								},
+								"whiteLogo": {
+									"height": 1483,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/PC1Kf2TS2__FzsGmQOd4Mg/{w}x{h}.{f}",
+									"width": 2983
+								}
+							},
+							"name": "Apple TV",
+							"title": "Apple TV"
+						},
+						"tvs.sbd.241000": {
+							"id": "tvs.sbd.241000",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"blackLogo": {
+									"height": 750,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Y_R2ZJKNFYvhFkiYaXVOag/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"colorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/oHjtqHYVLwrqU0aEH2Z4aA/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"coverArt": {
+									"height": 2160,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/UtmzUTJfNIro1jxbT5b17Q/{w}x{h}.{f}",
+									"width": 3840
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/_n3Zeia0obt4SDPsRCY3cA/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/hxicL9dDhYh2W0Hkt44igw/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 3000
+								},
+								"whiteLogo": {
+									"height": 750,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/q_wAJyObzza-ORtak5B4fg/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"name": "Formula 1",
+							"title": "Formula 1"
+						},
+						"tvs.sbd.7000": {
+							"id": "tvs.sbd.7000",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"blackLogo": {
+									"height": 2988,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/ZEvYpFE1EoNYhZmh6GTUhQ/{w}x{h}.{f}",
+									"width": 2802
+								},
+								"colorLogo": {
+									"height": 3000,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/OMtZIPVxM030bG18Buj5gw/{w}x{h}.{f}",
+									"width": 3000
+								},
+								"coverArt": {
+									"height": 2160,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/isvIdExhLoORqDfxoTEhHQ/{w}x{h}.{f}",
+									"width": 3840
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/_n3Zeia0obt4SDPsRCY3cA/{w}x{h}.{f}",
+									"width": 960
+								},
+								"squareColorLogo": {
+									"height": 2802,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/1DxKCeYYsjBZyxFm5SYgUg/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2802
+								},
+								"whiteLogo": {
+									"height": 2988,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Kc1Xx3Z1QBOuXe1EHDu4TA/{w}x{h}.{f}",
+									"width": 2802
+								}
+							},
+							"name": "MLS",
+							"title": "MLS"
+						}
+					}
+				}
+			}
+		},
+		{
+			"case": "brand-143441-Disney",
+			"stage": "results",
+			"sf": "143441",
+			"searchTerm": "Disney",
+			"source_sha256": "b3bc32d515f1343df55e68c943be454f6f82f0af55e61ed5cde5c84d398563b4",
+			"cropping": "Real shelf headers/order retained; only the matching Brand items and its public brand metadata kept. Other result items/account/metrics removed.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "uts.cvs.search",
+						"title": "",
+						"shelves": [
+							{
+								"displayType": "cardLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Top Results",
+									"url": "https://tv.apple.com/us/shelf/top-results/uts.col.search.TR?searchTerm=Disney"
+								},
+								"id": "uts.col.search.TR",
+								"url": "https://tv.apple.com/us/collection/top-results/uts.col.search.TR?searchTerm=Disney",
+								"items": [
+									{
+										"id": "tvs.sbd.1000216",
+										"images": {
+											"shelfItemImage": {
+												"height": 1642,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Disney+",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216"
+									}
+								]
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Movies",
+									"url": "https://tv.apple.com/us/shelf/movies/uts.col.search.MV?searchTerm=Disney"
+								},
+								"id": "uts.col.search.MV",
+								"url": "https://tv.apple.com/us/collection/movies/uts.col.search.MV?searchTerm=Disney",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "TV Shows",
+									"url": "https://tv.apple.com/us/shelf/tv-shows/uts.col.search.SH?searchTerm=Disney"
+								},
+								"id": "uts.col.search.SH",
+								"url": "https://tv.apple.com/us/collection/tv-shows/uts.col.search.SH?searchTerm=Disney",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Channels & Apps",
+									"url": "https://tv.apple.com/us/shelf/channels--apps/uts.col.search.BR?searchTerm=Disney"
+								},
+								"id": "uts.col.search.BR",
+								"url": "https://tv.apple.com/us/collection/channels--apps/uts.col.search.BR?searchTerm=Disney",
+								"items": [
+									{
+										"id": "tvs.sbd.1000216",
+										"images": {
+											"shelfItemImage": {
+												"height": 1642,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Disney+",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216"
+									}
+								]
+							},
+							{
+								"displayType": "personLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Cast & Crew",
+									"url": "https://tv.apple.com/us/shelf/cast--crew/uts.col.search.PN?searchTerm=Disney"
+								},
+								"id": "uts.col.search.PN",
+								"url": "https://tv.apple.com/us/collection/cast--crew/uts.col.search.PN?searchTerm=Disney",
+								"items": []
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000216": {
+							"id": "tvs.sbd.1000216",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fa/74/2f/fa742f2d-ce8d-f1ab-18b4-c7a775d5ba94/AppIcon-0-0-1x_U007emarketing-0-8-0-0-0-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 58,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/33Pnnbkeyyt-Lhf4uYNnbQ/{w}x{h}.{f}",
+									"width": 110
+								},
+								"shelfImage": {
+									"height": 1642,
+									"isP3": false,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}BDT.TVABCh03.{f}?bColor=136878",
+									"width": 3000
+								},
+								"squareColorLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/MsCG6padV_hgowHLBX5DOw/{w}x{h}SWL.TVARHBL1.{f}?bColor=136878",
+									"width": 1642
+								},
+								"whiteLogo": {
+									"height": 1642,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/DE7IYgeSrN85y7nQql20fA/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"name": "Disney+",
+							"title": "Disney+"
+						}
+					},
+					"searchTerm": "Disney"
+				}
+			}
+		},
+		{
+			"case": "brand-143441-HBO",
+			"stage": "results",
+			"sf": "143441",
+			"searchTerm": "HBO",
+			"source_sha256": "adea05bc5b471841261181cd7e6469132679c3a4869320283fb7f207b5aa7e2f",
+			"cropping": "Real shelf headers/order retained; only the matching Brand items and its public brand metadata kept. Other result items/account/metrics removed.",
+			"body": {
+				"data": {
+					"canvas": {
+						"id": "uts.cvs.search",
+						"title": "",
+						"shelves": [
+							{
+								"displayType": "cardLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Top Results",
+									"url": "https://tv.apple.com/us/shelf/top-results/uts.col.search.TR?searchTerm=HBO"
+								},
+								"id": "uts.col.search.TR",
+								"url": "https://tv.apple.com/us/collection/top-results/uts.col.search.TR?searchTerm=HBO",
+								"items": [
+									{
+										"id": "tvs.sbd.1000566",
+										"images": {
+											"shelfItemImage": {
+												"height": 2164,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/972JE6FzpckxuQ1XcOQjHw/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "HBO Max",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/hbo-max/tvs.sbd.1000566"
+									}
+								]
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "TV Shows",
+									"url": "https://tv.apple.com/us/shelf/tv-shows/uts.col.search.SH?searchTerm=HBO"
+								},
+								"id": "uts.col.search.SH",
+								"url": "https://tv.apple.com/us/collection/tv-shows/uts.col.search.SH?searchTerm=HBO",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Movies",
+									"url": "https://tv.apple.com/us/shelf/movies/uts.col.search.MV?searchTerm=HBO"
+								},
+								"id": "uts.col.search.MV",
+								"url": "https://tv.apple.com/us/collection/movies/uts.col.search.MV?searchTerm=HBO",
+								"items": []
+							},
+							{
+								"displayType": "sportsCardLockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Sports",
+									"url": "https://tv.apple.com/us/shelf/sports/uts.col.search.SE?searchTerm=HBO"
+								},
+								"id": "uts.col.search.SE",
+								"url": "https://tv.apple.com/us/collection/sports/uts.col.search.SE?searchTerm=HBO",
+								"items": []
+							},
+							{
+								"displayType": "lockup",
+								"header": {
+									"supportsSeeAllView": true,
+									"title": "Channels & Apps",
+									"url": "https://tv.apple.com/us/shelf/channels--apps/uts.col.search.BR?searchTerm=HBO"
+								},
+								"id": "uts.col.search.BR",
+								"url": "https://tv.apple.com/us/collection/channels--apps/uts.col.search.BR?searchTerm=HBO",
+								"items": [
+									{
+										"id": "tvs.sbd.1000566",
+										"images": {
+											"shelfItemImage": {
+												"height": 2164,
+												"isP3": false,
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/972JE6FzpckxuQ1XcOQjHw/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+												"width": 3000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "HBO Max",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/hbo-max/tvs.sbd.1000566"
+									}
+								]
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.1000566": {
+							"id": "tvs.sbd.1000566",
+							"images": {
+								"appIcon": {
+									"height": 1024,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/88/b3/cb/88b3cb65-9dd7-8801-bb47-affd72805a82/AppIcon-0-0-1x_U007epad-0-1-85-220.png/{w}x{h}.{f}",
+									"width": 1024
+								},
+								"logoGlyph": {
+									"height": 540,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/076gJm4JDJ-vE_0zYe6RCg/{w}x{h}.{f}",
+									"width": 960
+								},
+								"shelfImage": {
+									"height": 2164,
+									"isP3": false,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/972JE6FzpckxuQ1XcOQjHw/{w}x{h}BDT.TVABCh03.{f}?bColor=000000",
+									"width": 3000
+								},
+								"squareColorLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/e1DhDZUrGoH9mS5CL-3aqQ/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+									"width": 2164
+								},
+								"whiteLogo": {
+									"height": 2164,
+									"supportsLayeredImage": false,
+									"url": "https://is1-ssl.mzstatic.com/image/thumb/972JE6FzpckxuQ1XcOQjHw/{w}x{h}.{f}",
+									"width": 3000
+								}
+							},
+							"name": "HBO Max",
+							"title": "HBO Max"
+						}
+					},
+					"searchTerm": "HBO"
+				}
+			}
+		}
+	]
+}

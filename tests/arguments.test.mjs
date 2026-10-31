@@ -14,11 +14,29 @@ test("release stays compact while full/dev expose database settings", () => {
 		["ThirdParty", "isWorkaroundSSLPinning", "Storage", "LogLevel"],
 	);
 	assert.deepEqual(release.args, args);
-	assert.deepEqual(dev.args, argsFull);
+	assert.deepEqual(
+		dev.args.filter(({ key }) => key !== "LumenKey"),
+		argsFull,
+	);
 	assert.deepEqual(full.args, argsFull);
 	assert.deepEqual(argsFull.find(arg => arg.key === "Tabs").defaultValue, database.TV.Settings.Tabs);
 	for (const [key, value] of Object.entries(database.TV.Settings.CountryCode)) assert.deepEqual(argsFull.find(arg => arg.key === `CountryCode.${key}`).defaultValue, value);
 	assert.equal(argsFull.find(arg => arg.key === "Storage").defaultValue, "PersistentStore");
+});
+
+test("Lumen search authentication is optional and exposed only in dev arguments", () => {
+	const argument = dev.args.find(({ key }) => key === "LumenKey");
+	assert.equal(argument.type, "string");
+	assert.equal(argument.defaultValue, "");
+	assert.deepEqual(argument.exclude, ["boxjs"]);
+	assert.equal(
+		full.args.some(({ key }) => key === "LumenKey"),
+		false,
+	);
+	assert.equal(
+		release.args.some(({ key }) => key === "LumenKey"),
+		false,
+	);
 });
 
 test("BoxJs keys and defaults are generated from the full parameter set", () => {
