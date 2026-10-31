@@ -1,0 +1,56 @@
+{
+	"note": "Structural projections from the 2026-11-01 Mac-auth US channels/settings responses. Consent state, timestamps and sidebar values below are synthetic test values, not account data.",
+	"channels": {
+		"data": {
+			"channels": {
+				"tvs.sbd.1000231": {
+					"id": "tvs.sbd.1000231",
+					"title": "STARZ",
+					"type": "Brand",
+					"name": "STARZ",
+					"appName": "Apple TV",
+					"appAdamIds": ["1174078549"],
+					"appBundleIds": ["com.apple.tv"],
+					"isApSubscription": true,
+					"isFirstParty": true,
+					"isAppleTvPlus": false,
+					"isTvAppBrand": false
+				},
+				"tvs.sbd.1000216": {
+					"id": "tvs.sbd.1000216",
+					"title": "Disney+",
+					"type": "Brand",
+					"name": "Disney+",
+					"appName": "Disney+",
+					"appAdamIds": ["1446075923"],
+					"appBundleIds": ["com.disney.disneyplus"],
+					"isApSubscription": false,
+					"isFirstParty": false,
+					"isAppleTvPlus": false,
+					"isTvAppBrand": false
+				}
+			}
+		}
+	},
+	"settings": {
+		"data": {
+			"brandConsentSettings": [
+				{
+					"id": "tvs.sbd.1000216",
+					"title": "Disney+",
+					"images": {},
+					"state": "Disconnected",
+					"lastUpdateTimestamp": 0
+				}
+			],
+			"brandSidebarSetting": {
+				"tvs.sbd.4000": {
+					"isHidden": false,
+					"isPinned": true
+				}
+			},
+			"country": "US",
+			"postPlayAutoPlayEnabled": false
+		}
+	}
+}

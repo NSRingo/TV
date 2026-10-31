@@ -3,13 +3,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV 频道注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.0.0
+ * @version 1.1.0
  */
 export default class InjectChannel {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectChannel";
-		this.Version = "1.0.0";
+		this.Version = "1.1.0";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -36,6 +36,30 @@ export default class InjectChannel {
 			},
 		},
 	];
+
+	/**
+	 * 将配置派生的完整 Brand 原地写入品牌接口或资源响应共用的 data.channels 字典。
+	 * @param {Object} body - 已解析的品牌接口、频道、Room 或 shelf 正文。
+	 * @param {Object} options - 由 Response 准备的本次请求上下文。
+	 * @param {string|null} options.platform - 请求 pfm，仅用于组装宿主字段。
+	 * @param {string} options.region - 请求 storefront 对应的小写地区码。
+	 * @returns {Object} 原 body 引用；已有品牌的订阅、安装和同意状态保留。
+	 */
+	InjectBrand(body, { platform, region }) {
+		for (const channel of this.#BuildChannels(body, platform, region)) _.set(body, ["data", "channels", channel.id], channel);
+		return body;
+	}
+
+	/**
+	 * 原地补充配置频道的缺省侧栏偏好；不生成外部 App 的同意记录。
+	 * @param {Object} body - 已解析的 /uts/v3/user/settings 正文。
+	 * @returns {Object} 原 body 引用；已有侧栏条目整体保留，不向服务端写回设置。
+	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-user-settings-channel-model.md
+	 */
+	InjectUTSUserSettings(body) {
+		for (const { id } of this.#Config) _.set(body, ["data", "brandSidebarSetting", id], body.data?.brandSidebarSetting?.[id] ?? this.#BuildBrandSidebarSetting());
+		return body;
+	}
 
 	/**
 	 * 原地首插配置中的频道导航，缺少 ChannelsAndApps 分组或 subTabs 时创建。
@@ -236,6 +260,15 @@ export default class InjectChannel {
 				return result;
 			}),
 		);
+	}
+
+	/**
+	 * 组装侧栏新条目的可见、未固定初始值；不代表服务端保存的用户偏好。
+	 * @private
+	 * @returns {Object} brandSidebarSetting[id] 的缺省结构。
+	 */
+	#BuildBrandSidebarSetting() {
+		return { isHidden: false, isPinned: false };
 	}
 
 	/**

@@ -292,7 +292,11 @@ export async function Response($request, $response) {
 						case "/uts/v3/shelves/uts.col.search.BR":
 							body = await injectChannel.InjectSearch(body, { platform: Platform, region: Region, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
 							break;
+						case "/uts/v3/channels":
+							body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+							break;
 						case "/uts/v3/user/settings":
+							body = injectChannel.InjectUTSUserSettings(body);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":
