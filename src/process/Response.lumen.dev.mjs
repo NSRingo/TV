@@ -1,4 +1,5 @@
 import { Lodash as _, Console } from "@nsnanocat/util";
+import InjectChannel from "../class/InjectChannel.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
 /***************** Processing *****************/
@@ -19,7 +20,7 @@ export async function Response($request, $response) {
 	// 解析格式
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
-	const { Settings } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Configs } = setENV("iRingo", "TV", database, $request.$argument);
 	Console.logLevel = Settings.LogLevel;
 	// 创建空数据
 	let body = {};
@@ -51,7 +52,14 @@ export async function Response($request, $response) {
 			body = JSON.parse($response.body);
 			// 主机判断
 			switch (url.hostname) {
-				case "www.lumen.ax":
+				case "www.lumen.ax": {
+					const Platform = url.searchParams.get("pfm"),
+						StoreFront = url.searchParams.get("sf");
+					const Region =
+						Object.entries(Configs.Storefront)
+							.find(([, sf]) => sf === StoreFront)?.[0]
+							.toLowerCase() ?? "us";
+					const injectChannel = new InjectChannel();
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":
@@ -60,12 +68,22 @@ export async function Response($request, $response) {
 									switch (PATHs[6]) {
 										case "Channels":
 										case "Rooms":
-											for (const shelf of body.data?.canvas?.shelves ?? []) setShelfHeader(shelf, body.data?.channels?.["tvs.sbd.lumen"]);
+											switch (Boolean(body.data?.canvas)) {
+												case true:
+													body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+													for (const shelf of body.data.canvas.shelves ?? []) setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
+													break;
+											}
 											break;
 									}
 									break;
 								case "shelves":
-									setShelfHeader(body.data?.shelf, body.data?.channels?.["tvs.sbd.lumen"]);
+									switch (Boolean(body.data?.shelf)) {
+										case true:
+											body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
+											break;
+									}
 									break;
 								case "movies":
 									switch (Boolean(body.data?.canvas && body.data?.content)) {
@@ -90,6 +108,7 @@ export async function Response($request, $response) {
 							break;
 					}
 					break;
+				}
 			}
 			$response.body = JSON.stringify(body);
 			break;
@@ -107,7 +126,7 @@ export async function Response($request, $response) {
 	/**
 	 * 原地补齐频道 canvas 与独立 shelf 共用的官方行头部，保留已有 header 字段。
 	 * @param {Object} shelf - 待修改的行。
-	 * @param {Object} [channel] - 正文中的完整 Lumen Brand，直接复用，不改分类或运行状态。
+	 * @param {Object} channel - InjectChannel 组装的完整 Lumen Brand，直接复用。
 	 * @returns {Object} 原 shelf 引用。
 	 */
 	function setShelfHeader(shelf, channel) {
@@ -122,19 +141,15 @@ export async function Response($request, $response) {
 				});
 				break;
 			case "epicStage":
-				switch (channel?.type) {
-					case "Brand":
-						_.set(shelf, "header", {
-							title: channel.title,
-							supportsSeeAllView: false,
-							url: channel.url,
-							...shelf.header,
-							entityType: "Brand",
-							entity: channel,
-							images: { headerImage: channel.images?.headerImage ?? channel.images?.squareColorLogo ?? channel.images?.appIcon, ...shelf.header?.images },
-						});
-						break;
-				}
+				_.set(shelf, "header", {
+					title: channel.title,
+					supportsSeeAllView: false,
+					url: channel.url,
+					...shelf.header,
+					entityType: "Brand",
+					entity: channel,
+					images: { headerImage: channel.images.headerImage ?? channel.images.squareColorLogo ?? channel.images.appIcon, ...shelf.header?.images },
+				});
 				break;
 		}
 		return shelf;

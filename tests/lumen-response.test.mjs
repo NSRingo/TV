@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
+import InjectChannel from "../src/class/InjectChannel.mjs";
 import { Response } from "../src/process/Response.lumen.dev.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
@@ -28,7 +29,9 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.equal(hero.header.supportsSeeAllView, false);
 		assert.equal(hero.header.url, actual.data.channels["tvs.sbd.lumen"].url);
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
-		assert.deepEqual(actual.data.channels, fixtures.channel.data.channels);
+		const expected = structuredClone(fixtures.channel);
+		new InjectChannel().InjectBrand(expected, { platform: "iphone", region: "tw" });
+		assert.deepEqual(actual.data.channels, expected.data.channels);
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;
 			assert.deepEqual(unchanged, fixtures.channel.data.canvas.shelves[index]);
@@ -40,7 +43,7 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 test("independent Lumen shelf preserves pagination, items and existing header fields", async t => {
 	const shelf = { ...structuredClone(fixtures.channel.data.canvas.shelves[1]), nextToken: "page-two", header: { title: "Existing title", supportsSeeAllView: false, url: "https://tv.apple.com/tw/shelf/existing/edt.col.lumen-lib-284", custom: true } };
 	const body = { data: { shelf } };
-	assert.deepEqual(await replay(t, "/uts/v3/shelves/edt.col.lumen-lib-284", body), body);
+	assert.deepEqual((await replay(t, "/uts/v3/shelves/edt.col.lumen-lib-284", body)).data.shelf, shelf);
 	delete shelf.header;
 	const actual = await replay(t, "/uts/v3/shelves/edt.col.lumen-lib-284", body);
 	assert.equal(actual.data.shelf.header.title, shelf.title);
@@ -48,13 +51,16 @@ test("independent Lumen shelf preserves pagination, items and existing header fi
 	assert.deepEqual(actual.data.shelf.items, shelf.items);
 });
 
-test("hero preserves existing header metadata and uses the backend Brand without changing flags or host IDs", async t => {
+test("hero preserves existing header metadata and uses the shared Brand definition", async t => {
 	const body = structuredClone(fixtures.channel);
 	body.data.canvas.shelves[0].header = { title: "Existing hero", supportsSeeAllView: false, url: "https://tv.apple.com/tw/channel/existing/tvs.sbd.lumen", images: { headerImage: { url: "https://images.example.test/custom.png" }, extra: true }, custom: true };
 	const actual = await replay(t, "/uts/v3/canvases/Channels/tvs.sbd.lumen", body);
 	const { entityType, entity, ...header } = actual.data.canvas.shelves[0].header;
 	assert.deepEqual(header, body.data.canvas.shelves[0].header);
-	assert.deepEqual(entity, body.data.channels["tvs.sbd.lumen"]);
+	assert.deepEqual(entity, actual.data.channels["tvs.sbd.lumen"]);
+	assert.deepEqual(entity.appBundleIds, ["com.apple.tv"]);
+	assert.equal(entity.isApSubscription, false);
+	assert.equal(entity.isFirstParty, false);
 	assert.equal(entityType, "Brand");
 });
 
@@ -94,11 +100,14 @@ for (const [path, body, origin] of [
 	});
 }
 
-test("missing Brand does not create a fake hero entity, and unknown display types remain unchanged", async t => {
+test("Room without a backend Brand receives the configured Brand while unknown rows remain unchanged", async t => {
 	const body = structuredClone(fixtures.channel);
 	delete body.data.channels;
 	body.data.canvas.shelves[1].displayType = "unknown";
-	assert.deepEqual(await replay(t, "/uts/v3/canvases/Channels/tvs.sbd.lumen", body), body);
+	const actual = await replay(t, "/uts/v3/canvases/Rooms/edt.item.lumen", body);
+	assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
+	assert.deepEqual(actual.data.canvas.shelves[0].header.entity, actual.data.channels["tvs.sbd.lumen"]);
+	assert.deepEqual(actual.data.canvas.shelves[1], body.data.canvas.shelves[1]);
 });
 
 for (const format of [undefined, "text/html", "application/octet-stream", "application/vnd.apple.mpegurl"]) {
