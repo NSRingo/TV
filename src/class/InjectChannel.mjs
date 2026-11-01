@@ -3,13 +3,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV 频道注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.1.0
+ * @version 1.2.0
  */
 export default class InjectChannel {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectChannel";
-		this.Version = "1.1.0";
+		this.Version = "1.2.0";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -23,6 +23,7 @@ export default class InjectChannel {
 			name: "Lumen",
 			url: "https://tv.apple.com/us/channel/lumen/{id}",
 			searchURL: "https://www.lumen.ax/api/appletv/v1/search",
+			website: "https://www.lumen.ax/",
 			hexColor: "#080809",
 			images: {
 				icon: { width: 1280, height: 768, url: "https://www.lumen.ax/api/appletv/pub/brand/v1/icon/{w}x{h}.{f}" },
@@ -58,6 +59,29 @@ export default class InjectChannel {
 	 */
 	InjectUTSUserSettings(body) {
 		for (const { id } of this.#Config) _.set(body, ["data", "brandSidebarSetting", id], body.data?.brandSidebarSetting?.[id] ?? this.#BuildBrandSidebarSetting());
+		return body;
+	}
+
+	/**
+	 * 在频道或 Room 末尾追加独立官网外链；不改变 Brand 导航或客户端自动生成的 App 页脚。
+	 * @param {Object} body - 已解析并确认存在 data.canvas 的频道或 Room 正文。
+	 * @returns {Object} 原 body 引用；保留原 shelves 数组及其他行，重复调用替换同 ID 外链行。
+	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-open-app-and-website.md
+	 */
+	InjectWebsiteLink(body) {
+		_.set(body, "data.canvas.shelves", body.data.canvas.shelves ?? []);
+		for (const config of this.#Config) {
+			const shelf = this.#BuildWebsiteShelf(config);
+			const index = body.data.canvas.shelves.findIndex(({ id }) => id === shelf.id);
+			switch (index) {
+				case -1:
+					body.data.canvas.shelves.push(shelf);
+					break;
+				default:
+					body.data.canvas.shelves.splice(index, 1, shelf);
+					break;
+			}
+		}
 		return body;
 	}
 
@@ -269,6 +293,32 @@ export default class InjectChannel {
 	 */
 	#BuildBrandSidebarSetting() {
 		return { isHidden: false, isPinned: false };
+	}
+
+	/**
+	 * 采用美服实际 ExternalLink 的 epicShowcase / Flavor_D 包装，不伪造 Brand 的打开 App 字段。
+	 * @private
+	 * @param {Object} config - #Config 中的品牌身份、官网和素材。
+	 * @returns {Object} 独立官网行；URL 由客户端外链路由转换为 AppPunchout.contextData.openUrl。
+	 */
+	#BuildWebsiteShelf(config) {
+		const id = config.id.split(".").at(-1);
+		return {
+			id: `edt.col.${id}-website`,
+			displayType: "epicShowcase",
+			header: { supportsSeeAllView: false },
+			items: [
+				{
+					id: `edt.item.${id}-website`,
+					type: "ExternalLink",
+					flavorType: "Flavor_D",
+					isExternalUrl: true,
+					tagLine: `打开 ${config.name} 官网`,
+					url: config.website,
+					images: { shelfItemImage: { ...config.images.icon, supportsLayeredImage: false } },
+				},
+			],
+		};
 	}
 
 	/**
