@@ -8,6 +8,7 @@ import { Request } from "../src/process/Request.mjs";
 import { Request as RequestDev } from "../src/process/Request.dev.mjs";
 import { Response } from "../src/process/Response.mjs";
 import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
+import { Response as ResponseLumen } from "../src/process/Response.lumen.dev.mjs";
 
 const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json", import.meta.url)));
 Console.logLevel = "OFF";
@@ -50,6 +51,26 @@ for (const fixture of baseline.cases) {
 			}
 		}
 		assert.deepEqual(actual, expected);
+	});
+}
+
+for (const [variant, processResponse, origin, path, body, brandId] of [
+	["release", Response, "https://uts-api.itunes.apple.com", "/uts/v3/search/landing", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, "tvs.sbd.4000"],
+	["dev", ResponseDev, "https://uts-api.itunes.apple.com", "/uts/v3/configurations", { data: { applicationProps: { tabs: [] } } }, "tvs.sbd.lumen"],
+	["lumen", ResponseLumen, "https://www.lumen.ax/api/appletv/v1", "/uts/v3/canvases/Channels/tvs.sbd.lumen", { data: { canvas: { shelves: [] } } }, "tvs.sbd.lumen"],
+]) {
+	test(`${variant}: resolves sfh storefronts while preserving sf precedence and the default region`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		for (const [query, region] of [
+			["sfh=143470-18,33", "tw"],
+			["sf=143462&sfh=143470-18,33", "jp"],
+			["sf=143441", "us"],
+			["", "us"],
+		]) {
+			const request = { url: `${origin}${path}?caller=wlk&pfm=atv&region=TW&v=101&${query}`, method: "POST", headers: {}, $argument: "LogLevel=OFF" };
+			const result = await processResponse(request, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			assert.equal(new URL(JSON.parse(result.body).data.channels[brandId].url).pathname.split("/")[1], region, query);
+		}
 	});
 }
 

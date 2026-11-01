@@ -62,7 +62,7 @@ export async function Response($request, $response) {
 						Platform = url.searchParams.get("pfm"),
 						Caller = url.searchParams.get("caller");
 					Console.info(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
-					const StoreFront = url.searchParams.get("sf");
+					const StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0];
 					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
 					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
 					const Region =

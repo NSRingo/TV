@@ -54,7 +54,7 @@ export async function Response($request, $response) {
 			switch (url.hostname) {
 				case "www.lumen.ax": {
 					const Platform = url.searchParams.get("pfm"),
-						StoreFront = url.searchParams.get("sf");
+						StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0];
 					const Region =
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
