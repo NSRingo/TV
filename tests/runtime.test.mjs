@@ -14,9 +14,11 @@ Console.logLevel = "OFF";
 
 for (const fixture of baseline.cases) {
 	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
-	test(`${fixture.variant}: ${fixture.name} ${injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
+	test(`${fixture.variant}: ${fixture.name} ${fixture.name.startsWith("tabs-") ? "retains navigation with ungated Apple channels from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const request = { ...structuredClone(fixture.request), $argument: `${fixture.argument}&LogLevel=OFF` };
+		// 固定历史 tab 配置，继续验证旧基线；当前默认值由 tabs.test.mjs 覆盖。
+		const tabsArgument = fixture.name.startsWith("tabs-") ? "&Tabs=WatchNow,Originals,MLS,Sports,Kids,Store,Movies,TV,ChannelsAndApps,Library,Search" : "";
+		const request = { ...structuredClone(fixture.request), $argument: `${fixture.argument}${tabsArgument}&LogLevel=OFF` };
 		let actual;
 		let expected = structuredClone(fixture.expected);
 		if (fixture.phase === "request") {
@@ -41,7 +43,11 @@ for (const fixture of baseline.cases) {
 					delete actual.data.channels;
 				}
 			}
-			if (fixture.name.startsWith("tabs-")) actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
+			if (fixture.name.startsWith("tabs-")) {
+				actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
+				// 苹果频道统一按结构补入，MLS 不再受旧平台/版本门槛限制。
+				if (!expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, { type: "MLS", title: "MLS", target: { id: "tvs.sbd.7000", type: "Brand", url: "https://tv.apple.com/us/channel/tvs.sbd.7000" } });
+			}
 		}
 		assert.deepEqual(actual, expected);
 	});

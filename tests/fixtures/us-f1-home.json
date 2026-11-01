@@ -1,0 +1,134 @@
+{
+	"note": "Public projection of the 2026-10-31 US iphone v100 WatchNow page 2 response. Only the native sports navigation shelf and public F1 identity/images are retained; account state and metrics omitted.",
+	"source_path": "$.data.canvas.shelves[2]",
+	"body": {
+		"data": {
+			"canvas": {
+				"shelves": [
+					{
+						"displayType": "brick",
+						"header": {
+							"supportsSeeAllView": false,
+							"title": "Explore F1, MLS, and MLB"
+						},
+						"id": "uts.col.tv-plus-sports-nav-brick",
+						"items": [
+							{
+								"flavor": "FullBleed",
+								"id": "tvs.sbd.241000",
+								"images": {
+									"shelfItemImage": {
+										"height": 3000,
+										"isP3": true,
+										"joeColor": "b:rgb(210,220,227) p:rgb(12,9,9) s:rgb(89,8,2) t:rgb(52,51,53) q:rgb(113,51,47)",
+										"supportsLayeredImage": false,
+										"url": "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/83/cb/da/83cbda10-5c59-c960-2a0a-1b80fd309987/a7de939d-fa92-446d-b14c-59f0c4178d81.png/{w}x{h}sr.{f}",
+										"width": 2000
+									}
+								},
+								"intents": [
+									"NAVIGATE"
+								],
+								"title": "Formula 1",
+								"type": "Brand",
+								"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_watchnow"
+							},
+							{
+								"flavor": "FullBleed",
+								"id": "tvs.sbd.7000",
+								"images": {
+									"shelfItemImage": {
+										"height": 3000,
+										"isP3": true,
+										"joeColor": "b:rgb(20,39,88) p:rgb(232,165,131) s:rgb(246,158,84) t:rgb(190,140,122) q:rgb(201,134,85)",
+										"supportsLayeredImage": false,
+										"url": "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/f2/3e/92/f23e9206-8327-dea8-35e5-24aea4932257/4360e847-6a61-4215-8731-a16040db97e4.png/{w}x{h}sr.{f}",
+										"width": 2000
+									}
+								},
+								"intents": [
+									"NAVIGATE"
+								],
+								"title": "MLS",
+								"type": "Brand",
+								"url": "https://tv.apple.com/us/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_watchnow"
+							},
+							{
+								"eyebrow": "Stream Friday Night Baseball games included with your Apple TV subscription. View the Friday Night Baseball schedule, game highlights, and scores here.",
+								"flavor": "FullBleed",
+								"id": "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+								"images": {
+									"shelfItemImage": {
+										"height": 3000,
+										"isP3": true,
+										"joeColor": "b:rgb(6,20,57) p:rgb(209,216,226) s:rgb(177,199,238) t:rgb(168,177,192) q:rgb(143,163,202)",
+										"supportsLayeredImage": false,
+										"url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/07/96/8d/07968dd9-bc80-24e2-872e-db7d85ba2e09/b610e7cf-e9d0-4374-9f4c-92c33d0f294a.png/{w}x{h}sr.{f}",
+										"width": 2000
+									}
+								},
+								"title": "Friday Night Baseball",
+								"type": "Room",
+								"url": "https://tv.apple.com/us/room/friday-night-baseball/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2?ctx_proot=tahoma_watchnow"
+							}
+						]
+					}
+				]
+			},
+			"channels": {
+				"tvs.sbd.241000": {
+					"hexColor": "#000000",
+					"id": "tvs.sbd.241000",
+					"images": {
+						"appIcon": {
+							"height": 1024,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/74/61/a274610a-1537-0429-df1b-afacfad5a478/tvCalistoga-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/{w}x{h}.{f}",
+							"width": 1024
+						},
+						"blackLogo": {
+							"height": 750,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/Y_R2ZJKNFYvhFkiYaXVOag/{w}x{h}.{f}",
+							"width": 3000
+						},
+						"colorLogo": {
+							"height": 3000,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/oHjtqHYVLwrqU0aEH2Z4aA/{w}x{h}.{f}",
+							"width": 3000
+						},
+						"coverArt": {
+							"height": 2160,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/UtmzUTJfNIro1jxbT5b17Q/{w}x{h}.{f}",
+							"width": 3840
+						},
+						"logoGlyph": {
+							"height": 540,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/_n3Zeia0obt4SDPsRCY3cA/{w}x{h}.{f}",
+							"width": 960
+						},
+						"squareColorLogo": {
+							"height": 3000,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/hxicL9dDhYh2W0Hkt44igw/{w}x{h}SWL.TVARHBL1.{f}?bColor=000000",
+							"width": 3000
+						},
+						"whiteLogo": {
+							"height": 750,
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/q_wAJyObzza-ORtak5B4fg/{w}x{h}.{f}",
+							"width": 3000
+						}
+					},
+					"name": "Formula 1",
+					"title": "Formula 1",
+					"type": "Brand",
+					"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_watchnow"
+				}
+			}
+		}
+	}
+}

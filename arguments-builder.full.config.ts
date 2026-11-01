@@ -89,9 +89,9 @@ const tabs: ArgumentItem = {
 	options: [
 		{ key: "WatchNow", label: "主页（立即观看）" },
 		{ key: "Originals", label: "Apple TV+（原创内容）" },
+		{ key: "Grevy", label: "F1（一级方程式赛车）" },
 		{ key: "MLS", label: "MLS" },
 		{ key: "Sports", label: "体育节目" },
-		{ key: "Kids", label: "儿童" },
 		{ key: "Store", label: "商店" },
 		{ key: "Movies", label: "电影" },
 		{ key: "TV", label: "电视节目" },
@@ -124,6 +124,7 @@ const countryNames: Record<string, string> = {
 	WatchNow: "主页",
 	Channels: "频道与 App",
 	Originals: "Apple TV+",
+	Grevy: "F1（一级方程式赛车）",
 	Sports: "体育节目",
 	Kids: "儿童",
 	Store: "商店",

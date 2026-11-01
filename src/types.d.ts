@@ -25,9 +25,9 @@ export interface Settings {
      * Possible values:
      * - `'WatchNow'` - 主页（立即观看）
      * - `'Originals'` - Apple TV+（原创内容）
+     * - `'Grevy'` - F1（一级方程式赛车）
      * - `'MLS'` - MLS
      * - `'Sports'` - 体育节目
-     * - `'Kids'` - 儿童
      * - `'Store'` - 商店
      * - `'Movies'` - 电影
      * - `'TV'` - 电视节目
@@ -35,9 +35,9 @@ export interface Settings {
      * - `'Library'` - 资料库
      * - `'Search'` - 搜索
      *
-     * @defaultValue ["WatchNow","Originals","MLS","Sports","Kids","Store","Movies","TV","ChannelsAndApps","Library","Search"]
+     * @defaultValue ["WatchNow","Originals","Grevy","MLS","Sports","Store","Movies","TV","ChannelsAndApps","Library","Search"]
      */
-    Tabs?: ('WatchNow' | 'Originals' | 'MLS' | 'Sports' | 'Kids' | 'Store' | 'Movies' | 'TV' | 'ChannelsAndApps' | 'Library' | 'Search')[];
+    Tabs?: ('WatchNow' | 'Originals' | 'Grevy' | 'MLS' | 'Sports' | 'Store' | 'Movies' | 'TV' | 'ChannelsAndApps' | 'Library' | 'Search')[];
     CountryCode?: {
     /**
          * [配置文件] 国家或地区代码
@@ -167,6 +167,30 @@ export interface Settings {
          * @defaultValue "AUTO"
          */
         Originals?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
+    /**
+         * [F1（一级方程式赛车）] 国家或地区代码
+         *
+         * 选择此分类请求使用的国家或地区；AUTO 保留原值。
+         *
+         * @remarks
+         *
+         * Possible values:
+         * - `'AUTO'` - 自动（保留原请求地区）
+         * - `'CN'` - 中国大陆
+         * - `'HK'` - 中国香港
+         * - `'TW'` - 中国台湾
+         * - `'SG'` - 新加坡
+         * - `'US'` - 美国
+         * - `'JP'` - 日本
+         * - `'AU'` - 澳大利亚
+         * - `'GB'` - 英国
+         * - `'KR'` - 韩国
+         * - `'CA'` - 加拿大
+         * - `'IE'` - 爱尔兰
+         *
+         * @defaultValue "US"
+         */
+        Grevy?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
     /**
          * [体育节目] 国家或地区代码
          *

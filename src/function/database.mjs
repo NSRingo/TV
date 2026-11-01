@@ -3,8 +3,8 @@ export default {
 		Settings: {
 			ThirdParty: false,
 			isWorkaroundSSLPinning: true,
-			Tabs: ["WatchNow", "Originals", "MLS", "Sports", "Kids", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
-			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
+			Tabs: ["WatchNow", "Originals", "Grevy", "MLS", "Sports", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
+			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Grevy: "US", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},
 		Configs: {
 			Locale: [
@@ -21,8 +21,6 @@ export default {
 			],
 			Tabs: [
 				{ title: "主页", type: "WatchNow", universalLinks: ["https://tv.apple.com/watch-now", "https://tv.apple.com/home"], destinationType: "Target", target: { id: "tahoma_watchnow", type: "Root", url: "https://tv.apple.com/watch-now" }, isSelected: true },
-				{ title: "Apple TV+", type: "Originals", universalLinks: ["https://tv.apple.com/channel/tvs.sbd.4000", "https://tv.apple.com/atv", "https://tv.apple.com/originals"], destinationType: "Target", target: { id: "tvs.sbd.4000", type: "Brand", url: "https://tv.apple.com/us/channel/tvs.sbd.4000" } },
-				{ title: "MLS", type: "MLS", universalLinks: ["https://tv.apple.com/mls"], destinationType: "Target", target: { id: "tvs.sbd.7000", type: "Brand", url: "https://tv.apple.com/us/channel/tvs.sbd.7000" } },
 				{
 					title: "体育节目",
 					type: "Sports",

@@ -60,6 +60,8 @@ export async function Response($request, $response) {
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
 					const injectChannel = new InjectChannel();
+					/** @type {import('../class/InjectChannel.mjs').ChannelContext} */
+					const channelContext = { platform: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":
@@ -70,7 +72,7 @@ export async function Response($request, $response) {
 										case "Rooms":
 											switch (Boolean(body.data?.canvas)) {
 												case true:
-													body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+													body = injectChannel.InjectBrand(body, channelContext);
 													for (const shelf of body.data.canvas.shelves ?? []) setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
 													// body = injectChannel.InjectWebsiteLink(body, { region: Region });
 													break;
@@ -81,7 +83,7 @@ export async function Response($request, $response) {
 								case "shelves":
 									switch (Boolean(body.data?.shelf)) {
 										case true:
-											body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+											body = injectChannel.InjectBrand(body, channelContext);
 											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
 											break;
 									}

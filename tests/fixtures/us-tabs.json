@@ -1,0 +1,104 @@
+{
+	"note": "Public navigation projection fetched on 2026-11-01 through Surge HTTP client, bypassing rewrite scripts. Images omitted. Native UI and playback not tested. Desktop v91 omits Grevy; v92 includes it; iphone v100 omits it.",
+	"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=en-US",
+	"body": {
+		"data": {
+			"applicationProps": {
+				"tabs": [
+					{
+						"destinationType": "Target",
+						"target": {
+							"id": "tahoma_searchlanding",
+							"type": "Root",
+							"url": "https://tv.apple.com/search"
+						},
+						"title": "Search",
+						"type": "Search",
+						"universalLinks": [
+							"https://tv.apple.com/search"
+						]
+					},
+					{
+						"destinationType": "Target",
+						"isSelected": true,
+						"target": {
+							"id": "tahoma_watchnow",
+							"type": "Root",
+							"url": "https://tv.apple.com/watch-now"
+						},
+						"title": "Home",
+						"type": "WatchNow",
+						"universalLinks": [
+							"https://tv.apple.com/watch-now",
+							"https://tv.apple.com/home"
+						]
+					},
+					{
+						"destinationType": "Target",
+						"hexColor": "#000000",
+						"target": {
+							"id": "tvs.sbd.4000",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/apple-tv/tvs.sbd.4000"
+						},
+						"title": "Apple TV",
+						"type": "Originals",
+						"universalLinks": [
+							"https://tv.apple.com/channel/tvs.sbd.4000",
+							"https://tv.apple.com/atv",
+							"https://tv.apple.com/originals"
+						]
+					},
+					{
+						"destinationType": "Target",
+						"hexColor": "#000000",
+						"target": {
+							"id": "tvs.sbd.241000",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000"
+						},
+						"title": "Formula 1",
+						"type": "Grevy",
+						"universalLinks": [
+							"https://tv.apple.com/f1"
+						]
+					},
+					{
+						"destinationType": "Target",
+						"hexColor": "#000000",
+						"target": {
+							"id": "tvs.sbd.7000",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/mls/tvs.sbd.7000"
+						},
+						"title": "MLS",
+						"type": "MLS",
+						"universalLinks": [
+							"https://tv.apple.com/mls"
+						]
+					},
+					{
+						"destinationType": "Target",
+						"target": {
+							"id": "tahoma_store",
+							"type": "Root",
+							"url": "https://tv.apple.com/store"
+						},
+						"title": "Store",
+						"type": "Store",
+						"universalLinks": [
+							"https://tv.apple.com/store",
+							"https://tv.apple.com/movies",
+							"https://tv.apple.com/tv-shows"
+						]
+					},
+					{
+						"destinationType": "Client",
+						"title": "Library",
+						"type": "Library"
+					}
+				]
+			}
+		}
+	}
+}

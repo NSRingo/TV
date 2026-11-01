@@ -1,4 +1,4 @@
-import { Console, fetch, Lodash as _ } from "@nsnanocat/util";
+import { Console, fetch } from "@nsnanocat/util";
 import InjectChannel from "../class/InjectChannel.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
@@ -65,15 +65,20 @@ export async function Response($request, $response) {
 					const StoreFront = url.searchParams.get("sf");
 					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
 					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
-					const Region = Object.entries(Configs.Storefront).find(([, sf]) => sf === StoreFront)?.[0].toLowerCase() ?? "us";
+					const Region =
+						Object.entries(Configs.Storefront)
+							.find(([, sf]) => sf === StoreFront)?.[0]
+							.toLowerCase() ?? "us";
 					const injectChannel = new InjectChannel();
+					/** @type {import('../class/InjectChannel.mjs').ChannelContext} */
+					const channelContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple", "thirdParty"] };
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
 							if (Caller !== "wta") {
+								body = injectChannel.InjectUTSConfigurationTabs(body, channelContext);
 								// caller=wta跳过原导航整理，仍注入配置频道
-								if (body?.data?.applicationProps) {
-									_.set(body, "data.applicationProps.tabs", body.data.applicationProps.tabs ?? []);
+								if (Array.isArray(body?.data?.applicationProps?.tabs)) {
 									//body.data.applicationProps.requiredParamsMap.WithoutUtsk.locale = "zh_Hans";
 									//body.data.applicationProps.requiredParamsMap.Default.locale = "zh_Hans";
 									const newTabs = [];
@@ -102,7 +107,6 @@ export async function Response($request, $response) {
 											}
 											switch (tab?.type) {
 												case "WatchNow":
-												case "Originals":
 													newTabs.push(tab);
 													break;
 												case "Store":
@@ -120,20 +124,6 @@ export async function Response($request, $response) {
 												case "TV":
 													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
 													if (Version < 54) newTabs.push(tab);
-													break;
-												case "MLS":
-													if (Version >= 64)
-														switch (Platform) {
-															case "atv":
-															case "ipad":
-															case "appletv":
-															case "desktop":
-															// biome-ignore lint/suspicious/noFallthroughSwitchClause: <explanation>
-															default:
-																newTabs.push(tab);
-															case "iphone":
-																return;
-														}
 													break;
 												case "Sports":
 												case "Kids":
@@ -281,29 +271,30 @@ export async function Response($request, $response) {
 									//body.data.userProps.gac = true;
 								}
 							}
-							body = injectChannel.InjectUTSConfigurationChannelsAndApps(body, { platform: Platform, region: Region });
+							body = injectChannel.InjectUTSConfigurationChannelsAndApps(body, channelContext);
 							break;
 						case "/uts/v3/search/landing":
 						case "/uts/v3/canvases/Roots/tahoma_searchlanding":
-							body = injectChannel.InjectSearchLanding(body, { platform: Platform, region: Region });
+							body = injectChannel.InjectSearchLanding(body, channelContext);
 							break;
 						case "/uts/v3/search":
 						case "/uts/v3/shelves/uts.col.search.TR":
 						case "/uts/v3/shelves/uts.col.search.BR":
-							body = await injectChannel.InjectSearch(body, { platform: Platform, region: Region, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
+							body = await injectChannel.InjectSearch(body, { ...channelContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
 							break;
 						case "/uts/v3/channels":
-							body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
+							body = injectChannel.InjectBrand(body, channelContext);
 							break;
 						case "/uts/v3/user/settings":
-							body = injectChannel.InjectUTSUserSettings(body);
+							body = injectChannel.InjectUTSUserSettings(body, channelContext);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":
 						// biome-ignore lint/suspicious/noFallthroughSwitchClause: 首页继续执行原播放地址处理
 						case "/uts/v3/canvases/roots/tahoma_watchnow":
-							body = injectChannel.InjectWatchNowLockup(body, { platform: Platform, region: Region });
+							body = injectChannel.InjectWatchNowLockup(body, channelContext);
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
+						case "/uts/v3/canvases/Channels/tvs.sbd.241000": // Formula 1
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {
 							// MLS Season Pass
 							if (Settings?.isWorkaroundSSLPinning) {
@@ -328,6 +319,7 @@ export async function Response($request, $response) {
 						}
 						case "/uts/v3/shelves/uts.col.UpNext": // 待播清單
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.4000": // Apple TV+ 待播節目
+						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.241000": // Formula 1 待播節目
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.7000": // MLS Season Pass 待播節目
 						case "/uts/v3/shelves/edt.col.62d7229e-d9a1-4f00-98e5-458c11ed3938": {
 							// 精選推薦

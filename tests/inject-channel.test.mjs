@@ -225,13 +225,13 @@ for (const fixture of fixtures.home) {
 		original.data.canvas.nextToken = "canvas-pagination";
 		original.data.canvas.shelves[0].nextToken = "shelf-pagination";
 		original.data.canvas.shelves[0].sections[0].nextToken = "section-pagination";
-		const actual = await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", original, `sf=${fixture.sf}`);
+		const actual = await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", original, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
 		const item = actual.data.canvas.shelves[0].sections[0].items[0];
 		assert.equal(item.id, brandId);
 		assert.equal(item.type, "Brand");
 		assert.match(item.url, new RegExp(`/${fixture.sf === "143470" ? "tw" : "us"}/channel/lumen/`));
 		assert.deepEqual([item.images.shelfItemImage.width, item.images.shelfItemImage.height], [1000, 1500]);
-		assert.deepEqual(await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", actual, `sf=${fixture.sf}`), actual);
+		assert.deepEqual(await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", actual, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF"), actual);
 		actual.data.canvas.shelves[0].sections[0].items.shift();
 		delete actual.data.channels[brandId];
 		assert.deepEqual(actual, original);
@@ -246,7 +246,7 @@ test("all legacy home lockups and matching door sections are injected together",
 		{ displayType: "channelUpsell", items: [{ id: "upsell" }] },
 	];
 	for (const path of ["/uts/v3/canvases/Roots/watchNow", "/uts/v3/canvases/roots/tahoma_watchnow"]) {
-		const actual = await replay(t, path, { data: { canvas: { shelves } } });
+		const actual = await replay(t, path, { data: { canvas: { shelves } } }, "", ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
 		const result = actual.data.canvas.shelves;
 		for (const target of [result[0], result[1], result[2].sections[1]]) {
 			assert.equal(target.items[0].id, brandId);
@@ -286,7 +286,7 @@ test("home injection retains the existing playable URL workaround", async t => {
 for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")) {
 	for (const path of ["/uts/v3/search/landing", "/uts/v3/canvases/Roots/tahoma_searchlanding"]) {
 		test(`${fixture.case}: ${path} prepends a Brand to the official Browse grid`, async t => {
-			const actual = await replay(t, path, fixture.body, `sf=${fixture.sf}`);
+			const actual = await replay(t, path, fixture.body, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
 			const item = actual.data.canvas.shelves[0].items[0];
 			assert.equal(item.id, brandId);
 			assert.equal(item.type, "Brand");
@@ -295,7 +295,7 @@ for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")
 				actual.data.canvas.shelves.some(({ id }) => id === "uts.col.search.BR"),
 				false,
 			);
-			assert.deepEqual(await replay(t, path, actual, `sf=${fixture.sf}`), actual);
+			assert.deepEqual(await replay(t, path, actual, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF"), actual);
 			actual.data.canvas.shelves[0].items.shift();
 			delete actual.data.channels[brandId];
 			assert.deepEqual(actual, fixture.body);
@@ -306,7 +306,7 @@ for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")
 test("landing handles Brand-only grids and creates a grid without modifying unrelated rows", async t => {
 	const unrelated = { id: "other", displayType: "cardLockup", items: [{ id: "movie", type: "Movie" }] };
 	for (const shelves of [[], [unrelated], [{ id: "browse", displayType: "brick", isGrid: true, items: [{ id: "disney", type: "Brand" }], nextToken: "keep" }]]) {
-		const actual = await replay(t, "/uts/v3/search/landing", { data: { canvas: { shelves } } });
+		const actual = await replay(t, "/uts/v3/search/landing", { data: { canvas: { shelves } } }, "", ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
 		const grid = actual.data.canvas.shelves[0];
 		assert.equal(grid.displayType, "brick");
 		assert.equal(grid.isGrid, true);

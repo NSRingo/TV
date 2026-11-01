@@ -1,0 +1,258 @@
+{
+	"note": "Public projection of original 2026-10-31 US/TW ipad search landing responses. Brand cards plus one Room retained; account/metrics omitted; pagination token synthetic. Tests replay these shapes across platform parameters and both landing routes.",
+	"samples": [
+		{
+			"sf": "143441",
+			"source_pfm": "ipad",
+			"source_sha256": "79d3d84bd969af324998ea051b027c0cffa8261ad3b504f1fb96ad9b893723ed",
+			"body": {
+				"data": {
+					"canvas": {
+						"shelves": [
+							{
+								"id": "edt.col.692f7527-c1cb-4fbf-b8b8-faab21a353bd",
+								"displayType": "brick",
+								"isGrid": true,
+								"header": {
+									"supportsSeeAllView": false,
+									"title": "Browse"
+								},
+								"items": [
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.4000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(32,23,30) p:rgb(232,229,229) s:rgb(215,170,144) t:rgb(192,188,189) q:rgb(178,140,121)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/d6/de/ec/d6deeceb-dbdc-8672-9486-fb9f970d0a14/1b67f27d-5a61-4bfb-a205-8c26a8db67ee.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Apple TV",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.241000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(210,220,227) p:rgb(12,9,9) s:rgb(89,8,2) t:rgb(52,51,53) q:rgb(113,51,47)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/77/d6/14/77d6147d-dc6f-7f81-dd9f-1ecd0a4a8f01/4998f63d-417f-464b-9b88-0cd8881413e4.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Formula 1",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.7000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(233,130,33) p:rgb(12,6,1) s:rgb(9,17,39) t:rgb(56,31,8) q:rgb(54,40,38)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/79/29/21/79292130-a276-2bcc-06ff-282811d16e37/b08c19c1-5c55-43fd-add4-bc8af491d4a5.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "MLS",
+										"type": "Brand",
+										"url": "https://tv.apple.com/us/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(6,20,57) p:rgb(209,216,226) s:rgb(177,199,238) t:rgb(168,177,192) q:rgb(143,163,202)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/fa/94/aa/fa94aa98-9f7b-0aa4-015a-bb32e2a3dfae/85c676d3-0350-4357-abba-c378686b1074.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"title": "Major League Baseball on Apple TV",
+										"type": "Room",
+										"url": "https://tv.apple.com/us/room/major-league-baseball-on-apple-tv/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2?ctx_proot=tahoma_searchlanding"
+									}
+								],
+								"nextToken": "synthetic-pagination"
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.4000": {
+							"id": "tvs.sbd.4000",
+							"name": "Apple TV",
+							"title": "Apple TV",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding",
+							"isApSubscription": true,
+							"isFirstParty": true,
+							"isAppleTvPlus": true,
+							"isTvAppBrand": false,
+							"isWatchlistEnabled": true,
+							"shouldTrackPlayActivity": true
+						},
+						"tvs.sbd.241000": {
+							"id": "tvs.sbd.241000",
+							"name": "Formula 1",
+							"title": "Formula 1",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_searchlanding",
+							"isApSubscription": true,
+							"isFirstParty": true,
+							"isAppleTvPlus": false,
+							"isTvAppBrand": false,
+							"isWatchlistEnabled": true,
+							"shouldTrackPlayActivity": true
+						},
+						"tvs.sbd.7000": {
+							"id": "tvs.sbd.7000",
+							"name": "MLS",
+							"title": "MLS",
+							"type": "Brand",
+							"url": "https://tv.apple.com/us/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding",
+							"isApSubscription": true,
+							"isFirstParty": true,
+							"isAppleTvPlus": false,
+							"isTvAppBrand": false,
+							"isWatchlistEnabled": true,
+							"shouldTrackPlayActivity": true
+						}
+					}
+				}
+			}
+		},
+		{
+			"sf": "143470",
+			"source_pfm": "ipad",
+			"source_sha256": "f2f05149335df9778f94c51e834625f6cf381a64e31f3aa8015ba9fddc0a0de6",
+			"body": {
+				"data": {
+					"canvas": {
+						"shelves": [
+							{
+								"id": "edt.col.5f722d3f-812b-49bd-a2a4-dd1553f4838c",
+								"displayType": "brick",
+								"isGrid": true,
+								"header": {
+									"supportsSeeAllView": false,
+									"title": "瀏覽"
+								},
+								"items": [
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.4000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(32,23,30) p:rgb(232,229,229) s:rgb(215,170,144) t:rgb(192,188,189) q:rgb(178,140,121)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/d6/de/ec/d6deeceb-dbdc-8672-9486-fb9f970d0a14/1b67f27d-5a61-4bfb-a205-8c26a8db67ee.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "Apple TV",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "FullBleed",
+										"id": "tvs.sbd.7000",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(233,130,33) p:rgb(12,6,1) s:rgb(9,17,39) t:rgb(56,31,8) q:rgb(54,40,38)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/79/29/21/79292130-a276-2bcc-06ff-282811d16e37/b08c19c1-5c55-43fd-add4-bc8af491d4a5.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"intents": [
+											"NAVIGATE"
+										],
+										"title": "MLS",
+										"type": "Brand",
+										"url": "https://tv.apple.com/tw/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding"
+									},
+									{
+										"flavor": "Heading2",
+										"id": "edt.item.5c3e706a-1616-434e-a898-82a652a0fe35",
+										"images": {
+											"shelfItemImage": {
+												"height": 3000,
+												"isP3": true,
+												"joeColor": "b:rgb(0,88,160) p:rgb(242,246,250) s:rgb(229,238,245) t:rgb(193,215,232) q:rgb(183,208,228)",
+												"supportsLayeredImage": false,
+												"url": "https://is1-ssl.mzstatic.com/image/thumb/Features221/v4/ec/ad/a3/ecada38b-1f21-14d9-946c-cb5aa5a4c5f1/96a97ad3-a271-44a2-a2c3-166b041b3d35.png/{w}x{h}sr.{f}",
+												"width": 2000
+											}
+										},
+										"title": "4K HDR",
+										"type": "Room",
+										"url": "https://tv.apple.com/tw/room/4k-hdr/edt.item.5c3e706a-1616-434e-a898-82a652a0fe35?ctx_proot=tahoma_searchlanding"
+									}
+								],
+								"nextToken": "synthetic-pagination"
+							}
+						]
+					},
+					"channels": {
+						"tvs.sbd.4000": {
+							"id": "tvs.sbd.4000",
+							"name": "Apple TV",
+							"title": "Apple TV",
+							"type": "Brand",
+							"url": "https://tv.apple.com/tw/channel/apple-tv/tvs.sbd.4000?ctx_proot=tahoma_searchlanding",
+							"isApSubscription": true,
+							"isFirstParty": true,
+							"isAppleTvPlus": true,
+							"isTvAppBrand": false,
+							"isWatchlistEnabled": true,
+							"shouldTrackPlayActivity": true
+						},
+						"tvs.sbd.7000": {
+							"id": "tvs.sbd.7000",
+							"name": "MLS",
+							"title": "MLS",
+							"type": "Brand",
+							"url": "https://tv.apple.com/tw/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_searchlanding",
+							"isApSubscription": true,
+							"isFirstParty": true,
+							"isAppleTvPlus": false,
+							"isTvAppBrand": false,
+							"isWatchlistEnabled": true,
+							"shouldTrackPlayActivity": true
+						}
+					}
+				}
+			}
+		}
+	]
+}

@@ -41,6 +41,18 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
+Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）使用 Apple 原生类型 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，`CountryCode.Grevy=US`。
+
+Apple TV、F1、MLS、Lumen 的身份、素材和插入位置集中在 `InjectChannel.#Config`。`kind=apple/thirdParty` 是内部分类，与控制平台转换的 `ThirdParty` 参数无关，不写入响应。导航直接使用官方 `tab.type`、`tab.destinationType`；`placements` 直接使用官方 `displayType` 或完整 shelf、section、页面根 ID。`SelectConfig` 通过 `switch` 按这些原值归类，调用方以原值取用，不转换大小写或另设位置别名。卡片素材键为 `tahoma_watchnow`、`tahoma_searchlanding`，品牌图片键直接使用 `appIcon`、`shelfItemImage` 等响应字段。频道 JSON 仍由 `BuildChannel` 生成。正式版选择苹果频道，dev 选择两组，Lumen 响应修复入口只选择第三方。方法按调用接收 `{ platform, region, settings, kinds }`，旧调用缺省只处理第三方。
+
+| 频道 | 导航 | 首页已有结构 | 搜索落地页 |
+| --- | --- | --- | --- |
+| Apple TV | Originals 根 tab | channelLockup / brandLockup | 官方 Browse 网格 |
+| F1 / MLS | Grevy / MLS 根 tab | channelLockup / brandLockup、uts.col.tv-plus-sports-nav-brick | 官方 Browse 网格 |
+| Lumen | ChannelsAndApps 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
+
+苹果频道按 `Settings.Tabs` 补入，不按平台或版本限制，不创建缺少的导航容器或首页行，也不补入 moretv。搜索同时覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，使用搜索专用卡片素材；dev 默认顺序为 Lumen → Apple TV → F1 → MLS，保留其他卡片和分页。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。Lumen 的搜索后端、鉴权及侧栏行为保持原有范围，官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
+
 dev 在 `arguments-builder.dev.config.ts` 中另提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。有值时由 `InjectSearch` 查询 Lumen 并合并到 Apple 搜索结果；留空或只填空白时跳过 Lumen 搜索，包括频道入口和影视结果。此鉴权值只从本次 argument 读取，不参与下表的 BoxJs / Storage 合并，也不写入品牌或响应正文。
 
 Storage 控制设置来源，优先级从高到低：
@@ -92,4 +104,4 @@ npx wrangler deploy --dry-run --outdir .wrangler/worker-build --config wrangler.
 
 ## 回归基线
 
-`tests/fixtures/runtime-baseline.json` 保存原提交 `084eff9` 配合 util 1.8.9、URL 1.2.4 的 52 个行为结果。测试分别回放正式版和 dev 的输入，再检查 Storage、云端路由、请求体和交错请求参数隔离。
+`tests/fixtures/runtime-baseline.json` 保存原提交 `084eff9` 配合 util 1.8.9、URL 1.2.4 的 52 个行为结果。测试固定历史 Tabs 回放，并显式验证 MLS 不再受旧平台/版本门槛限制的差异。`apple-search-landing.json`、`us-tabs.json`、`us-f1-home.json` 保存裁剪后的原站结构，验证频道位置、搜索专用素材、已有对象/状态保留、分页和重复注入；另覆盖 Storage、云端路由、请求体和交错请求参数隔离。

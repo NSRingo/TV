@@ -24,6 +24,22 @@ test("release stays compact while full/dev expose database settings", () => {
 	assert.equal(argsFull.find(arg => arg.key === "Storage").defaultValue, "PersistentStore");
 });
 
+test("public tab settings replace Kids with Formula 1 in Apple's navigation order", () => {
+	const tabs = argsFull.find(({ key }) => key === "Tabs");
+	assert.deepEqual(
+		tabs.options.slice(0, 4).map(({ key }) => key),
+		["WatchNow", "Originals", "Grevy", "MLS"],
+	);
+	assert.equal(
+		tabs.options.some(({ key }) => key === "Kids"),
+		false,
+	);
+	assert.equal(tabs.defaultValue.includes("Kids"), false);
+	assert.deepEqual(tabs.defaultValue.slice(0, 4), ["WatchNow", "Originals", "Grevy", "MLS"]);
+	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Kids").defaultValue, "US");
+	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Grevy").defaultValue, "US");
+});
+
 test("Lumen search authentication is optional and exposed only in dev arguments", () => {
 	const argument = dev.args.find(({ key }) => key === "LumenKey");
 	assert.equal(argument.type, "string");

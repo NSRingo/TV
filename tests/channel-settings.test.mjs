@@ -90,6 +90,12 @@ for (const [path, source] of [
 				assert.equal(actual.data.channels[brandId].type, "Brand");
 				assert.equal(new URL(actual.data.channels[brandId].url).pathname.split("/")[1], "us");
 				delete actual.data.channels[brandId];
+				for (const id of ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"]) {
+					assert.equal(actual.data.channels[id].isFirstParty, true);
+					assert.equal(actual.data.channels[id].isApSubscription, true);
+					assert.equal(actual.data.channels[id].isSubscribed, undefined);
+					delete actual.data.channels[id];
+				}
 				break;
 			case "/uts/v3/user/settings":
 				assert.deepEqual(actual.data.brandSidebarSetting[brandId], { isHidden: false, isPinned: false });

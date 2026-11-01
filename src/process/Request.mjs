@@ -165,6 +165,10 @@ export async function Request($request) {
 						case "/uts/v3/shelves/edt.col.63bf2052-50b9-44c8-a67e-30e196e19c60":
 							Type = "Originals";
 							break;
+						case "/uts/v3/canvases/Channels/tvs.sbd.241000":
+						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.241000":
+							Type = "Grevy";
+							break;
 						case "/uts/v3/channels":
 						case "/uts/v2/brands":
 							Type = "Channels";
@@ -229,6 +233,7 @@ export async function Request($request) {
 						default:
 							//if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
 							if (url.searchParams.get("ctx_brand") === "tvs.sbd.4000") Type = "Originals";
+							else if (url.searchParams.get("ctx_brand") === "tvs.sbd.241000") Type = "Grevy";
 							else if (url.pathname.includes("/uts/v3/canvases/Channels/")) Type = "Channels";
 							else if (url.pathname.includes("/uts/v2/brands/")) Type = "Channels";
 							else if (url.pathname.includes("/uts/v3/movies/")) Type = "Movies";
