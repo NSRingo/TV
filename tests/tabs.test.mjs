@@ -55,15 +55,29 @@ for (const [variant, processResponse, processRequest] of [
 		});
 	}
 
-	test(`${variant}: existing F1 navigation is preserved as a complete server object`, async t => {
+	test(`${variant}: injected Apple navigation matches the complete official tab objects`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const body = structuredClone(fixture.body);
-		const f1 = body.data.applicationProps.tabs[3];
-		f1.title = "服务器本地化标题";
-		f1.images = { defaultImage: { url: "https://images.example.test/native-f1.png", width: 100, height: 100 } };
+		const types = ["Originals", "Grevy", "MLS"];
+		const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+		body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => !types.includes(type));
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-		const actual = JSON.parse(response.body).data.applicationProps.tabs.find(({ type }) => type === "Grevy");
-		assert.deepEqual(actual, f1);
+		const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+		assert.deepEqual(actual, expected);
+	});
+
+	test(`${variant}: existing Apple navigation is preserved as complete server objects`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const body = structuredClone(fixture.body);
+		const types = ["Originals", "Grevy", "MLS"];
+		const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+		for (const tab of expected) {
+			tab.title = `服务器本地化标题 ${tab.type}`;
+			tab.images = { defaultImage: { url: `https://images.example.test/${tab.type}.png`, width: 100, height: 100 } };
+		}
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+		const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+		assert.deepEqual(actual, expected);
 	});
 
 	test(`${variant}: a missing tabs array does not create F1 navigation`, async t => {

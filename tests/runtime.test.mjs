@@ -11,6 +11,7 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 import { Response as ResponseLumen } from "../src/process/Response.lumen.dev.mjs";
 
 const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json", import.meta.url)));
+const officialAppleTabs = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url))).body.data.applicationProps.tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type, title, target }) => ({ type, title, target }));
 Console.logLevel = "OFF";
 
 for (const fixture of baseline.cases) {
@@ -51,7 +52,9 @@ for (const fixture of baseline.cases) {
 			if (fixture.name.startsWith("tabs-")) {
 				actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
 				// 苹果频道统一按结构补入，MLS 不再受旧平台/版本门槛限制。
-				if (!expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, { type: "MLS", title: "MLS", target: { id: "tvs.sbd.7000", type: "Brand", url: "https://tv.apple.com/us/channel/tvs.sbd.7000" } });
+				if (!expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, officialAppleTabs.find(({ type }) => type === "MLS"));
+				// 注入模板使用完整官方配置，替换旧基线中的预定义苹果导航。
+				expected = expected.map(tab => officialAppleTabs.find(({ type }) => type === tab.type) ?? tab);
 			}
 		}
 		assert.deepEqual(actual, expected);
