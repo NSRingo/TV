@@ -1,7 +1,7 @@
 import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 
 /**
- * @typedef {Object} ChannelContext
+ * @typedef {Object} BrandContext
  * @property {string|null} [platform] - pfm 仅用于宿主字段，不限制注入；省略时使用桌面宿主。
  * @property {string} region - 本次响应的小写地区码。
  * @property {import('../types').Settings} [settings] - 选择苹果频道时传入本次请求设置。
@@ -9,7 +9,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 
 /**
- * @typedef {Object} ChannelConfig
+ * @typedef {Object} BrandConfig
  * @property {'apple'|'thirdParty'} kind - 内部接入分类，不写入响应。
  * @property {string} id - Brand 完整 ID。
  * @property {string} name - 品牌名称。
@@ -34,12 +34,12 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 
 /**
- * @typedef {Record<'all'|'ChannelsAndApps'|'channelLockup'|'brandLockup'|'uts.col.tv-plus-sports-nav-brick'|'uts.shlfsect.moretv'|'tahoma_searchlanding', ChannelConfig[]>} ChannelConfigGroups
+ * @typedef {Record<'all'|'ChannelsAndApps'|'channelLockup'|'brandLockup'|'uts.col.tv-plus-sports-nav-brick'|'uts.shlfsect.moretv'|'tahoma_searchlanding', BrandConfig[]>} BrandConfigGroups
  * all 保留筛选后的配置顺序，其余键直接使用官方标识。
  */
 
 /**
- * @typedef {Object} ChannelSearchOptions
+ * @typedef {Object} BrandSearchOptions
  * @property {string} pathname - 主搜索或官方 TR/BR 路径；其他路径保持原样。
  * @property {string} searchTerm - 原始搜索词；频道名匹配忽略大小写及首尾空白。
  * @property {boolean} topResultsOnly - 主搜索是否仅合并到 TR；TR 导航始终合并到 TR。
@@ -47,14 +47,14 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 
 /**
- * Apple TV 频道注入器，按各方法入参原地修改 UTS 正文。
+ * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
  * @version 1.2.0
  */
-export default class InjectChannel {
+export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
-		this.Name = "InjectChannel";
+		this.Name = "InjectBrand";
 		this.Version = "1.2.0";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
@@ -62,7 +62,7 @@ export default class InjectChannel {
 	/**
 	 * 服务身份、原生 tab、插入位置和各场景素材；kind 仅供内部选取，不写入响应。
 	 * 苹果品牌及搜索素材来自美服搜索落地页；F1/MLS 首页素材来自原站体育 brick。
-	 * @type {ChannelConfig[]}
+	 * @type {BrandConfig[]}
 	 */
 	#Config = [
 		{
@@ -388,12 +388,12 @@ export default class InjectChannel {
 	/**
 	 * 将配置派生的完整 Brand 原地写入品牌接口或资源响应共用的 data.channels 字典。
 	 * @param {Object} body - 已解析的品牌接口、频道、Room 或 shelf 正文。
-	 * @param {ChannelContext} options - 本次请求上下文；kinds 含 apple 时必须提供 settings。
-	 * @returns {Object} 原 body 引用；已有品牌的订阅、安装和同意状态保留。
+	 * @param {BrandContext} options - 本次请求上下文；kinds 含 apple 时必须提供 settings。
+	 * @returns {Object} 原 body 引用；已有品牌的订阅、安装、同意和固定状态保留。
 	 */
 	InjectBrand(body, options) {
 		for (const config of this.#SelectConfig(options).all) {
-			const channel = this.#BuildChannel(config, options, body.data?.channels?.[config.id]);
+			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
 			_.set(body, ["data", "channels", channel.id], channel);
 		}
 		return body;
@@ -402,7 +402,7 @@ export default class InjectChannel {
 	/**
 	 * 原地补充配置频道的缺省侧栏偏好；不生成外部 App 的同意记录。
 	 * @param {Object} body - 已解析的 /uts/v3/user/settings 正文。
-	 * @param {Pick<ChannelContext, 'kinds'|'settings'>} [options={}] - 按 kinds 及苹果频道开关筛选，再取 ChannelsAndApps 分组。
+	 * @param {Pick<BrandContext, 'kinds'|'settings'>} [options={}] - 按 kinds 及苹果频道开关筛选，再取 ChannelsAndApps 分组。
 	 * @returns {Object} 原 body 引用；已有侧栏条目整体保留，不向服务端写回设置。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-user-settings-channel-model.md
 	 */
@@ -417,7 +417,7 @@ export default class InjectChannel {
 	/**
 	 * 在频道或 Room 末尾追加独立官网外链；不改变 Brand 导航或客户端自动生成的 App 页脚。
 	 * @param {Object} body - 已解析并确认存在 data.canvas 的频道或 Room 正文。
-	 * @param {ChannelContext} options - 本次地区与频道筛选上下文，官网外链仅处理第三方配置。
+	 * @param {BrandContext} options - 本次地区与频道筛选上下文，官网外链仅处理第三方配置。
 	 * @returns {Object} 原 body 引用；保留原 shelves 数组及其他行，重复调用替换同 ID 外链行。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-open-app-and-website.md
 	 */
@@ -443,14 +443,14 @@ export default class InjectChannel {
 	 * 原地首插配置中的频道导航，缺少 ChannelsAndApps 分组或 subTabs 时创建。
 	 * 导航 target 与 data.channels[id] 共用同一完整 Brand。
 	 * @param {Object} body - 已解析的 UTS 配置正文。
-	 * @param {ChannelContext} options - 本次请求上下文；仅 ChannelsAndApps 分组生成子导航。
+	 * @param {BrandContext} options - 本次请求上下文；仅 ChannelsAndApps 分组生成子导航。
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectUTSConfigurationChannelsAndApps(body, options) {
 		const configs = this.#SelectConfig(options).ChannelsAndApps;
 		const channels = [];
 		for (const config of configs) {
-			const channel = this.#BuildChannel(config, options, body.data?.channels?.[config.id]);
+			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
 			channels.push(channel);
 		}
 		switch (channels.length) {
@@ -460,7 +460,7 @@ export default class InjectChannel {
 				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
 				const tabs = body.data.applicationProps.tabs;
 				const tab = tabs.find(({ type }) => type === configs[0].tab.type) ?? { ...configs[0].tab, subTabs: [] };
-				const subTabs = channels.map(channel => this.#BuildChannelSubTab(channel));
+				const subTabs = channels.map(channel => this.#BuildBrandSubTab(channel, tab.subTabs?.find(({ target }) => target?.id === channel.id)));
 				_.set(tab, "subTabs", [...subTabs, ...(tab.subTabs ?? []).filter(({ target }) => !channels.some(({ id }) => id === target?.id))]);
 				switch (tabs.indexOf(tab)) {
 					case -1: {
@@ -484,7 +484,7 @@ export default class InjectChannel {
 	/**
 	 * 在已有 tabs 数组中补齐选中的苹果频道；普通导航排序仍由 Response 处理。
 	 * @param {Object} body - 已解析的 UTS 配置正文；缺少 tabs 数组时保持原样。
-	 * @param {ChannelContext} options - 本次请求上下文；settings.Tabs 决定苹果频道选取。
+	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 决定苹果频道选取。
 	 * @returns {Object} 原 body 引用；已有 tab 保留，不创建品牌字典。
 	 */
 	InjectUTSConfigurationTabs(body, options) {
@@ -511,7 +511,7 @@ export default class InjectChannel {
 	 * 按配置补入已有频道行、体育 brick 和 moretv；苹果与第三方使用各自位置。
 	 * 没有目标行时保持正文原样，不创建首页行。
 	 * @param {Object} body - 已解析的首页正文，频道行位于 data.canvas.shelves。
-	 * @param {ChannelContext} options - 本次请求上下文；位置来自各频道 placements，不按平台限制。
+	 * @param {BrandContext} options - 本次请求上下文；位置来自各频道 placements，不按平台限制。
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectWatchNowLockup(body, options) {
@@ -547,7 +547,7 @@ export default class InjectChannel {
 	 * 在原站 Browse 网格补齐苹果频道并首插第三方；缺少网格时仅为第三方创建。
 	 * 两条 landing 路径共用此结构，不生成 Room 或搜索结果 BR 行。
 	 * @param {Object} body - 已解析的搜索落地页正文。
-	 * @param {ChannelContext} options - 本次请求上下文；苹果频道使用 settings.Tabs 与对应地区设置。
+	 * @param {BrandContext} options - 本次请求上下文；苹果频道使用 settings.Tabs 与对应地区设置。
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectSearchLanding(body, options) {
@@ -586,7 +586,7 @@ export default class InjectChannel {
 	 * 查询频道影视后端并原地写入搜索结果；频道名完整匹配时才加入频道入口。
 	 * 主响应使用 data.canvas.shelves，官方 TR/BR 导航使用 data.shelf。
 	 * @param {Object} body - 已解析的搜索主响应或 TR/BR 导航正文。
-	 * @param {ChannelContext & ChannelSearchOptions} options - 本次请求上下文与搜索参数；只查询选中的第三方后端。
+	 * @param {BrandContext & BrandSearchOptions} options - 本次请求上下文与搜索参数；只查询选中的第三方后端。
 	 * @returns {Promise<Object>} 解析为原 body 引用；无鉴权或空词不查询，BR 导航不查询影视后端。
 	 */
 	async InjectSearch(body, options) {
@@ -595,7 +595,7 @@ export default class InjectChannel {
 		// 脚本内部请求不经过 Surge Header Rewrite，鉴权必须随本次查询显式传入。
 		const headers = { "X-Lumen-Key": lumenKey?.trim() };
 		const configs = this.#SelectConfig(options).all.filter(({ kind, searchURL }) => kind === "thirdParty" && searchURL && keyword && headers["X-Lumen-Key"]);
-		const channels = configs.map(config => this.#BuildChannel(config, options, body.data?.channels?.[config.id]));
+		const channels = configs.map(config => this.#BuildBrand(config, options, body.data?.channels?.[config.id]));
 		// 只有频道名称匹配搜索词时，才向官方 TR/BR 加入频道入口。
 		const brands = channels.filter(({ name }) => name.toLowerCase() === keyword);
 		const categories = this.#BuildSearchCategoryShelves(region, searchTerm);
@@ -724,7 +724,7 @@ export default class InjectChannel {
 	/**
 	 * 采用美服实际 ExternalLink 的 epicShowcase / Flavor_D 包装，不伪造 Brand 的打开 App 字段。
 	 * @private
-	 * @param {ChannelConfig} config - #Config 中包含 website 的第三方品牌配置。
+	 * @param {BrandConfig} config - #Config 中包含 website 的第三方品牌配置。
 	 * @param {string} region - 用于 collection URL 的小写地区码。
 	 * @returns {Object} 独立官网行；URL 由客户端外链路由转换为 AppPunchout.contextData.openUrl。
 	 */
@@ -753,23 +753,31 @@ export default class InjectChannel {
 	/**
 	 * 组装 ChannelsAndApps.subTabs[] 的频道导航包装。
 	 * @private
-	 * @param {Object} channel - 完整 Brand，直接复用为 target。
-	 * @returns {Object} 含标题、target 和 universalLinks 的子导航。
+	 * @param {Object} brand - 完整 Brand，直接复用为 target。
+	 * @param {Object} [state] - 已有子导航，保留其固定状态。
+	 * @returns {Object} 含频道菜单、侧栏图片及 Brand target 的子导航。
+	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/brand-type-client-behavior.md
 	 */
-	#BuildChannelSubTab(channel) {
+	#BuildBrandSubTab(brand, state) {
 		return {
-			type: "Channel",
+			// 官方子导航以 Brand 标识品牌入口；Channel 是页面分类，不属于导航 type 枚举。
+			type: "Brand",
+			// Lumen 按频道接入侧栏菜单，Hide 使用 isChannel=true；不决定派生的 channelType 或播放方式。
+			brandType: "Channel",
 			destinationType: "Target",
-			title: channel.title,
-			target: channel,
-			universalLinks: [channel.url],
+			title: brand.title,
+			isPinned: state?.isPinned ?? brand.isPinned,
+			canBeHiddenFromNavigation: true,
+			images: { defaultImage: { ...brand.images.appIcon } },
+			target: brand,
+			universalLinks: [brand.url],
 		};
 	}
 
 	/**
 	 * 组装 data.canvas.shelves[] 的搜索 Browse 网格模板。
 	 * @private
-	 * @param {Pick<ChannelConfig, 'id'>} channel - 用于派生 Browse 集合 ID 的第三方配置。
+	 * @param {Pick<BrandConfig, 'id'>} channel - 用于派生 Browse 集合 ID 的第三方配置。
 	 * @returns {Object} items 为空数组的 brick 网格。
 	 */
 	#BuildSearchLandingShelf(channel) {
@@ -821,8 +829,8 @@ export default class InjectChannel {
 	/**
 	 * 按调用分组与苹果频道开关筛选，再由各频道配置的 tab.type、placements 决定归类。
 	 * @private
-	 * @param {Pick<ChannelContext, 'kinds'|'settings'>} options - 缺省只选第三方；包含 apple 时必须提供 settings.Tabs。
-	 * @returns {ChannelConfigGroups} 按配置顺序排列的频道分组；键直接使用官方类型与完整 ID。
+	 * @param {Pick<BrandContext, 'kinds'|'settings'>} options - 缺省只选第三方；包含 apple 时必须提供 settings.Tabs。
+	 * @returns {BrandConfigGroups} 按配置顺序排列的频道分组；键直接使用官方类型与完整 ID。
 	 */
 	#SelectConfig({ kinds = ["thirdParty"], settings }) {
 		const candidates = this.#Config.filter(({ kind }) => kinds.includes(kind));
@@ -868,8 +876,8 @@ export default class InjectChannel {
 	 * @private
 	 * @param {Object} body - 原响应正文，用于保留或补入 data.channels[id]。
 	 * @param {Object} container - 已找到的 shelf 或 section，原地修改其 items。
-	 * @param {ChannelConfig[]} configs - SelectConfig 按当前位置归组后的频道配置。
-	 * @param {ChannelContext} options - 传给 BuildChannel 的本次请求上下文。
+	 * @param {BrandConfig[]} configs - SelectConfig 按当前位置归组后的频道配置。
+	 * @param {BrandContext} options - 传给 BuildBrand 的本次请求上下文。
 	 * @param {'tahoma_watchnow'|'tahoma_searchlanding'} rootId - 官方页面根 ID，直接选取苹果频道 cards 素材。
 	 * @returns {void} 原地补入卡片与品牌，保留已有苹果卡片及其 URL。
 	 */
@@ -878,7 +886,7 @@ export default class InjectChannel {
 		const appleOrder = this.#Config.filter(({ kind }) => kind === "apple").map(({ id }) => id);
 		const thirdPartyBrands = [];
 		for (const config of configs) {
-			const channel = this.#BuildChannel(config, options, body.data?.channels?.[config.id]);
+			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
 			switch (config.kind) {
 				case "apple":
 					_.set(body, ["data", "channels", channel.id], channel);
@@ -936,13 +944,13 @@ export default class InjectChannel {
 	/**
 	 * 保留原站苹果 Brand；缺少时使用公开元数据，第三方沿用各自接入定义。
 	 * @private
-	 * @param {ChannelConfig} config - #Config 中的服务身份、端点和素材。
-	 * @param {ChannelContext} options - pfm 只决定宿主字段，地区由本次设置选择。
-	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装和同意状态。
+	 * @param {BrandConfig} config - #Config 中的服务身份、端点和素材。
+	 * @param {BrandContext} options - pfm 只决定宿主字段，地区由本次设置选择。
+	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装、同意和固定状态。
 	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md
 	 */
-	#BuildChannel(config, { platform, region, settings }, state) {
+	#BuildBrand(config, { platform, region, settings }, state) {
 		// 只匹配宿主字段，不按平台限制注入；官方 iPhone/ipad 与 desktop/appletv 返回不同宿主。
 		let appHost;
 		switch (platform?.toLowerCase()) {
@@ -996,7 +1004,7 @@ export default class InjectChannel {
 					url: config.url.replace("{id}", config.id).replace("/us/", `/${region}/`),
 					searchURL: config.searchURL,
 					intents: ["NAVIGATE"],
-					isPinned: false,
+					isPinned: state?.isPinned ?? false,
 					...appHost,
 					hexColor: config.hexColor,
 					// Lumen 不声明 Apple 内置收费订阅或第一方接入，这两个标志均保持 false。

@@ -1,5 +1,5 @@
 import { Lodash as _, Console } from "@nsnanocat/util";
-import InjectChannel from "../class/InjectChannel.mjs";
+import InjectBrand from "../class/InjectBrand.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
 /***************** Processing *****************/
@@ -59,9 +59,9 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectChannel = new InjectChannel();
-					/** @type {import('../class/InjectChannel.mjs').ChannelContext} */
-					const channelContext = { platform: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
+					const injectBrand = new InjectBrand();
+					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
+					const brandContext = { platform: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":
@@ -72,9 +72,9 @@ export async function Response($request, $response) {
 										case "Rooms":
 											switch (Boolean(body.data?.canvas)) {
 												case true:
-													body = injectChannel.InjectBrand(body, channelContext);
+													body = injectBrand.InjectBrand(body, brandContext);
 													for (const shelf of body.data.canvas.shelves ?? []) setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
-													// body = injectChannel.InjectWebsiteLink(body, { region: Region });
+													// body = injectBrand.InjectWebsiteLink(body, { region: Region });
 													break;
 											}
 											break;
@@ -83,7 +83,7 @@ export async function Response($request, $response) {
 								case "shelves":
 									switch (Boolean(body.data?.shelf)) {
 										case true:
-											body = injectChannel.InjectBrand(body, channelContext);
+											body = injectBrand.InjectBrand(body, brandContext);
 											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
 											break;
 									}
@@ -129,7 +129,7 @@ export async function Response($request, $response) {
 	/**
 	 * 原地补齐频道 canvas 与独立 shelf 共用的官方行头部，保留已有 header 字段。
 	 * @param {Object} shelf - 待修改的行。
-	 * @param {Object} channel - InjectChannel 组装的完整 Lumen Brand，直接复用。
+	 * @param {Object} channel - InjectBrand 组装的完整 Lumen Brand，直接复用。
 	 * @returns {Object} 原 shelf 引用。
 	 */
 	function setShelfHeader(shelf, channel) {

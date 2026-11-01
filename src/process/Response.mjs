@@ -1,5 +1,5 @@
 import { Console, Lodash as _ } from "@nsnanocat/util";
-import InjectChannel from "../class/InjectChannel.mjs";
+import InjectBrand from "../class/InjectBrand.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
 /***************** Processing *****************/
@@ -60,14 +60,14 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectChannel = new InjectChannel();
-					/** @type {import('../class/InjectChannel.mjs').ChannelContext} */
-					const channelContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple"] };
+					const injectBrand = new InjectBrand();
+					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
+					const brandContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple"] };
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
 							if (Caller !== "wta") {
-								body = injectChannel.InjectUTSConfigurationTabs(body, channelContext);
+								body = injectBrand.InjectUTSConfigurationTabs(body, brandContext);
 								// 不修改caller=wta的configurations数据
 								if (Array.isArray(body?.data?.applicationProps?.tabs)) {
 									const newTabs = [];
@@ -155,7 +155,7 @@ export async function Response($request, $response) {
 							break;
 						case "/uts/v3/search/landing":
 						case "/uts/v3/canvases/Roots/tahoma_searchlanding":
-							body = injectChannel.InjectSearchLanding(body, channelContext);
+							body = injectBrand.InjectSearchLanding(body, brandContext);
 							break;
 						case "/uts/v3/user/settings":
 							break;
@@ -163,7 +163,7 @@ export async function Response($request, $response) {
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":
 						// biome-ignore lint/suspicious/noFallthroughSwitchClause: 首页继续执行原播放地址处理
 						case "/uts/v3/canvases/roots/tahoma_watchnow":
-							body = injectChannel.InjectWatchNowLockup(body, channelContext);
+							body = injectBrand.InjectWatchNowLockup(body, brandContext);
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
 						case "/uts/v3/canvases/Channels/tvs.sbd.241000": // Formula 1
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {

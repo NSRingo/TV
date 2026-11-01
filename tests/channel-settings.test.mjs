@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import InjectChannel from "../src/class/InjectChannel.mjs";
+import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 import { Response as ResponseRelease } from "../src/process/Response.mjs";
 
@@ -15,7 +15,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const body = structuredClone(fixtures.channels);
 		const channels = body.data.channels;
 		channels[brandId] = { id: brandId, isSubscribed: false, isInstalled: false, isConsented: false };
-		const injector = new InjectChannel();
+		const injector = new InjectBrand();
 		assert.equal(injector.InjectBrand(body, { platform, region: "tw" }), body);
 		assert.equal(body.data.channels, channels);
 		assert.equal(channels.tvs, undefined);
@@ -37,7 +37,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 
 test("shared Brand creates a missing dictionary without adding navigation or preferences", () => {
 	const body = {};
-	assert.equal(new InjectChannel().InjectBrand(body, { platform: "iphone", region: "us" }), body);
+	assert.equal(new InjectBrand().InjectBrand(body, { platform: "iphone", region: "us" }), body);
 	assert.deepEqual(Object.keys(body.data), ["channels"]);
 	assert.equal(body.data.channels[brandId].id, brandId);
 });
@@ -45,7 +45,7 @@ test("shared Brand creates a missing dictionary without adding navigation or pre
 for (const body of [{}, { data: {} }, { data: { brandSidebarSetting: {} } }]) {
 	test(`settings creates only a missing sidebar entry: ${JSON.stringify(body)}`, () => {
 		const actual = structuredClone(body);
-		assert.equal(new InjectChannel().InjectUTSUserSettings(actual), actual);
+		assert.equal(new InjectBrand().InjectUTSUserSettings(actual), actual);
 		assert.deepEqual(actual.data.brandSidebarSetting, { [brandId]: { isHidden: false, isPinned: false } });
 		assert.equal(actual.data.brandConsentSettings, undefined);
 		assert.equal(actual.data.channels, undefined);
@@ -56,7 +56,7 @@ test("settings retains App consent objects and all account preferences", () => {
 	const body = structuredClone(fixtures.settings);
 	const consent = body.data.brandConsentSettings;
 	const sidebar = body.data.brandSidebarSetting;
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	injector.InjectUTSUserSettings(body);
 	assert.equal(body.data.brandConsentSettings, consent);
 	assert.equal(body.data.brandSidebarSetting, sidebar);
@@ -71,7 +71,7 @@ test("settings retains App consent objects and all account preferences", () => {
 test("settings preserves an existing hidden/pinned Lumen record and extensions by reference", () => {
 	const state = { isHidden: true, isPinned: true, custom: "preserved" };
 	const body = { data: { brandSidebarSetting: { [brandId]: state } } };
-	new InjectChannel().InjectUTSUserSettings(body);
+	new InjectBrand().InjectUTSUserSettings(body);
 	assert.equal(body.data.brandSidebarSetting[brandId], state);
 	assert.deepEqual(state, { isHidden: true, isPinned: true, custom: "preserved" });
 });

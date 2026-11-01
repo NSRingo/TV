@@ -1,5 +1,5 @@
 import { Console, fetch } from "@nsnanocat/util";
-import InjectChannel from "../class/InjectChannel.mjs";
+import InjectBrand from "../class/InjectBrand.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
 /***************** Processing *****************/
@@ -69,14 +69,14 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectChannel = new InjectChannel();
-					/** @type {import('../class/InjectChannel.mjs').ChannelContext} */
-					const channelContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple", "thirdParty"] };
+					const injectBrand = new InjectBrand();
+					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
+					const brandContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple", "thirdParty"] };
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
 							if (Caller !== "wta") {
-								body = injectChannel.InjectUTSConfigurationTabs(body, channelContext);
+								body = injectBrand.InjectUTSConfigurationTabs(body, brandContext);
 								// caller=wta跳过原导航整理，仍注入配置频道
 								if (Array.isArray(body?.data?.applicationProps?.tabs)) {
 									//body.data.applicationProps.requiredParamsMap.WithoutUtsk.locale = "zh_Hans";
@@ -271,28 +271,28 @@ export async function Response($request, $response) {
 									//body.data.userProps.gac = true;
 								}
 							}
-							body = injectChannel.InjectUTSConfigurationChannelsAndApps(body, channelContext);
+							body = injectBrand.InjectUTSConfigurationChannelsAndApps(body, brandContext);
 							break;
 						case "/uts/v3/search/landing":
 						case "/uts/v3/canvases/Roots/tahoma_searchlanding":
-							body = injectChannel.InjectSearchLanding(body, channelContext);
+							body = injectBrand.InjectSearchLanding(body, brandContext);
 							break;
 						case "/uts/v3/search":
 						case "/uts/v3/shelves/uts.col.search.TR":
 						case "/uts/v3/shelves/uts.col.search.BR":
-							body = await injectChannel.InjectSearch(body, { ...channelContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
+							body = await injectBrand.InjectSearch(body, { ...brandContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
 							break;
 						case "/uts/v3/channels":
-							body = injectChannel.InjectBrand(body, channelContext);
+							body = injectBrand.InjectBrand(body, brandContext);
 							break;
 						case "/uts/v3/user/settings":
-							body = injectChannel.InjectUTSUserSettings(body, channelContext);
+							body = injectBrand.InjectUTSUserSettings(body, brandContext);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":
 						// biome-ignore lint/suspicious/noFallthroughSwitchClause: 首页继续执行原播放地址处理
 						case "/uts/v3/canvases/roots/tahoma_watchnow":
-							body = injectChannel.InjectWatchNowLockup(body, channelContext);
+							body = injectBrand.InjectWatchNowLockup(body, brandContext);
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
 						case "/uts/v3/canvases/Channels/tvs.sbd.241000": // Formula 1
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {

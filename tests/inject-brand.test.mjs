@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import InjectChannel from "../src/class/InjectChannel.mjs";
+import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 import { Response as ResponseRelease } from "../src/process/Response.mjs";
 
@@ -35,7 +35,7 @@ async function replay(t, path, body, query = "", response = ResponseDev, argumen
 }
 
 test("synchronous injectors take per-method context and preserve the original body and row arrays", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	for (const [method, body, rowsOf, context] of [
 		["InjectUTSConfigurationChannelsAndApps", { data: { applicationProps: { tabs: [{ type: "Library" }] } } }, body => body.data.applicationProps.tabs, { platform: "ipad", region: "tw" }],
 		["InjectWatchNowLockup", { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } }, body => body.data.canvas.shelves, { platform: "desktop", region: "us" }],
@@ -50,7 +50,7 @@ test("synchronous injectors take per-method context and preserve the original bo
 
 test("one instance searches concurrently with method-local context and mutates the original response objects", async t => {
 	const requests = backend(t);
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const tr = { id: "uts.col.search.TR", items: [{ id: "apple" }] };
 	const br = { id: "uts.col.search.BR", items: [{ id: "disney" }] };
 	const shelves = [tr, br];
@@ -102,7 +102,7 @@ for (const fixture of channelTypes.samples) {
 		for (const [path, method, body, itemOf] of cases) {
 			// iPhone 大小写由真实请求约定保留，组装器仍应选择移动宿主。
 			const pfm = fixture.pfm === "iphone" ? "iPhone" : fixture.pfm;
-			const injector = new InjectChannel();
+			const injector = new InjectBrand();
 			await injector[method](body, method === "InjectSearch" ? { platform: pfm, region: "us", pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { platform: pfm, region: "us" });
 			const brand = itemOf(body);
 			assert.equal(brand.id, brandId);
@@ -117,7 +117,7 @@ for (const fixture of channelTypes.samples) {
 	});
 }
 
-test("existing Lumen subscription, consent and installation state is preserved across every injection", async t => {
+test("existing Lumen subscription, consent, installation and pin state is preserved across every injection", async t => {
 	backend(t, { items: [] });
 	for (const [path, method, shelves] of [
 		["/uts/v3/configurations", "InjectUTSConfigurationChannelsAndApps", []],
@@ -125,8 +125,8 @@ test("existing Lumen subscription, consent and installation state is preserved a
 		["/uts/v3/search/landing", "InjectSearchLanding", []],
 		["/uts/v3/search", "InjectSearch", []],
 	]) {
-		const injector = new InjectChannel();
-		const state = { isConsented: false, isInstalled: false, isSubscribed: false };
+		const injector = new InjectBrand();
+		const state = { isConsented: false, isInstalled: false, isSubscribed: false, isPinned: true };
 		const body = { data: { channels: { [brandId]: { id: brandId, ...state } }, canvas: { shelves } } };
 		await injector[method](body, method === "InjectSearch" ? { platform: "desktop", region: "us", pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { platform: "desktop", region: "us" });
 		const brand = body.data.channels[brandId];
@@ -137,7 +137,7 @@ test("existing Lumen subscription, consent and installation state is preserved a
 });
 
 test("configuration uses the explicit region and preserves it on repeated injection", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const body = {
 		data: {
 			applicationProps: {
@@ -174,15 +174,20 @@ test("new structures use the request storefront even when navigation filtering r
 });
 
 test("configuration prepends a shared complete Brand target and preserves unrelated navigation", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const original = { type: "Channel", title: "Disney+", target: { id: "tvs.sbd.1000216" } };
 	const body = { data: { applicationProps: { tabs: [{ type: "WatchNow" }, { type: "ChannelsAndApps", title: "Existing title", subTabs: [original, { target: { id: brandId }, title: "Old Lumen" }] }, { type: "Library" }], untouched: true }, channels: { other: { id: "other" } } } };
 	assert.equal(injector.InjectUTSConfigurationChannelsAndApps(body, { platform: "desktop", region: "us" }), body);
 	const tab = body.data.applicationProps.tabs[1];
 	assert.equal(tab.title, "Existing title");
 	assert.equal(tab.subTabs.length, 2);
-	assert.equal(tab.subTabs[0].type, "Channel");
+	assert.equal(tab.subTabs[0].type, "Brand");
+	assert.equal(tab.subTabs[0].brandType, "Channel");
 	assert.equal(tab.subTabs[0].destinationType, "Target");
+	assert.equal(tab.subTabs[0].isPinned, false);
+	assert.equal(tab.subTabs[0].canBeHiddenFromNavigation, true);
+	assert.deepEqual(tab.subTabs[0].images.defaultImage, body.data.channels[brandId].images.appIcon);
+	assert.notEqual(tab.subTabs[0].images.defaultImage, body.data.channels[brandId].images.appIcon);
 	assert.deepEqual(tab.subTabs[0].universalLinks, ["https://tv.apple.com/us/channel/lumen/tvs.sbd.lumen"]);
 	assert.equal(tab.subTabs[0].target, body.data.channels[brandId]);
 	assert.equal(tab.subTabs[1], original);
@@ -194,6 +199,26 @@ test("configuration prepends a shared complete Brand target and preserves unrela
 	injector.InjectUTSConfigurationChannelsAndApps(body, { platform: "desktop", region: "us" });
 	assert.deepEqual(body, once);
 });
+
+for (const isPinned of [false, true]) {
+	test(`ATV configuration retains sidebar pin state ${isPinned} over the Brand default`, async t => {
+		const body = {
+			data: {
+				applicationProps: { tabs: [{ type: "ChannelsAndApps", subTabs: [{ type: "Brand", isPinned, target: { id: brandId } }] }] },
+				channels: { [brandId]: { id: brandId, isPinned: !isPinned } },
+			},
+		};
+		const actual = await replay(t, "/uts/v3/configurations", body, "caller=wlk&pfm=atv&sf=143441&v=101");
+		const subTab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0];
+		assert.equal(subTab.type, "Brand");
+		assert.equal(subTab.brandType, "Channel");
+		assert.equal(subTab.isPinned, isPinned);
+		assert.equal(subTab.canBeHiddenFromNavigation, true);
+		assert.equal(subTab.images.defaultImage.url, actual.data.channels[brandId].images.appIcon.url);
+		assert.equal(actual.data.channels[brandId].isPinned, !isPinned);
+		assert.deepEqual(await replay(t, "/uts/v3/configurations", actual, "caller=wlk&pfm=atv&sf=143441&v=101"), actual);
+	});
+}
 
 for (const body of [{}, { data: { applicationProps: {} } }]) {
 	test(`configuration creates missing paths: ${JSON.stringify(body)}`, async t => {

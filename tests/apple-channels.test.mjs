@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import InjectChannel from "../src/class/InjectChannel.mjs";
+import InjectBrand from "../src/class/InjectBrand.mjs";
 import database from "../src/function/database.mjs";
 import { Response } from "../src/process/Response.mjs";
 import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
@@ -13,7 +13,7 @@ const context = { platform: "iphone", region: "tw", settings: database.TV.Settin
 Console.logLevel = "OFF";
 
 test("Apple root tabs are selected from the registry without platform/version restrictions", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const search = { type: "Search", custom: "preserved" };
 	const body = { data: { applicationProps: { tabs: [search] } } };
 	assert.equal(injector.InjectUTSConfigurationTabs(body, context), body);
@@ -74,7 +74,7 @@ test("official Browse preserves existing Apple objects and account state by refe
 	const brand = body.data.channels[appleIds[1]];
 	Object.assign(brand, { isSubscribed: false, isInstalled: false, isConsented: false });
 	const items = [...body.data.canvas.shelves[0].items];
-	new InjectChannel().InjectSearchLanding(body, context);
+	new InjectBrand().InjectSearchLanding(body, context);
 	assert.equal(body.data.channels[appleIds[1]], brand);
 	for (const item of items)
 		assert.equal(
@@ -84,7 +84,7 @@ test("official Browse preserves existing Apple objects and account state by refe
 });
 
 test("channel insertion preserves the supplied URL without adding or replacing page context", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	for (const url of ["https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000", "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=official-root&ctx_other=keep"]) {
 		for (const rootId of ["tahoma_watchnow", "tahoma_searchlanding"]) {
 			const shelf = { displayType: "brandLockup", items: [] };
@@ -113,7 +113,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 });
 
 test("Apple-only landing does not create a grid; a third-party fallback grid stays third-party on replay", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const empty = {};
 	assert.equal(injector.InjectSearchLanding(empty, { ...context, kinds: ["apple"] }), empty);
 	assert.deepEqual(empty, {});
@@ -145,7 +145,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 		},
 	};
 	const promo = body.data.canvas.shelves[2];
-	new InjectChannel().InjectWatchNowLockup(body, context);
+	new InjectBrand().InjectWatchNowLockup(body, context);
 	assert.deepEqual(
 		body.data.canvas.shelves[0].items.map(({ id }) => id),
 		[appleIds[1], appleIds[2], "mlb"],
@@ -161,7 +161,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 test("Apple selection and country settings only control supplementation", () => {
 	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Grevy: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
-	new InjectChannel().InjectSearchLanding(body, { ...context, settings, kinds: ["apple"] });
+	new InjectBrand().InjectSearchLanding(body, { ...context, settings, kinds: ["apple"] });
 	assert.deepEqual(
 		body.data.canvas.shelves[0].items.filter(({ type }) => type === "Brand").map(({ id }) => id),
 		appleIds,
@@ -172,7 +172,7 @@ test("Apple selection and country settings only control supplementation", () => 
 });
 
 test("mixed registry keeps sidebar, website and external search capabilities third-party only", async t => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const body = {};
 	injector.InjectUTSUserSettings(body, context);
 	assert.deepEqual(Object.keys(body.data.brandSidebarSetting), ["tvs.sbd.lumen"]);
@@ -194,7 +194,7 @@ test("mixed registry keeps sidebar, website and external search capabilities thi
 });
 
 test("one injector keeps Apple image objects and request settings isolated", () => {
-	const injector = new InjectChannel();
+	const injector = new InjectBrand();
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
 	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Grevy: "JP" } };
 	injector.InjectWatchNowLockup(first, { ...context, settings, kinds: ["apple"] });

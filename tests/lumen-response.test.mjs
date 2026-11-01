@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import InjectChannel from "../src/class/InjectChannel.mjs";
+import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Response } from "../src/process/Response.lumen.dev.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
@@ -30,7 +30,7 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.equal(hero.header.url, actual.data.channels["tvs.sbd.lumen"].url);
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
 		const expected = structuredClone(fixtures.channel);
-		new InjectChannel().InjectBrand(expected, { platform: "iphone", region: "tw" });
+		new InjectBrand().InjectBrand(expected, { platform: "iphone", region: "tw" });
 		assert.deepEqual(actual.data.channels, expected.data.channels);
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;
@@ -46,7 +46,7 @@ test("website injection mutates the original canvas, preserves rows and paginati
 	const shelves = body.data.canvas.shelves;
 	const originals = [...shelves];
 	body.data.canvas.nextToken = "page-two";
-	const inject = new InjectChannel();
+	const inject = new InjectBrand();
 	assert.equal(inject.InjectWebsiteLink(body, { region: "tw" }), body);
 	assert.equal(body.data.canvas.shelves, shelves);
 	assert.equal(body.data.canvas.nextToken, "page-two");
@@ -68,7 +68,7 @@ test("website injection mutates the original canvas, preserves rows and paginati
 
 test("website injection creates a missing shelves array in an existing canvas", () => {
 	const body = { data: { canvas: { id: "tvs.sbd.lumen" } } };
-	new InjectChannel().InjectWebsiteLink(body, { region: "us" });
+	new InjectBrand().InjectWebsiteLink(body, { region: "us" });
 	assert.equal(body.data.canvas.shelves.length, 1);
 	assert.equal(body.data.canvas.shelves[0].items[0].url, "https://www.lumen.ax/");
 });
@@ -96,6 +96,21 @@ test("hero preserves existing header metadata and uses the shared Brand definiti
 	assert.equal(entity.isFirstParty, false);
 	assert.equal(entityType, "Brand");
 });
+
+for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases/Rooms/edt.item.lumen"]) {
+	test(`Lumen ${path}: normalizes an incorrect backend Channel entity to Brand`, async t => {
+		const body = structuredClone(fixtures.channel);
+		const channel = body.data.channels["tvs.sbd.lumen"];
+		channel.type = "Channel";
+		body.data.canvas.shelves[0].header = { entityType: "Channel", entity: channel };
+		const actual = await replay(t, path, body);
+		assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
+		assert.equal(actual.data.canvas.shelves[0].header.entityType, "Brand");
+		assert.equal(actual.data.canvas.shelves[0].header.entity.type, "Brand");
+		assert.deepEqual(actual.data.canvas.canvasInfo, body.data.canvas.canvasInfo);
+		assert.equal(actual.data.canvas.canvasInfo.canvasType, "Channel");
+	});
+}
 
 test("movie adds official section markers while preserving content, playback, channels and the canvas URL", async t => {
 	const path = "/uts/v3/movies/umc.cmc.lumen1580066";
