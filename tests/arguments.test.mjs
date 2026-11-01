@@ -11,7 +11,7 @@ import database from "../src/function/database.mjs";
 test("release stays compact while full/dev expose database settings", () => {
 	assert.deepEqual(
 		args.map(arg => arg.key),
-		["ThirdParty", "isWorkaroundSSLPinning", "Storage", "LogLevel"],
+		["ThirdParty", "isWorkaroundSSLPinning", "Locale", "Storage", "LogLevel"],
 	);
 	assert.deepEqual(release.args, args);
 	assert.deepEqual(
@@ -22,6 +22,17 @@ test("release stays compact while full/dev expose database settings", () => {
 	assert.deepEqual(argsFull.find(arg => arg.key === "Tabs").defaultValue, database.TV.Settings.Tabs);
 	for (const [key, value] of Object.entries(database.TV.Settings.CountryCode)) assert.deepEqual(argsFull.find(arg => arg.key === `CountryCode.${key}`).defaultValue, value);
 	assert.equal(argsFull.find(arg => arg.key === "Storage").defaultValue, "PersistentStore");
+});
+
+test("language defaults to AUTO across release, full, dev and BoxJs settings", () => {
+	assert.equal(database.TV.Settings.Locale, "AUTO");
+	for (const config of [release, full, dev]) {
+		const locale = config.args.find(({ key }) => key === "Locale");
+		assert.equal(locale.defaultValue, "AUTO");
+		assert.equal(locale.options[0].key, "AUTO");
+	}
+	const settings = new ArgumentsBuilder({ args: argsFull }).buildBoxJsSettings("@iRingo.TV.Settings");
+	assert.equal(settings.find(({ id }) => id === "@iRingo.TV.Settings.Locale").val, "AUTO");
 });
 
 test("public tab settings replace Kids with Formula 1 in Apple's navigation order", () => {

@@ -16,6 +16,28 @@ export interface Settings {
      */
     isWorkaroundSSLPinning?: boolean;
     /**
+     * 语言
+     *
+     * 选择 UTS 接口返回内容的语言。AUTO 保留 App 生成的语言参数和请求头，跟随 App 语言设置。
+     *
+     * @remarks
+     *
+     * Possible values:
+     * - `'AUTO'` - 自动（跟随 App 语言）
+     * - `'zh-Hans'` - 简体中文
+     * - `'zh-Hant'` - 繁体中文
+     * - `'yue-Hant'` - 粤语（繁体）
+     * - `'en-US'` - 英语（美国）
+     * - `'en-GB'` - 英语（英国）
+     * - `'en-AU'` - 英语（澳大利亚）
+     * - `'en-CA'` - 英语（加拿大）
+     * - `'ja-JP'` - 日语
+     * - `'ko-KR'` - 韩语
+     *
+     * @defaultValue "AUTO"
+     */
+    Locale?: 'AUTO' | 'zh-Hans' | 'zh-Hant' | 'yue-Hant' | 'en-US' | 'en-GB' | 'en-AU' | 'en-CA' | 'ja-JP' | 'ko-KR';
+    /**
      * 启用的标签与栏目
      *
      * 选择标签与栏目，多个值以逗号分隔；实际入口仍由平台、版本和地区决定。

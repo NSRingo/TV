@@ -39,13 +39,13 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 代理入口为 `src/request.js`、`src/response.js` 及其 `.dev.js` 版本。业务逻辑分别位于 `src/process/Request.mjs`、`Response.mjs` 及对应 dev 文件，保留两套既有行为。
 
-参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
+参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Locale、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
 Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）使用 Apple 原生类型 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，`CountryCode.Grevy=US`。
 
 F1 导航模板完整携带原站 configurations 的四组侧栏 SVG，服务器已有的 tab 整体保留。
 
-地区设置只切换内容地区，语言沿用 App 自己提供的 `locale` 和语言请求头；脚本不添加、截断或按地区覆盖语言代码。
+地区设置只切换内容地区。`Locale` 默认 `AUTO`，原样保留 App 提供的语言参数和请求头，不添加、截断或按地区覆盖语言代码；手动选择语言时，仅覆盖 UTS 接口的 `locale` 参数。
 
 Apple TV、F1、MLS、Lumen 的身份、素材和插入位置集中在 `InjectBrand.#Config`。`kind=apple/thirdParty` 是内部分类，与控制平台转换的 `ThirdParty` 参数无关，不写入响应。导航直接使用官方 `tab.type`、`tab.destinationType`；`placements` 直接使用官方 `displayType` 或完整 shelf、section、页面根 ID。`SelectConfig` 通过 `switch` 按这些原值归类，调用方以原值取用，不转换大小写或另设位置别名。卡片素材键为 `tahoma_watchnow`、`tahoma_searchlanding`，品牌图片键直接使用 `appIcon`、`shelfItemImage` 等响应字段。频道 JSON 仍由 `BuildBrand` 生成。正式版选择苹果频道，dev 选择两组，Lumen 响应修复入口只选择第三方。方法按调用接收 `{ platform, region, settings, kinds }`，旧调用缺省只处理第三方。
 

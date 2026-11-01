@@ -127,6 +127,7 @@ export async function Request($request) {
 			// 主机判断
 			switch (url.hostname) {
 				case "uts-api.itunes.apple.com": {
+					if (Settings.Locale !== "AUTO") url.searchParams.set("locale", Settings.Locale);
 					const Caller = url.searchParams.get("caller"),
 						Platform = url.searchParams.get("pfm"),
 						Version = Number.parseInt(url.searchParams.get("v"), 10);

@@ -80,6 +80,26 @@ const storage: ArgumentItem = {
 	description: "默认使用 PersistentStore，配置优先级为 database -> $argument -> PersistentStore (BoxJS)；选择 Argument 时为 database -> PersistentStore (BoxJS) -> $argument。",
 };
 
+const locale: ArgumentItem = {
+	key: "Locale",
+	name: "语言",
+	type: "string",
+	defaultValue: database.TV.Settings.Locale,
+	options: [
+		{ key: "AUTO", label: "自动（跟随 App 语言）" },
+		{ key: "zh-Hans", label: "简体中文" },
+		{ key: "zh-Hant", label: "繁体中文" },
+		{ key: "yue-Hant", label: "粤语（繁体）" },
+		{ key: "en-US", label: "英语（美国）" },
+		{ key: "en-GB", label: "英语（英国）" },
+		{ key: "en-AU", label: "英语（澳大利亚）" },
+		{ key: "en-CA", label: "英语（加拿大）" },
+		{ key: "ja-JP", label: "日语" },
+		{ key: "ko-KR", label: "韩语" },
+	],
+	description: "选择 UTS 接口返回内容的语言。AUTO 保留 App 生成的语言参数和请求头，跟随 App 语言设置。",
+};
+
 const tabs: ArgumentItem = {
 	key: "Tabs",
 	name: "启用的标签与栏目",
@@ -143,7 +163,7 @@ const countries: ArgumentItem[] = Object.entries(database.TV.Settings.CountryCod
 	...(key === "View" ? { boxJsType: "text" as const, description: "按优先顺序填写地区代码，以逗号分隔，默认 SG,TW。" } : { options: countryOptions, description: "选择此分类请求使用的国家或地区；AUTO 保留原值。" }),
 }));
 
-export const args: ArgumentItem[] = [...publicArgs.slice(0, 2), storage, publicArgs[2]];
-export const argsFull: ArgumentItem[] = [...publicArgs.slice(0, 2), tabs, ...countries, storage, publicArgs[2]];
+export const args: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, storage, publicArgs[2]];
+export const argsFull: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, tabs, ...countries, storage, publicArgs[2]];
 
 export default defineConfig({ output, args: argsFull });
