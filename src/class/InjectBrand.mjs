@@ -22,6 +22,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string[]} [tab.universalLinks] - 苹果根 tab 的通用链接。
  * @property {Object} [tab.target] - 苹果根 tab 的 Brand 目标。
  * @property {string} [tab.hexColor] - 官方导航背景色。
+ * @property {Record<string, Object>} [tab.images] - 官方侧栏图像。
  * @property {string} [tab.subTabsPlacementType] - 第三方分组的子项展示方式。
  * @property {Object[]} [tab.subTabs] - 第三方分组的初始子项模板。
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
@@ -165,6 +166,14 @@ export default class InjectBrand {
 				universalLinks: ["https://tv.apple.com/f1"],
 				destinationType: "Target",
 				hexColor: "#000000",
+				// 原站 configurations 的 F1 侧栏 SVG；四种字重共用相同路径。
+				images: Object.fromEntries(
+					[["boldImage", "bold"], ["defaultImage", "regular"], ["mediumImage", "medium"], ["regularImage", "regular"]].map(([key, weight]) => [key, {
+						embeddedData: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTAwcHgiIGhlaWdodD0iMTAwcHgiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPGcgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIj4KICAgICAgICA8cGF0aCBkPSJNNzMuMDAwMDAwMyw2MS41IEw5NiwzOC41IEw4Mi4xNTY4NzQ5LDM4LjUgTDU5LjE1NzM1NDQsNjEuNSBMNzMuMDAwMDAwMyw2MS41IFogTTY5LjcwMjM3NTMsNDguNTE2NSBMNDEuODU5NDM3Nyw0OC41MTY1IEMzMy4zNzM4NzUxLDQ4LjUxNjUgMzEuODg4OTM3Niw0OC45NjY0Mzc1IDI4LjI1NDQ1ODQsNTIuNjAwOTE2NyBDMjQuODU1MjUwMSw1Ni4wMDAxMjUgMTkuMzMzODEyNiw2MS41IDE5LjMzMzgxMjYsNjEuNSBMMzEuMzk0OTE2OCw2MS41IEwzNC4yNzIzMTI2LDU4LjYyMjYwNDIgQzM2LjE2NDA2MjYsNTYuNzMwODU0MiAzNy4xMzk2NDYsNTYuNTM0ODc1IDQxLjExMTkzNzcsNTYuNTM0ODc1IEw2MS42ODQ0Nzk0LDU2LjUzNDg3NSBMNjkuNzAyMzc1Myw0OC41MTY1IFogTTI3Ljg4MzEwNDMsNTAuOTYwNzI5MiBDMjUuMzcyNzUwMSw1My4zMjkyNSAxOS45MTA3MjkyLDU4LjYzNTA2MjUgMTYuOTY2NzI5Miw2MS41IEw0LDYxLjUgQzQsNjEuNSAxNC4zOTAyNSw1MS4xMzk5Mzc1IDIwLjE2NTE2NjcsNDUuNDU1NTgzMyBDMjYuMTE0OTc5MywzOS43OTE4MzMzIDI5LjA4MTAyMDksMzguNSAzOS45OTQwNDE4LDM4LjUgTDc5LjcxOTM1NDUsMzguNSBMNzEuMTE3ODMzNiw0Ny4xMDEwNDE3IEw0MC44MDA5NTg1LDQ3LjEwMTA0MTcgQzMzLjEzMjg1NDMsNDcuMTAxMDQxNyAzMS40MDk3NzA5LDQ3LjYzMjQzNzUgMjcuODgzMTA0Myw1MC45NjA3MjkyIFoiIGZpbGwtcnVsZT0ibm9uemVybyI+PC9wYXRoPgogICAgPC9nPgo8L3N2Zz4=",
+						format: "embeddedSvg",
+						weight,
+					}]),
+				),
 				target: {
 					id: "tvs.sbd.241000",
 					type: "Brand",

@@ -51,8 +51,20 @@ for (const [variant, processResponse, processRequest] of [
 			assert.equal(tabs[index - 1].type, "Originals");
 			assert.deepEqual(tabs[index].target, fixture.body.data.applicationProps.tabs[3].target);
 			assert.deepEqual(tabs[index].universalLinks, ["https://tv.apple.com/f1"]);
+			assert.deepEqual(tabs[index].images, fixture.body.data.applicationProps.tabs[3].images);
 		});
 	}
+
+	test(`${variant}: existing F1 navigation is preserved as a complete server object`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const body = structuredClone(fixture.body);
+		const f1 = body.data.applicationProps.tabs[3];
+		f1.title = "服务器本地化标题";
+		f1.images = { defaultImage: { url: "https://images.example.test/native-f1.png", width: 100, height: 100 } };
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+		const actual = JSON.parse(response.body).data.applicationProps.tabs.find(({ type }) => type === "Grevy");
+		assert.deepEqual(actual, f1);
+	});
 
 	test(`${variant}: a missing tabs array does not create F1 navigation`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
