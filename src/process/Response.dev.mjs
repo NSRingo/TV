@@ -531,7 +531,6 @@ export async function Response($request, $response) {
 			request.url = new URL(request.url);
 			request.url.searchParams.set("sf", database.Storefront[CC]);
 			Console.debug(`sf=${request.url.searchParams.get("sf")}`);
-			request.url.searchParams.set("locale", database.Locale[CC]);
 			Console.debug(`locale=${request.url.searchParams.get("locale")}`);
 			request.url = request.url.toString();
 			Console.debug(`request.url=${request.url}`);

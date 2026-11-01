@@ -29,7 +29,6 @@ export default function setENV(name, platforms, database, argument = globalThis.
 	//Console.debug(`typeof Caches: ${typeof Caches}`, `Caches: ${JSON.stringify(Caches)}`);
 	/***************** Configs *****************/
 	//Configs.Storefront = new Map(Configs.Storefront);
-	if (Configs.Locale) Configs.Locale = new Map(Configs.Locale);
 	if (Configs.i18n) for (const type in Configs.i18n) Configs.i18n[type] = new Map(Configs.i18n[type]);
 	Console.log("✅ Set Environment Variables");
 	return { Settings, Caches, Configs, LumenKey };

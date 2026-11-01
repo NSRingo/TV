@@ -45,6 +45,8 @@ Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`Count
 
 F1 导航模板完整携带原站 configurations 的四组侧栏 SVG，服务器已有的 tab 整体保留。
 
+地区设置只切换内容地区，语言沿用 App 自己提供的 `locale` 和语言请求头；脚本不添加、截断或按地区覆盖语言代码。
+
 Apple TV、F1、MLS、Lumen 的身份、素材和插入位置集中在 `InjectBrand.#Config`。`kind=apple/thirdParty` 是内部分类，与控制平台转换的 `ThirdParty` 参数无关，不写入响应。导航直接使用官方 `tab.type`、`tab.destinationType`；`placements` 直接使用官方 `displayType` 或完整 shelf、section、页面根 ID。`SelectConfig` 通过 `switch` 按这些原值归类，调用方以原值取用，不转换大小写或另设位置别名。卡片素材键为 `tahoma_watchnow`、`tahoma_searchlanding`，品牌图片键直接使用 `appIcon`、`shelfItemImage` 等响应字段。频道 JSON 仍由 `BuildBrand` 生成。正式版选择苹果频道，dev 选择两组，Lumen 响应修复入口只选择第三方。方法按调用接收 `{ platform, region, settings, kinds }`，旧调用缺省只处理第三方。
 
 第三方子导航使用 `type=Brand`、`brandType=Channel`，在子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。

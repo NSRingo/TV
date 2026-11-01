@@ -7,18 +7,6 @@ export default {
 			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Grevy: "US", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},
 		Configs: {
-			Locale: [
-				["AU", "en-AU"],
-				["CA", "en-CA"],
-				["GB", "en-GB"],
-				["KR", "ko-KR"],
-				["HK", "yue-Hant"],
-				["JP", "ja-JP"],
-				["MO", "zh-Hant"],
-				["TW", "zh-Hant"],
-				["US", "en-US"],
-				["SG", "zh-Hans"],
-			],
 			Tabs: [
 				{ title: "主页", type: "WatchNow", universalLinks: ["https://tv.apple.com/watch-now", "https://tv.apple.com/home"], destinationType: "Target", target: { id: "tahoma_watchnow", type: "Root", url: "https://tv.apple.com/watch-now" }, isSelected: true },
 				{

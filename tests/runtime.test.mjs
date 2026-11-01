@@ -15,7 +15,7 @@ Console.logLevel = "OFF";
 
 for (const fixture of baseline.cases) {
 	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
-	test(`${fixture.variant}: ${fixture.name} ${fixture.name.startsWith("tabs-") ? "retains navigation with ungated Apple channels from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
+	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "retains navigation with ungated Apple channels from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		// 固定历史 tab 配置，继续验证旧基线；当前默认值由 tabs.test.mjs 覆盖。
 		const tabsArgument = fixture.name.startsWith("tabs-") ? "&Tabs=WatchNow,Originals,MLS,Sports,Kids,Store,Movies,TV,ChannelsAndApps,Library,Search" : "";
@@ -23,6 +23,10 @@ for (const fixture of baseline.cases) {
 		let actual;
 		let expected = structuredClone(fixture.expected);
 		if (fixture.phase === "request") {
+			// 旧基线的 locale 覆盖已移除；其余路由、请求头和正文继续与基线对照。
+			const locale = new URL(fixture.request.url).searchParams.get("locale");
+			if (locale === null) delete expected.query.locale;
+			else expected.query.locale = locale;
 			const result = await (fixture.variant === "dev" ? RequestDev : Request)(request);
 			assert.equal(result.$response, undefined);
 			const url = new URL(result.$request.url);

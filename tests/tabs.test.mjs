@@ -85,6 +85,29 @@ for (const [variant, processResponse, processRequest] of [
 	});
 
 	for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.241000", "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.241000", "/uts/v3/shelves/edt.col.f1?ctx_brand=tvs.sbd.241000"]) {
+		test(`${variant}: F1 preserves client language when selecting the US storefront for ${path}`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			for (const [locale, headers, expected] of [
+				["zh-Hans", { "X-Apple-I-Locale": "en_US" }, "zh-Hans"],
+				["zh-Hant", {}, "zh-Hant"],
+				["ja-JP", {}, "ja-JP"],
+				["fr-FR", {}, "fr-FR"],
+				["zh_Hant_TW", {}, "zh_Hant_TW"],
+				["", { "X-Apple-I-Locale": "zh_Hans" }, null],
+				["", { "x-apple-i-locale": "zh_Hant_TW" }, null],
+				["", { "Accept-Language": "zh-Hant-TW,zh;q=0.9" }, null],
+				["", {}, null],
+			]) {
+				const url = new URL(path, "https://uts-api.itunes.apple.com");
+				url.searchParams.set("sf", "143470");
+				if (locale) url.searchParams.set("locale", locale);
+				const { $request } = await processRequest({ url: url.toString(), headers: structuredClone(headers), $argument: "LogLevel=OFF" });
+				assert.equal(new URL($request.url).searchParams.get("sf"), "143441");
+				assert.equal(new URL($request.url).searchParams.get("locale"), expected);
+				assert.deepEqual($request.headers, headers);
+			}
+		});
+
 		test(`${variant}: Formula 1 uses its own US region for ${path}`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			for (const [argument, storefront] of [

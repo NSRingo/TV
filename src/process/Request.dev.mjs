@@ -20,7 +20,7 @@ export async function Request($request) {
 	Console.logLevel = Settings.LogLevel;
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");
-	const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
+	const Locale = url.searchParams.get("locale");
 	Console.info(`StoreFront: ${StoreFront}`, `Locale: ${Locale}`);
 	// 创建空数据
 	let body = {};
@@ -312,7 +312,6 @@ export async function Request($request) {
 	if ($request.headers?.["X-Apple-Store-Front"]) $request.headers["X-Apple-Store-Front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["X-Apple-Store-Front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["X-Apple-Store-Front"];
 	if ($request.headers?.["x-apple-store-front"]) $request.headers["x-apple-store-front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["x-apple-store-front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["x-apple-store-front"];
 	if (StoreFront) url.searchParams.set("sf", Configs.Storefront[Settings.CountryCode[Type]] ?? StoreFront);
-	if (Locale) url.searchParams.set("locale", Configs.Locale.get(Settings.CountryCode[Type]) ?? Locale);
 	Console.info(`StoreFront: ${url.searchParams.get("sf")}`, `Locale = ${url.searchParams.get("locale")}`);
 	$request.url = url.toString();
 	Console.debug(`$request.url: ${$request.url}`);
