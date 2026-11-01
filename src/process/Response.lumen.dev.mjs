@@ -72,7 +72,7 @@ export async function Response($request, $response) {
 												case true:
 													body = injectChannel.InjectBrand(body, { platform: Platform, region: Region });
 													for (const shelf of body.data.canvas.shelves ?? []) setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
-													body = injectChannel.InjectWebsiteLink(body);
+													body = injectChannel.InjectWebsiteLink(body, { region: Region });
 													break;
 											}
 											break;

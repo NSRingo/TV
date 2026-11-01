@@ -40,10 +40,12 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		const website = actual.data.canvas.shelves.at(-1);
 		assert.equal(website.id, "edt.col.lumen-website");
 		assert.equal(website.displayType, "epicShowcase");
+		assert.equal(website.url, "https://tv.apple.com/tw/collection/edt.col.lumen-website");
 		assert.equal(website.items[0].type, "ExternalLink");
 		assert.equal(website.items[0].isExternalUrl, true);
 		assert.equal(website.items[0].flavorType, "Flavor_D");
 		assert.equal(website.items[0].url, "https://www.lumen.ax/");
+		assert.equal(website.items[0].shortNote, "https://www.lumen.ax/");
 		assert.deepEqual(await replay(t, path, actual), actual);
 	});
 }
@@ -54,19 +56,19 @@ test("website injection mutates the original canvas, preserves rows and paginati
 	const originals = [...shelves];
 	body.data.canvas.nextToken = "page-two";
 	const inject = new InjectChannel();
-	assert.equal(inject.InjectWebsiteLink(body), body);
+	assert.equal(inject.InjectWebsiteLink(body, { region: "tw" }), body);
 	assert.equal(body.data.canvas.shelves, shelves);
 	assert.equal(body.data.canvas.nextToken, "page-two");
 	for (const [index, row] of originals.entries()) assert.equal(shelves[index], row);
 	const expected = structuredClone(body);
 	shelves.at(-1).items[0].url = "https://example.test/stale";
-	inject.InjectWebsiteLink(body);
+	inject.InjectWebsiteLink(body, { region: "tw" });
 	assert.deepEqual(body, expected);
 });
 
 test("website injection creates a missing shelves array in an existing canvas", () => {
 	const body = { data: { canvas: { id: "tvs.sbd.lumen" } } };
-	new InjectChannel().InjectWebsiteLink(body);
+	new InjectChannel().InjectWebsiteLink(body, { region: "us" });
 	assert.equal(body.data.canvas.shelves.length, 1);
 	assert.equal(body.data.canvas.shelves[0].items[0].url, "https://www.lumen.ax/");
 });

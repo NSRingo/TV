@@ -65,13 +65,15 @@ export default class InjectChannel {
 	/**
 	 * 在频道或 Room 末尾追加独立官网外链；不改变 Brand 导航或客户端自动生成的 App 页脚。
 	 * @param {Object} body - 已解析并确认存在 data.canvas 的频道或 Room 正文。
+	 * @param {Object} options - 由 Response 准备的行导航上下文。
+	 * @param {string} options.region - 请求 storefront 对应的小写地区码。
 	 * @returns {Object} 原 body 引用；保留原 shelves 数组及其他行，重复调用替换同 ID 外链行。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-open-app-and-website.md
 	 */
-	InjectWebsiteLink(body) {
+	InjectWebsiteLink(body, { region }) {
 		_.set(body, "data.canvas.shelves", body.data.canvas.shelves ?? []);
 		for (const config of this.#Config) {
-			const shelf = this.#BuildWebsiteShelf(config);
+			const shelf = this.#BuildWebsiteShelf(config, region);
 			const index = body.data.canvas.shelves.findIndex(({ id }) => id === shelf.id);
 			switch (index) {
 				case -1:
@@ -299,14 +301,16 @@ export default class InjectChannel {
 	 * 采用美服实际 ExternalLink 的 epicShowcase / Flavor_D 包装，不伪造 Brand 的打开 App 字段。
 	 * @private
 	 * @param {Object} config - #Config 中的品牌身份、官网和素材。
+	 * @param {string} region - 用于 collection URL 的小写地区码。
 	 * @returns {Object} 独立官网行；URL 由客户端外链路由转换为 AppPunchout.contextData.openUrl。
 	 */
-	#BuildWebsiteShelf(config) {
+	#BuildWebsiteShelf(config, region) {
 		const id = config.id.split(".").at(-1);
 		return {
 			id: `edt.col.${id}-website`,
 			displayType: "epicShowcase",
 			header: { supportsSeeAllView: false },
+			url: `https://tv.apple.com/${region}/collection/edt.col.${id}-website`,
 			items: [
 				{
 					id: `edt.item.${id}-website`,
@@ -314,6 +318,7 @@ export default class InjectChannel {
 					flavorType: "Flavor_D",
 					isExternalUrl: true,
 					tagLine: `打开 ${config.name} 官网`,
+					shortNote: config.website,
 					url: config.website,
 					images: { shelfItemImage: { ...config.images.icon, supportsLayeredImage: false } },
 				},
