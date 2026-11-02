@@ -9,7 +9,7 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/apple-search-landing.json", import.meta.url)));
 const appleIds = ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"];
-const context = { platform: "iphone", region: "tw", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
+const context = { pfm: "iphone", region: "tw", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
 Console.logLevel = "OFF";
 
 test("Apple root tabs are selected from the registry without platform/version restrictions", () => {

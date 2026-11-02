@@ -62,7 +62,7 @@ export async function Response($request, $response) {
 							.toLowerCase() ?? "us";
 					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
-					const brandContext = { platform: Platform, region: Region, settings: Settings, kinds: ["apple"] };
+					const brandContext = { pfm: Platform, region: Region, settings: Settings, kinds: ["apple"] };
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":

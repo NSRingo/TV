@@ -2,7 +2,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 
 /**
  * @typedef {Object} BrandContext
- * @property {string|null} [platform] - pfm 仅用于宿主字段，不限制注入；省略时使用桌面宿主。
+ * @property {string|null} [pfm] - 请求的官方 pfm 参数，用于品牌宿主字段；省略时使用桌面宿主。
  * @property {string} region - 本次响应的小写地区码。
  * @property {import('../types').Settings} [settings] - 选择苹果频道时传入本次请求设置。
  * @property {Array<'apple'|'thirdParty'>} [kinds] - 缺省保持原有第三方调用行为。
@@ -1030,10 +1030,10 @@ export default class InjectBrand {
 	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md
 	 */
-	#BuildBrand(config, { platform, region, settings }, state) {
+	#BuildBrand(config, { pfm, region, settings }, state) {
 		// 只匹配宿主字段，不按平台限制注入；官方 iPhone/ipad 与 desktop/appletv 返回不同宿主。
 		let appHost;
-		switch (platform?.toLowerCase()) {
+		switch (pfm) {
 			case "iphone":
 			case "ipad":
 				appHost = { appAdamIds: ["1174078549"], appBundleIds: ["com.apple.tv"], appName: "Apple TV" };

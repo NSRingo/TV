@@ -61,7 +61,7 @@ export async function Response($request, $response) {
 							.toLowerCase() ?? "us";
 					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
-					const brandContext = { platform: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
+					const brandContext = { pfm: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":
