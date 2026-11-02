@@ -295,7 +295,8 @@ export async function Response($request, $response) {
 							injectBrand.InjectBrand(body.data.channels, brandContext);
 							break;
 						case "/uts/v3/user/settings":
-							body = injectBrand.InjectUTSUserSettings(body, brandContext);
+							_.set(body, "data.brandSidebarSetting", body.data?.brandSidebarSetting ?? {});
+							injectBrand.InjectUTSUserSettings(body.data.brandSidebarSetting, brandContext);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":

@@ -44,9 +44,10 @@ test("dev channels creates a missing dictionary without adding navigation or pre
 });
 
 for (const body of [{}, { data: {} }, { data: { brandSidebarSetting: {} } }]) {
-	test(`settings creates only a missing sidebar entry: ${JSON.stringify(body)}`, () => {
-		const actual = structuredClone(body);
-		assert.equal(new InjectBrand().InjectUTSUserSettings(actual), actual);
+	test(`dev settings creates only a missing sidebar entry: ${JSON.stringify(body)}`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const response = await ResponseDev({ url: "https://uts-api.itunes.apple.com/uts/v3/user/settings?pfm=iphone&sf=143441", headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+		const actual = JSON.parse(response.body);
 		assert.deepEqual(actual.data.brandSidebarSetting, { [brandId]: { isHidden: false, isPinned: false } });
 		assert.equal(actual.data.brandConsentSettings, undefined);
 		assert.equal(actual.data.channels, undefined);
@@ -58,12 +59,12 @@ test("settings retains App consent objects and all account preferences", () => {
 	const consent = body.data.brandConsentSettings;
 	const sidebar = body.data.brandSidebarSetting;
 	const injector = new InjectBrand();
-	injector.InjectUTSUserSettings(body);
+	assert.equal(injector.InjectUTSUserSettings(sidebar), sidebar);
 	assert.equal(body.data.brandConsentSettings, consent);
 	assert.equal(body.data.brandSidebarSetting, sidebar);
 	assert.equal(sidebar.tvs, undefined);
 	const once = structuredClone(body);
-	injector.InjectUTSUserSettings(body);
+	injector.InjectUTSUserSettings(sidebar);
 	assert.deepEqual(body, once);
 	delete body.data.brandSidebarSetting[brandId];
 	assert.deepEqual(body, fixtures.settings);
@@ -72,7 +73,7 @@ test("settings retains App consent objects and all account preferences", () => {
 test("settings preserves an existing hidden/pinned Lumen record and extensions by reference", () => {
 	const state = { isHidden: true, isPinned: true, custom: "preserved" };
 	const body = { data: { brandSidebarSetting: { [brandId]: state } } };
-	new InjectBrand().InjectUTSUserSettings(body);
+	new InjectBrand().InjectUTSUserSettings(body.data.brandSidebarSetting);
 	assert.equal(body.data.brandSidebarSetting[brandId], state);
 	assert.deepEqual(state, { isHidden: true, isPinned: true, custom: "preserved" });
 });

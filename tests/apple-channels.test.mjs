@@ -173,8 +173,8 @@ test("Apple selection and country settings only control supplementation", () => 
 
 test("mixed registry keeps sidebar, website and external search capabilities third-party only", async t => {
 	const injector = new InjectBrand();
-	const body = {};
-	injector.InjectUTSUserSettings(body, context);
+	const body = { data: { brandSidebarSetting: {} } };
+	injector.InjectUTSUserSettings(body.data.brandSidebarSetting, context);
 	assert.deepEqual(Object.keys(body.data.brandSidebarSetting), ["tvs.sbd.lumen"]);
 	const website = { data: { canvas: { shelves: [] } } };
 	injector.InjectWebsiteLink(website, context);

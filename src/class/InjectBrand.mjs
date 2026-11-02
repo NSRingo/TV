@@ -481,17 +481,16 @@ export default class InjectBrand {
 
 	/**
 	 * 原地补充配置频道的缺省侧栏偏好；不生成外部 App 的同意记录。
-	 * @param {Object} body - 已解析的 /uts/v3/user/settings 正文。
+	 * @param {Record<string, Object>} brandSidebarSetting - 原响应的 `body.data.brandSidebarSetting` 字典，由调用方确认存在或初始化。
 	 * @param {Pick<BrandContext, 'kinds'|'settings'>} [options={}] - 按 kinds 及苹果频道开关筛选，再取 ChannelsAndApps 分组。
-	 * @returns {Object} 原 body 引用；已有侧栏条目整体保留，不向服务端写回设置。
+	 * @returns {Record<string, Object>} 原 `body.data.brandSidebarSetting` 字典引用；已有侧栏条目整体保留，不向服务端写回设置。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-user-settings-channel-model.md
 	 */
-	InjectUTSUserSettings(body, options = {}) {
+	InjectUTSUserSettings(brandSidebarSetting, options = {}) {
 		for (const { id } of this.#SelectConfig(options).ChannelsAndApps) {
-			const sidebarSetting = body.data?.brandSidebarSetting?.[id] ?? { isHidden: false, isPinned: false };
-			_.set(body, ["data", "brandSidebarSetting", id], sidebarSetting);
+			brandSidebarSetting[id] ??= { isHidden: false, isPinned: false };
 		}
-		return body;
+		return brandSidebarSetting;
 	}
 
 	/**
