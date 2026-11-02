@@ -71,7 +71,13 @@
 								"type": "Room",
 								"url": "https://tv.apple.com/us/room/friday-night-baseball/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2?ctx_proot=tahoma_watchnow"
 							}
-						]
+						],
+						"cachingPolicy": {
+							"cache": true,
+							"maxAge": 0,
+							"type": "RefreshWithCanvas"
+						},
+						"url": "https://tv.apple.com/us/collection/explore-f1-mls-and-mlb/uts.col.tv-plus-sports-nav-brick?ctx_root=tahoma_watchnow&ctx_cvs=uts.tcvs.home-canvas&ctx_proot=tahoma_watchnow&ctx_shelf=uts.shlf.gen.tv-plus-sports-nav-brick"
 					}
 				]
 			},

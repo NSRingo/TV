@@ -17,7 +17,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string} id - Brand 完整 ID。
  * @property {string} name - 品牌名称。
  * @property {string} url - 频道 URL；第三方模板中的 {id} 由 Brand ID 替换。
- * @property {Array<'channelLockup'|'brandLockup'|'uts.col.tv-plus-sports-nav-brick'|'uts.shlfsect.moretv'|'tahoma_searchlanding'>} placements - 官方 displayType 或完整 shelf、section、页面根 ID。
+ * @property {Array<'channelLockup'|'brandLockup'|'uts.shlfsect.moretv'|'tahoma_searchlanding'>} placements - 官方 displayType 或完整 shelf、section、页面根 ID。
  * @property {Object} tab - 官方导航模板；Target 为苹果根 tab，SubTabs 为第三方所属分组。
  * @property {string} tab.title - 导航标题。
  * @property {'Originals'|'Grevy'|'MLS'|'ChannelsAndApps'} tab.type - 官方导航类型，直接用于选取与归组。
@@ -38,7 +38,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 
 /**
- * @typedef {Record<'all'|'ChannelsAndApps'|'channelLockup'|'brandLockup'|'uts.col.tv-plus-sports-nav-brick'|'uts.shlfsect.moretv'|'tahoma_searchlanding', BrandConfig[]>} BrandConfigGroups
+ * @typedef {Record<'all'|'ChannelsAndApps'|'channelLockup'|'brandLockup'|'uts.shlfsect.moretv'|'tahoma_searchlanding', BrandConfig[]>} BrandConfigGroups
  * all 保留筛选后的配置顺序，其余键直接使用官方标识。
  */
 
@@ -191,7 +191,7 @@ export default class InjectBrand {
 				name: "Formula 1",
 				url: "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000",
 				countryCodeKey: "Sports",
-				placements: ["channelLockup", "brandLockup", "uts.col.tv-plus-sports-nav-brick", "tahoma_searchlanding"],
+				placements: ["channelLockup", "brandLockup", "tahoma_searchlanding"],
 				tab: {
 					destinationType: "Target",
 					hexColor: "#000000",
@@ -306,7 +306,7 @@ export default class InjectBrand {
 				url: "https://tv.apple.com/us/channel/mls/tvs.sbd.7000",
 				// 兼容现有设置：MLS 沿用 CountryCode.Originals，不新增地区参数。
 				countryCodeKey: "Originals",
-				placements: ["channelLockup", "brandLockup", "uts.col.tv-plus-sports-nav-brick", "tahoma_searchlanding"],
+				placements: ["channelLockup", "brandLockup", "tahoma_searchlanding"],
 				tab: {
 					destinationType: "Target",
 					hexColor: "#000000",
@@ -467,7 +467,78 @@ export default class InjectBrand {
 				},
 			},
 		],
-		bricks: [],
+		bricks: [
+			{
+				id: "uts.col.tv-plus-sports-nav-brick",
+				displayType: "brick",
+				header: {
+					supportsSeeAllView: false,
+					title: "Explore F1, MLS, and MLB",
+				},
+				url: "https://tv.apple.com/us/collection/explore-f1-mls-and-mlb/uts.col.tv-plus-sports-nav-brick?ctx_root=tahoma_watchnow&ctx_cvs=uts.tcvs.home-canvas&ctx_proot=tahoma_watchnow&ctx_shelf=uts.shlf.gen.tv-plus-sports-nav-brick",
+				cachingPolicy: {
+					cache: true,
+					maxAge: 0,
+					type: "RefreshWithCanvas",
+				},
+				items: [
+					{
+						flavor: "FullBleed",
+						id: "tvs.sbd.241000",
+						images: {
+							shelfItemImage: {
+								height: 3000,
+								isP3: true,
+								joeColor: "b:rgb(210,220,227) p:rgb(12,9,9) s:rgb(89,8,2) t:rgb(52,51,53) q:rgb(113,51,47)",
+								supportsLayeredImage: false,
+								url: "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/83/cb/da/83cbda10-5c59-c960-2a0a-1b80fd309987/a7de939d-fa92-446d-b14c-59f0c4178d81.png/{w}x{h}sr.{f}",
+								width: 2000,
+							},
+						},
+						intents: ["NAVIGATE"],
+						title: "Formula 1",
+						type: "Brand",
+						url: "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=tahoma_watchnow",
+					},
+					{
+						flavor: "FullBleed",
+						id: "tvs.sbd.7000",
+						images: {
+							shelfItemImage: {
+								height: 3000,
+								isP3: true,
+								joeColor: "b:rgb(20,39,88) p:rgb(232,165,131) s:rgb(246,158,84) t:rgb(190,140,122) q:rgb(201,134,85)",
+								supportsLayeredImage: false,
+								url: "https://is1-ssl.mzstatic.com/image/thumb/Features/v4/f2/3e/92/f23e9206-8327-dea8-35e5-24aea4932257/4360e847-6a61-4215-8731-a16040db97e4.png/{w}x{h}sr.{f}",
+								width: 2000,
+							},
+						},
+						intents: ["NAVIGATE"],
+						title: "MLS",
+						type: "Brand",
+						url: "https://tv.apple.com/us/channel/mls/tvs.sbd.7000?ctx_proot=tahoma_watchnow",
+					},
+					{
+						eyebrow: "Stream Friday Night Baseball games included with your Apple TV subscription. View the Friday Night Baseball schedule, game highlights, and scores here.",
+						flavor: "FullBleed",
+						id: "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+						images: {
+							shelfItemImage: {
+								height: 3000,
+								isP3: true,
+								joeColor: "b:rgb(6,20,57) p:rgb(209,216,226) s:rgb(177,199,238) t:rgb(168,177,192) q:rgb(143,163,202)",
+								supportsLayeredImage: false,
+								url: "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/07/96/8d/07968dd9-bc80-24e2-872e-db7d85ba2e09/b610e7cf-e9d0-4374-9f4c-92c33d0f294a.png/{w}x{h}sr.{f}",
+								width: 2000,
+							},
+						},
+						title: "Friday Night Baseball",
+						type: "Room",
+						url: "https://tv.apple.com/us/room/friday-night-baseball/edt.item.62327df1-6874-470e-98b2-a5bbeac509a2?ctx_proot=tahoma_watchnow",
+					},
+				],
+			},
+		],
 	};
 
 	/**
@@ -585,7 +656,7 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 按配置补入已有频道行、体育 brick 和 moretv；苹果与第三方使用各自位置。
+	 * 按配置补入已有频道行和 moretv；苹果与第三方使用各自位置。
 	 * 没有目标行时保持正文原样，不创建首页行。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；位置来自各频道 placements，不按平台限制。
@@ -614,19 +685,39 @@ export default class InjectBrand {
 						}
 					}
 					break;
-				case "brick":
-					switch (shelf.id) {
-						case "uts.col.tv-plus-sports-nav-brick":
-							if (configs[shelf.id].length) {
-								body.data.channels ??= {};
-								this.#InjectCards(body.data.channels, shelf, configs[shelf.id], options, "tahoma_watchnow");
-							}
-							break;
-					}
-					break;
 			}
 		}
 		return body;
+	}
+
+	/**
+	 * 原位补齐配置 brick；缺行时在热门电影前创建，不在其他分页重复插入。
+	 * @param {Object[]} shelves - 原响应的 `body.data.canvas.shelves` 数组，由调用方确认存在。
+	 * @param {Record<string, Object>} channels - 原响应的 `body.data.channels` 字典，由调用方确认存在或初始化。
+	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 仅控制补入，已有卡片保留。
+	 * @returns {Object[]} 原 shelves 引用；Brand 元数据同时补入 channels，Room 不创建品牌记录。
+	 */
+	InjectBrick(shelves, channels, options) {
+		for (const config of this.#Config.bricks) {
+			let index = shelves.findIndex(({ id, displayType }) => id === config.id && displayType === config.displayType);
+			const state = shelves[index];
+			if (index === -1) index = shelves.findIndex(({ id }) => id === "uts.col.home-popular-movies");
+			if (index === -1) continue;
+			const shelf = this.#BuildBrick(config, options, state);
+			if (shelf.items.length) {
+				if (!state) shelves.splice(index, 0, shelf);
+				for (const item of config.items) {
+					switch (item.type) {
+						case "Brand": {
+							const brand = this.#Config.brands.find(({ id }) => id === item.id);
+							if (options.settings.Tabs.includes(brand.tab.type)) channels[brand.id] = this.#BuildBrand(brand, options, channels[brand.id]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		return shelves;
 	}
 
 	/**
@@ -811,6 +902,54 @@ export default class InjectBrand {
 	}
 
 	/**
+	 * 按原生顺序补入启用的 Brand/Room 卡片，保留已有行、卡片和未知字段。
+	 * @private
+	 * @param {Object} config - #Config.bricks 中保存的官方 brick 模板。
+	 * @param {BrandContext} options - F1/MLB 使用 Sports 地区，MLS 沿用 Originals；AUTO 保留请求地区。
+	 * @param {Object} [state] - 已有 shelf；缺少时复制模板，避免后续响应修改配置。
+	 * @returns {Object} 原位补齐的已有 shelf 或新建 shelf；全关时不添加卡片。
+	 */
+	#BuildBrick(config, { region, settings }, state) {
+		const shelf = state ?? { ...config, header: { ...config.header }, cachingPolicy: { ...config.cachingPolicy }, url: config.url.replace("/us/", `/${region}/`), items: [] };
+		for (const [position, item] of config.items.entries()) {
+			let tabType, countryCodeKey;
+			switch (item.type) {
+				case "Brand": {
+					const brand = this.#Config.brands.find(({ id }) => id === item.id);
+					tabType = brand.tab.type;
+					countryCodeKey = brand.countryCodeKey ?? tabType;
+					break;
+				}
+				case "Room":
+					tabType = "Sports";
+					countryCodeKey = "Sports";
+					break;
+			}
+			if (!settings.Tabs.includes(tabType) || shelf.items.some(({ id }) => id === item.id)) continue;
+			const country = settings.CountryCode[countryCodeKey];
+			const itemRegion = country === "AUTO" ? region : country.toLowerCase();
+			const card = { ...item, url: item.url.replace("/us/", `/${itemRegion}/`), images: { shelfItemImage: { ...item.images.shelfItemImage } } };
+			switch (item.type) {
+				case "Brand":
+					card.intents = [...item.intents];
+					break;
+			}
+			const later = config.items.slice(position + 1);
+			let index = later.map(({ id }) => shelf.items.findIndex(entry => entry.id === id)).find(index => index >= 0) ?? -1;
+			switch (index) {
+				case -1: {
+					const earlier = config.items.slice(0, position).reverse();
+					const previous = earlier.map(({ id }) => shelf.items.findIndex(entry => entry.id === id)).find(index => index >= 0) ?? -1;
+					index = previous + 1;
+					break;
+				}
+			}
+			shelf.items.splice(index, 0, card);
+		}
+		return shelf;
+	}
+
+	/**
 	 * 采用美服实际 ExternalLink 的 epicShowcase / Flavor_D 包装，不伪造 Brand 的打开 App 字段。
 	 * @private
 	 * @param {BrandConfig} config - #Config.brands 中包含 website 的第三方品牌配置。
@@ -939,7 +1078,7 @@ export default class InjectBrand {
 					break;
 			}
 		}
-		const grouped = { all: selected, ChannelsAndApps: [], channelLockup: [], brandLockup: [], "uts.col.tv-plus-sports-nav-brick": [], "uts.shlfsect.moretv": [], tahoma_searchlanding: [] };
+		const grouped = { all: selected, ChannelsAndApps: [], channelLockup: [], brandLockup: [], "uts.shlfsect.moretv": [], tahoma_searchlanding: [] };
 		for (const config of selected) {
 			switch (config.tab.type) {
 				case "ChannelsAndApps":
@@ -950,7 +1089,6 @@ export default class InjectBrand {
 				switch (placement) {
 					case "channelLockup":
 					case "brandLockup":
-					case "uts.col.tv-plus-sports-nav-brick":
 					case "uts.shlfsect.moretv":
 					case "tahoma_searchlanding":
 						grouped[placement].push(config);

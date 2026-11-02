@@ -303,6 +303,11 @@ export async function Response($request, $response) {
 						// biome-ignore lint/suspicious/noFallthroughSwitchClause: 首页继续执行原播放地址处理
 						case "/uts/v3/canvases/roots/tahoma_watchnow":
 							body = injectBrand.InjectWatchNowLockup(body, brandContext);
+							if (body.data?.canvas?.shelves) {
+								const channels = body.data.channels ?? {};
+								injectBrand.InjectBrick(body.data.canvas.shelves, channels, brandContext);
+								if (!body.data.channels && Object.keys(channels).length) body.data.channels = channels;
+							}
 						case "/uts/v3/canvases/Channels/tvs.sbd.4000": // Apple TV+
 						case "/uts/v3/canvases/Channels/tvs.sbd.241000": // Formula 1
 						case "/uts/v3/canvases/Channels/tvs.sbd.7000": {

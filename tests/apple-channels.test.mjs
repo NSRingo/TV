@@ -137,7 +137,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 		data: {
 			canvas: {
 				shelves: [
-					{ displayType: "brick", id: "uts.col.tv-plus-sports-nav-brick", items: [{ id: "mlb" }] },
+					{ displayType: "brick", id: "uts.col.tv-plus-sports-nav-brick", items: [{ id: "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", type: "Room" }] },
 					{ displayType: "doorLockupWithSections", sections: [{ id: "uts.shlfsect.moretv", items: [] }] },
 					{ displayType: "channelUpsell", items: [{ id: appleIds[0] }] },
 				],
@@ -145,10 +145,12 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 		},
 	};
 	const promo = body.data.canvas.shelves[2];
-	new InjectBrand().InjectWatchNowLockup(body, context);
+	const injector = new InjectBrand();
+	injector.InjectWatchNowLockup(body, context);
+	injector.InjectBrick(body.data.canvas.shelves, body.data.channels, context);
 	assert.deepEqual(
 		body.data.canvas.shelves[0].items.map(({ id }) => id),
-		[appleIds[1], appleIds[2], "mlb"],
+		[appleIds[1], appleIds[2], "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"],
 	);
 	assert.deepEqual(
 		body.data.canvas.shelves[1].sections[0].items.map(({ id }) => id),

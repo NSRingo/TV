@@ -14,7 +14,7 @@ for (const [variant, processResponse] of [
 	["dev", ResponseDev],
 ]) {
 	for (const displayType of ["channelLockup", "brandLockup", "doorLockupWithSections", "brick"]) {
-		test(`${variant}: existing ${displayType} follows registry placement without platform/version conditions`, async t => {
+		test(`${variant}: existing ${displayType} uses its injection method without platform/version conditions`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const items = [{ id: "tvs.sbd.4000", title: "Apple TV" }, { id: "tvs.sbd.7000", title: "MLS" }, { id: "other" }];
 			const container = { items, nextToken: "preserved" };
@@ -36,7 +36,7 @@ for (const [variant, processResponse] of [
 			const actualContainer = displayType === "doorLockupWithSections" ? actualShelf.sections[1] : actualShelf;
 			assert.deepEqual(
 				actualContainer.items.filter(({ id }) => id !== "tvs.sbd.lumen").map(({ id }) => id),
-				displayType === "doorLockupWithSections" ? ["tvs.sbd.4000", "tvs.sbd.7000", "other"] : ["tvs.sbd.4000", brandId, "tvs.sbd.7000", "other"],
+				displayType === "doorLockupWithSections" ? ["tvs.sbd.4000", "tvs.sbd.7000", "other"] : ["tvs.sbd.4000", brandId, "tvs.sbd.7000", ...(displayType === "brick" ? ["edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"] : []), "other"],
 			);
 			if (displayType === "doorLockupWithSections") assert.equal(actual.data.channels?.[brandId], undefined);
 			else assert.deepEqual(actualContainer.items.find(({ id }) => id === brandId).images.shelfItemImage, fixture.body.data.canvas.shelves[0].items[0].images.shelfItemImage);
