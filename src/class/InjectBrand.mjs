@@ -495,27 +495,26 @@ export default class InjectBrand {
 
 	/**
 	 * 在频道或 Room 末尾追加独立官网外链；不改变 Brand 导航或客户端自动生成的 App 页脚。
-	 * @param {Object} body - 已解析并确认存在 data.canvas 的频道或 Room 正文。
+	 * @param {Object[]} shelves - 原响应的 `body.data.canvas.shelves` 数组，由调用方确认存在或初始化。
 	 * @param {BrandContext} options - 本次地区与频道筛选上下文，官网外链仅处理第三方配置。
-	 * @returns {Object} 原 body 引用；保留原 shelves 数组及其他行，重复调用替换同 ID 外链行。
+	 * @returns {Object[]} 原 `body.data.canvas.shelves` 数组引用；保留其他行，重复调用替换同 ID 外链行。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-open-app-and-website.md
 	 */
-	InjectWebsiteLink(body, options) {
+	InjectWebsiteLink(shelves, options) {
 		const { region } = options;
-		_.set(body, "data.canvas.shelves", body.data.canvas.shelves ?? []);
 		for (const config of this.#SelectConfig(options).all.filter(({ kind, website }) => kind === "thirdParty" && website)) {
 			const shelf = this.#BuildWebsiteShelf(config, region);
-			const index = body.data.canvas.shelves.findIndex(({ id }) => id === shelf.id);
+			const index = shelves.findIndex(({ id }) => id === shelf.id);
 			switch (index) {
 				case -1:
-					body.data.canvas.shelves.push(shelf);
+					shelves.push(shelf);
 					break;
 				default:
-					body.data.canvas.shelves.splice(index, 1, shelf);
+					shelves.splice(index, 1, shelf);
 					break;
 			}
 		}
-		return body;
+		return shelves;
 	}
 
 	/**

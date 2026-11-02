@@ -177,7 +177,7 @@ test("mixed registry keeps sidebar, website and external search capabilities thi
 	injector.InjectUTSUserSettings(body.data.brandSidebarSetting, context);
 	assert.deepEqual(Object.keys(body.data.brandSidebarSetting), ["tvs.sbd.lumen"]);
 	const website = { data: { canvas: { shelves: [] } } };
-	injector.InjectWebsiteLink(website, context);
+	injector.InjectWebsiteLink(website.data.canvas.shelves, context);
 	assert.deepEqual(
 		website.data.canvas.shelves.map(({ id }) => id),
 		["edt.col.lumen-website"],

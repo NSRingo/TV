@@ -106,13 +106,13 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 	});
 }
 
-test("website injection mutates the original canvas, preserves rows and pagination, and replaces its own row", () => {
+test("website injection mutates the supplied shelves, preserves rows and pagination, and replaces its own row", () => {
 	const body = structuredClone(fixtures.channel);
 	const shelves = body.data.canvas.shelves;
 	const originals = [...shelves];
 	body.data.canvas.nextToken = "page-two";
 	const inject = new InjectBrand();
-	assert.equal(inject.InjectWebsiteLink(body, { region: "tw" }), body);
+	assert.equal(inject.InjectWebsiteLink(shelves, { region: "tw" }), shelves);
 	assert.equal(body.data.canvas.shelves, shelves);
 	assert.equal(body.data.canvas.nextToken, "page-two");
 	for (const [index, row] of originals.entries()) assert.equal(shelves[index], row);
@@ -127,15 +127,15 @@ test("website injection mutates the original canvas, preserves rows and paginati
 	assert.equal(website.items[0].shortNote, "https://www.lumen.ax/");
 	const expected = structuredClone(body);
 	shelves.at(-1).items[0].url = "https://example.test/stale";
-	inject.InjectWebsiteLink(body, { region: "tw" });
+	inject.InjectWebsiteLink(shelves, { region: "tw" });
 	assert.deepEqual(body, expected);
 });
 
-test("website injection creates a missing shelves array in an existing canvas", () => {
-	const body = { data: { canvas: { id: "tvs.sbd.lumen" } } };
-	new InjectBrand().InjectWebsiteLink(body, { region: "us" });
-	assert.equal(body.data.canvas.shelves.length, 1);
-	assert.equal(body.data.canvas.shelves[0].items[0].url, "https://www.lumen.ax/");
+test("website injection populates an empty shelves array", () => {
+	const shelves = [];
+	new InjectBrand().InjectWebsiteLink(shelves, { region: "us" });
+	assert.equal(shelves.length, 1);
+	assert.equal(shelves[0].items[0].url, "https://www.lumen.ax/");
 });
 
 test("independent Lumen shelf preserves pagination, items and existing header fields", async t => {

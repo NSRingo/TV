@@ -78,7 +78,8 @@ export async function Response($request, $response) {
 														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
 														removeEmptyGenres(shelf);
 													}
-													// body = injectBrand.InjectWebsiteLink(body, { region: Region });
+													// body.data.canvas.shelves ??= [];
+													// injectBrand.InjectWebsiteLink(body.data.canvas.shelves, { region: Region });
 													break;
 											}
 											break;
