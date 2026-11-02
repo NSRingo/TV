@@ -31,7 +31,6 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
  * @property {Record<'tahoma_watchnow'|'tahoma_searchlanding', Object>} [cards] - 苹果频道按官方页面根 ID 区分的卡片图片。
  * @property {Record<string, boolean>} [metadata] - 苹果品牌的公开能力标志，不含账户状态。
- * @property {'Originals'|'Sports'} [countryCodeKey] - 苹果频道沿用的地区分类；省略时使用 tab.type。
  * @property {string} [searchURL] - 第三方影视搜索端点。
  * @property {string} [website] - 第三方官网外链。
  * @property {string} [hexColor] - 第三方品牌背景色。
@@ -190,7 +189,6 @@ export default class InjectBrand {
 				id: "tvs.sbd.241000",
 				name: "Formula 1",
 				url: "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000",
-				countryCodeKey: "Sports",
 				placements: ["channelLockup", "brandLockup", "tahoma_searchlanding"],
 				tab: {
 					destinationType: "Target",
@@ -304,8 +302,6 @@ export default class InjectBrand {
 				id: "tvs.sbd.7000",
 				name: "MLS",
 				url: "https://tv.apple.com/us/channel/mls/tvs.sbd.7000",
-				// 兼容现有设置：MLS 沿用 CountryCode.Originals，不新增地区参数。
-				countryCodeKey: "Originals",
 				placements: ["channelLockup", "brandLockup", "tahoma_searchlanding"],
 				tab: {
 					destinationType: "Target",
@@ -912,21 +908,19 @@ export default class InjectBrand {
 	#BuildBrick(config, { region, settings }, state) {
 		const shelf = state ?? { ...config, header: { ...config.header }, cachingPolicy: { ...config.cachingPolicy }, url: config.url.replace("/us/", `/${region}/`), items: [] };
 		for (const [position, item] of config.items.entries()) {
-			let tabType, countryCodeKey;
+			let tabType;
 			switch (item.type) {
 				case "Brand": {
 					const brand = this.#Config.brands.find(({ id }) => id === item.id);
 					tabType = brand.tab.type === "Grevy" ? "F1" : brand.tab.type;
-					countryCodeKey = brand.countryCodeKey ?? tabType;
 					break;
 				}
 				case "Room":
 					tabType = "Sports";
-					countryCodeKey = "Sports";
 					break;
 			}
 			if (!settings.Tabs.includes(tabType) || shelf.items.some(({ id }) => id === item.id)) continue;
-			const country = settings.CountryCode[countryCodeKey];
+			const country = item.id === "tvs.sbd.7000" ? settings.CountryCode.Originals : settings.CountryCode.Sports;
 			const itemRegion = country === "AUTO" ? region : country.toLowerCase();
 			const card = { ...item, url: item.url.replace("/us/", `/${itemRegion}/`), images: { shelfItemImage: { ...item.images.shelfItemImage } } };
 			switch (item.type) {
@@ -1192,7 +1186,7 @@ export default class InjectBrand {
 						channel = state;
 						break;
 					case false: {
-						const country = settings.CountryCode[config.countryCodeKey ?? config.tab.type];
+						const country = config.id === "tvs.sbd.241000" ? settings.CountryCode.Sports : settings.CountryCode.Originals;
 						let channelRegion = region;
 						switch (country) {
 							case "AUTO":
