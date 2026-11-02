@@ -16,6 +16,38 @@ async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/
 	return JSON.parse(result.body);
 }
 
+for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases/Rooms/edt.item.lumen", "/uts/v3/shelves/edt.col.lumen-lib-284"]) {
+	test(`Lumen ${path}: omits empty genres so tvOS keeps Movie and Show lockups`, async t => {
+		const items = [
+			{ id: "movie-empty", type: "Movie", title: "Movie", genres: [] },
+			{ id: "show-empty", type: "Show", title: "Show", genres: [] },
+			{ id: "movie-drama", type: "Movie", genres: [{ id: "drama", name: "Drama" }] },
+			{ id: "show-missing", type: "Show" },
+		];
+		const body = structuredClone(fixtures.channel);
+		for (const shelf of body.data.canvas.shelves) {
+			shelf.items = items;
+			shelf.nextToken = "page-two";
+		}
+		const input = path.includes("/shelves/") ? { data: { shelf: body.data.canvas.shelves[1] } } : body;
+		const expected = structuredClone(items);
+		delete expected[0].genres;
+		delete expected[1].genres;
+		for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
+			const actual = await replay(t, path, input, undefined, platform);
+			const shelves = actual.data.shelf ? [actual.data.shelf] : actual.data.canvas.shelves;
+			assert.equal(shelves.length, path.includes("/shelves/") ? 1 : body.data.canvas.shelves.length);
+			for (const shelf of shelves) {
+				assert.deepEqual(shelf.items, expected);
+				assert.equal(shelf.nextToken, "page-two");
+				// TV JS 27.1.16 的 tvOS 分类文案分支实际读取方式。
+				assert.doesNotThrow(() => shelf.items.map(item => item.genres?.[0].name));
+			}
+			assert.deepEqual(await replay(t, path, actual, undefined, platform), actual);
+		}
+	});
+}
+
 for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
 	test(`Lumen ${platform}: uses the native Channel model for canvas and shelf responses`, async t => {
 		const brandId = "tvs.sbd.lumen";

@@ -73,7 +73,10 @@ export async function Response($request, $response) {
 											switch (Boolean(body.data?.canvas)) {
 												case true:
 													body = injectBrand.InjectBrand(body, brandContext);
-													for (const shelf of body.data.canvas.shelves ?? []) setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
+													for (const shelf of body.data.canvas.shelves ?? []) {
+														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
+														removeEmptyGenres(shelf);
+													}
 													// body = injectBrand.InjectWebsiteLink(body, { region: Region });
 													break;
 											}
@@ -85,6 +88,7 @@ export async function Response($request, $response) {
 										case true:
 											body = injectBrand.InjectBrand(body, brandContext);
 											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
+											removeEmptyGenres(body.data.shelf);
 											break;
 									}
 									break;
@@ -126,6 +130,23 @@ export async function Response($request, $response) {
 	return $response;
 
 	/***************** Function *****************/
+	/**
+	 * 原地省略内容项的空 genres 数组，保留非空分类及其他字段。
+	 * TV JS 27.1.16 的 tvOS 分支读取 genres?.[0].name 时会因空数组抛错，随后静默丢弃该海报；省略字段可避开此分支。
+	 * @param {Object} shelf - 频道、Room 或独立 shelf 中的内容行。
+	 * @returns {Object} 原 shelf 引用；内容数量、顺序和分页不变。
+	 */
+	function removeEmptyGenres(shelf) {
+		for (const item of shelf.items ?? []) {
+			switch (Array.isArray(item.genres) && item.genres.length === 0) {
+				case true:
+					delete item.genres;
+					break;
+			}
+		}
+		return shelf;
+	}
+
 	/**
 	 * 原地补齐频道 canvas 与独立 shelf 共用的官方行头部，保留已有 header 字段。
 	 * @param {Object} shelf - 待修改的行。
