@@ -14,6 +14,29 @@ const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json
 const officialAppleTabs = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url))).body.data.applicationProps.tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type, title, target }) => ({ type, title, target }));
 Console.logLevel = "OFF";
 
+for (const [variant, processRequest] of [["release", Request], ["dev", RequestDev]]) {
+	test(`${variant}: UTS requests remove conditional ETag headers without changing the request body`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		for (const [method, path] of [["GET", "/uts/v3/canvases/Roots/tahoma_watchnow"], ["GET", "/uts/v3/user/settings"], ["POST", "/uts/v3/configurations"]]) {
+			for (const header of ["If-None-Match", "if-none-match"]) {
+				const request = { method, url: `https://uts-api.itunes.apple.com${path}?caller=wlk&pfm=atv&sf=143470&v=101`, headers: { "Content-Type": "application/json", "Accept-Language": "zh-Hant", [header]: "cached-uts-response" }, ...(method === "POST" ? { body: '{"featureFlags":{}}' } : {}), $argument: "LogLevel=OFF" };
+				const originalBody = request.body;
+				const { $request } = await processRequest(request);
+				assert.deepEqual($request.headers, { "Content-Type": "application/json", "Accept-Language": "zh-Hant" });
+				assert.equal($request.body, originalBody);
+			}
+		}
+	});
+	test(`${variant}: non-UTS requests preserve conditional ETag headers`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		for (const hostname of ["play.itunes.apple.com", "play-edge.itunes.apple.com", "umc-tempo-api.apple.com"]) {
+			const headers = { "If-None-Match": "cached-response", "if-none-match": "cached-response" };
+			const { $request } = await processRequest({ method: "GET", url: `https://${hostname}/test`, headers: { ...headers }, $argument: "LogLevel=OFF" });
+			assert.deepEqual($request.headers, headers);
+		}
+	});
+}
+
 for (const fixture of baseline.cases) {
 	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
 	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "retains navigation with ungated Apple channels from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
