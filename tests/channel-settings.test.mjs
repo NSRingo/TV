@@ -23,8 +23,8 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const brand = channels[brandId];
 		assert.equal(brand.type, "Brand");
 		assert.equal(brand.url, `https://tv.apple.com/tw/channel/lumen/${brandId}`);
-		assert.equal(brand.isApSubscription, false);
-		assert.equal(brand.isFirstParty, false);
+		assert.equal(brand.isApSubscription, true);
+		assert.equal(brand.isFirstParty, true);
 		assert.equal(brand.isSubscribed, false);
 		assert.equal(brand.isInstalled, false);
 		assert.equal(brand.isConsented, false);

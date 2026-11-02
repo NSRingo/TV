@@ -8,12 +8,45 @@ import { Response } from "../src/process/Response.lumen.dev.mjs";
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
 Console.logLevel = "OFF";
 
-async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1") {
+async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone") {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const response = { status: 200, headers: { "Content-Type": "application/json;charset=utf-8" }, body: JSON.stringify(body) };
-	const result = await Response({ url: `${origin}${path}?pfm=iphone&sf=143470&v=101`, headers: {}, $argument: "LogLevel=OFF" }, response);
+	const result = await Response({ url: `${origin}${path}?pfm=${platform}&sf=143470&v=101`, headers: {}, $argument: "LogLevel=OFF" }, response);
 	assert.equal(result, response);
 	return JSON.parse(result.body);
+}
+
+for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
+	test(`Lumen ${platform}: uses the native Channel model for canvas and shelf responses`, async t => {
+		const brandId = "tvs.sbd.lumen";
+		const body = structuredClone(fixtures.channel);
+		const state = { isSubscribed: false, isInstalled: false, isConsented: false, isPinned: true };
+		Object.assign(body.data.channels[brandId], state);
+		body.data.channels.other = { id: "other", isApSubscription: false, isFirstParty: false };
+		for (const [path, input] of [
+			["/uts/v3/canvases/Channels/tvs.sbd.lumen", body],
+			["/uts/v3/canvases/Rooms/edt.item.lumen", body],
+			["/uts/v3/shelves/edt.shelf.lumen-hero", { data: { shelf: body.data.canvas.shelves[0], channels: body.data.channels } }],
+		]) {
+			const actual = await replay(t, path, input, undefined, platform);
+			const brand = actual.data.channels[brandId];
+			assert.equal(brand.type, "Brand");
+			assert.equal(brand.isApSubscription, true);
+			assert.equal(brand.isFirstParty, true);
+			assert.equal(brand.isTvAppBrand, false);
+			assert.equal(brand.isAppleTvPlus, false);
+			assert.equal(brand.isItunes, false);
+			const mobile = platform === "iphone" || platform === "ipad";
+			assert.deepEqual(brand.appBundleIds, [mobile ? "com.apple.tv" : "com.apple.TVWatchList"]);
+			assert.deepEqual(brand.appAdamIds, [mobile ? "1174078549" : "1171145244"]);
+			for (const [key, value] of Object.entries(state)) assert.equal(brand[key], value);
+			assert.deepEqual(actual.data.channels.other, input.data.channels.other);
+			const hero = actual.data.shelf ?? actual.data.canvas.shelves[0];
+			assert.deepEqual(hero.header.entity, brand);
+			assert.deepEqual(hero.items, body.data.canvas.shelves[0].items);
+			assert.deepEqual(await replay(t, path, actual, undefined, platform), actual);
+		}
+	});
 }
 
 for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases/Rooms/edt.item.lumen"]) {
@@ -92,8 +125,8 @@ test("hero preserves existing header metadata and uses the shared Brand definiti
 	assert.deepEqual(header, body.data.canvas.shelves[0].header);
 	assert.deepEqual(entity, actual.data.channels["tvs.sbd.lumen"]);
 	assert.deepEqual(entity.appBundleIds, ["com.apple.tv"]);
-	assert.equal(entity.isApSubscription, false);
-	assert.equal(entity.isFirstParty, false);
+	assert.equal(entity.isApSubscription, true);
+	assert.equal(entity.isFirstParty, true);
 	assert.equal(entityType, "Brand");
 });
 

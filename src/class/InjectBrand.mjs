@@ -11,6 +11,9 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * @typedef {Object} BrandConfig
  * @property {'apple'|'thirdParty'} kind - 内部接入分类，不写入响应。
+ * @property {'Channel'|'App'} [brandType] - 第三方品牌接入类型，用于派生品牌标志和侧栏菜单分类。
+ * @property {boolean} [isApSubscription] - 第三方订阅频道标志；指定时优先，省略时按 brandType 派生。
+ * @property {boolean} [isFirstParty] - 第三方内置接入标志；指定时优先，省略时按 brandType 派生。
  * @property {string} id - Brand 完整 ID。
  * @property {string} name - 品牌名称。
  * @property {string} url - 频道 URL；第三方模板中的 {id} 由 Brand ID 替换。
@@ -411,6 +414,7 @@ export default class InjectBrand {
 		},
 		{
 			kind: "thirdParty",
+			brandType: "Channel",
 			placements: ["channelLockup", "brandLockup", "uts.shlfsect.moretv", "tahoma_searchlanding"],
 			id: "tvs.sbd.lumen",
 			name: "Lumen",
@@ -537,7 +541,7 @@ export default class InjectBrand {
 				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
 				const tabs = body.data.applicationProps.tabs;
 				const tab = tabs.find(({ type }) => type === configs[0].tab.type) ?? { ...configs[0].tab, subTabs: [] };
-				const subTabs = channels.map(channel => this.#BuildBrandSubTab(channel, tab.subTabs?.find(({ target }) => target?.id === channel.id)));
+				const subTabs = channels.map((channel, index) => this.#BuildBrandSubTab(configs[index], channel, tab.subTabs?.find(({ target }) => target?.id === channel.id)));
 				_.set(tab, "subTabs", [...subTabs, ...(tab.subTabs ?? []).filter(({ target }) => !channels.some(({ id }) => id === target?.id))]);
 				switch (tabs.indexOf(tab)) {
 					case -1: {
@@ -830,17 +834,18 @@ export default class InjectBrand {
 	/**
 	 * 组装 ChannelsAndApps.subTabs[] 的频道导航包装。
 	 * @private
+	 * @param {BrandConfig} config - #Config 中的品牌接入定义。
 	 * @param {Object} brand - 完整 Brand，直接复用为 target。
 	 * @param {Object} [state] - 已有子导航，保留其固定状态。
 	 * @returns {Object} 含频道菜单、侧栏图片及 Brand target 的子导航。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/brand-type-client-behavior.md
 	 */
-	#BuildBrandSubTab(brand, state) {
+	#BuildBrandSubTab(config, brand, state) {
 		return {
 			// 官方子导航以 Brand 标识品牌入口；Channel 是页面分类，不属于导航 type 枚举。
 			type: "Brand",
-			// Lumen 按频道接入侧栏菜单，Hide 使用 isChannel=true；不决定派生的 channelType 或播放方式。
-			brandType: "Channel",
+			// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
+			brandType: config.brandType,
 			destinationType: "Target",
 			title: brand.title,
 			isPinned: state?.isPinned ?? brand.isPinned,
@@ -1084,13 +1089,12 @@ export default class InjectBrand {
 					isPinned: state?.isPinned ?? false,
 					...appHost,
 					hexColor: config.hexColor,
-					// Lumen 不声明 Apple 内置收费订阅或第一方接入，这两个标志均保持 false。
-					isApSubscription: false,
+					isApSubscription: config.isApSubscription,
 					isAppleMusicImmersiveBrand: false,
 					isAppleTvPlus: false,
 					// 已有响应状态优先；缺省沿用 Lumen 后端的显示状态，不代表真实订阅或播放授权。
 					isConsented: state?.isConsented ?? true,
-					isFirstParty: false,
+					isFirstParty: config.isFirstParty,
 					isInstalled: state?.isInstalled ?? true,
 					isItunes: false,
 					isMountainBrand: false,
@@ -1103,6 +1107,24 @@ export default class InjectBrand {
 					shouldTrackPlayActivity: false,
 					images: Object.fromEntries(Object.entries(config.images).map(([key, image]) => [key, { ...image }])),
 				};
+				// Config 显式 true/false 优先；未指定时 Channel=true、App=false。
+				// true 派生 Subscription，归一化图片取 shelfImage、来源 overlay 取 whiteLogo，并阻止 App 页脚。
+				// false 在当前其他分类标志为 false 时派生 Punchout，图片改取 appIcon；不决定真实播放授权。
+				// brandType=App 接入必须配真实外部 App 的 appBundleIds、appAdamIds、appName，不能沿用上述 Apple TV 宿主。
+				switch (channel.isApSubscription) {
+					case undefined:
+						channel.isApSubscription = config.brandType === "Channel";
+						break;
+				}
+				// 此开关独立于 isApSubscription；Config 显式 true/false 优先，未指定时 Channel=true、App=false。
+				// true 阻止 connectedAppFooter，但不参与 channelType 分类，也不代表品牌归 Apple 所有或获得授权。
+				// false 且 isApSubscription=false、isConsented=true 时，非桌面 Channel 页面可能生成打开/安装及管理 App 页脚。
+				// 页脚按 appBundleIds[0] 构造 app:// 动作，不读取 Brand.url；缺少 bundle ID 会导致空动作解引用并显示 errorTemplate。
+				switch (channel.isFirstParty) {
+					case undefined:
+						channel.isFirstParty = config.brandType === "Channel";
+						break;
+				}
 				break;
 		}
 		return channel;

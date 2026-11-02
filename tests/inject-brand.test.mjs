@@ -16,6 +16,28 @@ const movies = [
 ];
 Console.logLevel = "OFF";
 
+test("third-party Config independently overrides both brand flags, including explicit false", async () => {
+	// 只替换私有配置生成各组样本，不为测试增加公开配置接口。
+	const source = readFileSync(new URL("../src/class/InjectBrand.mjs", import.meta.url), "utf8").replace('"@nsnanocat/util"', JSON.stringify(import.meta.resolve("@nsnanocat/util")));
+	for (const brandType of ["Channel", "App"]) {
+		for (const isApSubscription of [undefined, true, false]) {
+			for (const isFirstParty of [undefined, true, false]) {
+				const config = { brandType, isApSubscription, isFirstParty };
+				const configured = source.replace('brandType: "Channel",', `...${JSON.stringify(config)},`);
+				const { default: ConfiguredInjectBrand } = await import(`data:text/javascript;base64,${Buffer.from(configured).toString("base64")}`);
+				const body = { data: { channels: { [brandId]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
+				new ConfiguredInjectBrand().InjectUTSConfigurationChannelsAndApps(body, { platform: "atv", region: "tw" });
+				const brand = body.data.channels[brandId];
+				assert.equal(brand.isApSubscription, isApSubscription ?? (brandType === "Channel"), JSON.stringify(config));
+				assert.equal(brand.isFirstParty, isFirstParty ?? (brandType === "Channel"), JSON.stringify(config));
+				assert.equal(body.data.applicationProps.tabs[0].subTabs[0].brandType, brandType);
+				assert.equal(brand.isSubscribed, false);
+				assert.equal(brand.isConsented, false);
+			}
+		}
+	}
+});
+
 function backend(t, body = { items: movies }, status = 200) {
 	const requests = [];
 	t.mock.method(globalThis, "fetch", async (url, options) => {
@@ -108,8 +130,8 @@ for (const fixture of channelTypes.samples) {
 			assert.equal(brand.id, brandId);
 			assert.equal(brand.name, "Lumen");
 			assert.equal(brand, body.data.channels[brandId]);
-			// 官方订阅频道仅提供宿主等字段对照；Lumen 不沿用它的订阅和第一方标志。
-			const expected = { ...fixture.metadata, isApSubscription: false, isFirstParty: false };
+			// Lumen 按配置的 Channel 类型派生原生频道标志与平台宿主。
+			const expected = fixture.metadata;
 			assert.deepEqual(Object.fromEntries(Object.keys(expected).map(key => [key, brand[key]])), expected);
 			assert.equal(brand.isWatchlistEnabled, false);
 			assert.equal(brand.shouldTrackPlayActivity, false);
@@ -131,8 +153,8 @@ test("existing Lumen subscription, consent, installation and pin state is preser
 		await injector[method](body, method === "InjectSearch" ? { platform: "desktop", region: "us", pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { platform: "desktop", region: "us" });
 		const brand = body.data.channels[brandId];
 		assert.deepEqual(Object.fromEntries(Object.keys(state).map(key => [key, brand[key]])), state);
-		assert.equal(brand.isApSubscription, false);
-		assert.equal(brand.isFirstParty, false);
+		assert.equal(brand.isApSubscription, true);
+		assert.equal(brand.isFirstParty, true);
 	}
 });
 

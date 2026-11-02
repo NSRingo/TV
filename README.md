@@ -49,7 +49,7 @@ Apple TV、F1、MLS 的导航模板直接采用原站 configurations 的完整 t
 
 Apple TV、F1、MLS、Lumen 的身份、素材和插入位置集中在 `InjectBrand.#Config`。`kind=apple/thirdParty` 是内部分类，与控制平台转换的 `ThirdParty` 参数无关，不写入响应。导航直接使用官方 `tab.type`、`tab.destinationType`；`placements` 直接使用官方 `displayType` 或完整 shelf、section、页面根 ID。`SelectConfig` 通过 `switch` 按这些原值归类，调用方以原值取用，不转换大小写或另设位置别名。卡片素材键为 `tahoma_watchnow`、`tahoma_searchlanding`，品牌图片键直接使用 `appIcon`、`shelfItemImage` 等响应字段。频道 JSON 仍由 `BuildBrand` 生成。正式版选择苹果频道，dev 选择两组，Lumen 响应修复入口只选择第三方。方法按调用接收 `{ platform, region, settings, kinds }`，旧调用缺省只处理第三方。
 
-第三方子导航使用 `type=Brand`、`brandType=Channel`，在子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
+第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`；`isApSubscription`、`isFirstParty` 可在配置中独立指定 true/false，各自省略时由内部 Build 方法按 `Channel=true / App=false` 派生。Lumen 配置为 `Channel`，两项默认均为 true；所有注入入口和 Lumen 资源脚本共用该品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
 
 | 频道 | 导航 | 首页已有结构 | 搜索落地页 |
 | --- | --- | --- | --- |
