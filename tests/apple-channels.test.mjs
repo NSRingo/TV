@@ -9,7 +9,7 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/apple-search-landing.json", import.meta.url)));
 const appleIds = ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"];
-const context = { pfm: "iphone", region: "tw", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
+const context = { pfm: "iphone", region: "tw", settings: { ...database.TV.Settings, Tabs: [...appleIds, "tvs.sbd.lumen"] } };
 Console.logLevel = "OFF";
 
 test("Apple root tabs use supplied settings and preserve existing entries", () => {
@@ -96,8 +96,8 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 			}
 			const brand = { ...fixtures.samples[0].body.data.channels[appleIds[1]], url };
 			const body = { data: { canvas: { shelves: [shelf] }, channels: { [appleIds[1]]: brand } } };
-			const settings = { ...database.TV.Settings, Tabs: ["F1"] };
-			const options = { ...context, settings, kinds: ["apple"] };
+			const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"] };
+			const options = { ...context, settings };
 			switch (rootId) {
 				case "tahoma_watchnow":
 					injector.InjectWatchNowLockup(body, options);
@@ -115,7 +115,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 test("Apple-only landing does not create a grid; a third-party fallback grid stays third-party on replay", () => {
 	const injector = new InjectBrand();
 	const empty = {};
-	assert.equal(injector.InjectSearchLanding(empty, { ...context, kinds: ["apple"] }), empty);
+	assert.equal(injector.InjectSearchLanding(empty, { ...context, settings: { ...context.settings, Tabs: appleIds } }), empty);
 	assert.deepEqual(empty, {});
 	const fallback = {};
 	injector.InjectSearchLanding(fallback, context);
@@ -128,7 +128,7 @@ test("Apple-only landing does not create a grid; a third-party fallback grid sta
 	assert.deepEqual(fallback, once);
 	const thirdPartyGrid = { data: { canvas: { shelves: [{ id: "edt.col.lumen-browse", displayType: "brick", isGrid: true, items: [] }] } } };
 	const before = structuredClone(thirdPartyGrid);
-	injector.InjectSearchLanding(thirdPartyGrid, { ...context, kinds: ["apple"] });
+	injector.InjectSearchLanding(thirdPartyGrid, { ...context, settings: { ...context.settings, Tabs: appleIds } });
 	assert.deepEqual(thirdPartyGrid, before);
 });
 
@@ -161,9 +161,9 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 });
 
 test("Apple selection and country settings only control supplementation", () => {
-	const settings = { ...database.TV.Settings, Tabs: ["F1"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
-	new InjectBrand().InjectSearchLanding(body, { ...context, settings, kinds: ["apple"] });
+	new InjectBrand().InjectSearchLanding(body, { ...context, settings });
 	assert.deepEqual(
 		body.data.canvas.shelves[0].items.filter(({ type }) => type === "Brand").map(({ id }) => id),
 		appleIds,
@@ -198,12 +198,12 @@ test("mixed registry keeps sidebar, website and external search capabilities thi
 test("one injector keeps Apple image objects and request settings isolated", () => {
 	const injector = new InjectBrand();
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	const settings = { ...database.TV.Settings, Tabs: ["F1"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
-	injector.InjectWatchNowLockup(first, { ...context, settings, kinds: ["apple"] });
+	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	injector.InjectWatchNowLockup(first, { ...context, settings });
 	first.data.canvas.shelves[0].items[0].images.shelfItemImage.width = 1;
 	first.data.channels[appleIds[1]].images.logoGlyph.width = 1;
 	const second = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	injector.InjectWatchNowLockup(second, { ...context, kinds: ["apple"] });
+	injector.InjectWatchNowLockup(second, { ...context, settings: { ...context.settings, Tabs: appleIds } });
 	assert.deepEqual(
 		second.data.canvas.shelves[0].items.map(({ id }) => id),
 		appleIds,

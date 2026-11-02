@@ -14,6 +14,7 @@ const movies = [
 	{ id: "umc.cmc.lumen1", type: "Movie", title: "Lumen movie" },
 	{ id: "umc.cmc.lumen2", type: "Show", title: "Lumen show" },
 ];
+const settings = { Tabs: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
 test("third-party Config independently overrides both brand flags, including explicit false", async () => {
@@ -26,7 +27,7 @@ test("third-party Config independently overrides both brand flags, including exp
 				const configured = source.replace('brandType: "Channel",', `...${JSON.stringify(config)},`);
 				const { default: ConfiguredInjectBrand } = await import(`data:text/javascript;base64,${Buffer.from(configured).toString("base64")}`);
 				const body = { data: { channels: { [brandId]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
-				new ConfiguredInjectBrand().InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw" });
+				new ConfiguredInjectBrand().InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
 				const brand = body.data.channels[brandId];
 				assert.equal(brand.isApSubscription, isApSubscription ?? (brandType === "Channel"), JSON.stringify(config));
 				assert.equal(brand.isFirstParty, isFirstParty ?? (brandType === "Channel"), JSON.stringify(config));
@@ -59,9 +60,9 @@ async function replay(t, path, body, query = "", response = ResponseDev, argumen
 test("synchronous injectors take per-method context and preserve the original body and row arrays", () => {
 	const injector = new InjectBrand();
 	for (const [method, body, rowsOf, context] of [
-		["InjectUTSConfigurationChannelsAndApps", { data: { applicationProps: { tabs: [{ type: "Library" }] } } }, body => body.data.applicationProps.tabs, { pfm: "ipad", region: "tw" }],
-		["InjectWatchNowLockup", { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "desktop", region: "us" }],
-		["InjectSearchLanding", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "iphone", region: "tw" }],
+		["InjectUTSConfigurationChannelsAndApps", { data: { applicationProps: { tabs: [{ id: "Library", type: "Library" }] } } }, body => body.data.applicationProps.tabs, { pfm: "ipad", region: "tw", settings }],
+		["InjectWatchNowLockup", { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "desktop", region: "us", settings }],
+		["InjectSearchLanding", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "iphone", region: "tw", settings }],
 	]) {
 		const rows = rowsOf(body);
 		assert.equal(injector[method](body, context), body);
@@ -80,8 +81,8 @@ test("one instance searches concurrently with method-local context and mutates t
 	const shelf = { id: "uts.col.search.TR", items: [{ id: "original" }] };
 	const shelfBody = { data: { shelf } };
 	const [canvasResult, shelfResult] = await Promise.all([
-		injector.InjectSearch(canvasBody, { pfm: "ipad", region: "tw", pathname: "/uts/v3/search", searchTerm: "Lumen", topResultsOnly: false, lumenKey: "tablet-key" }),
-		injector.InjectSearch(shelfBody, { pfm: "desktop", region: "us", pathname: "/uts/v3/shelves/uts.col.search.TR", searchTerm: "Dune", topResultsOnly: true, lumenKey: "desktop-key" }),
+		injector.InjectSearch(canvasBody, { pfm: "ipad", region: "tw", settings, pathname: "/uts/v3/search", searchTerm: "Lumen", topResultsOnly: false, lumenKey: "tablet-key" }),
+		injector.InjectSearch(shelfBody, { pfm: "desktop", region: "us", settings, pathname: "/uts/v3/shelves/uts.col.search.TR", searchTerm: "Dune", topResultsOnly: true, lumenKey: "desktop-key" }),
 	]);
 	assert.equal(canvasResult, canvasBody);
 	assert.equal(canvasBody.data.canvas.shelves, shelves);
@@ -123,7 +124,7 @@ for (const fixture of channelTypes.samples) {
 		];
 		for (const [path, method, body, itemOf] of cases) {
 			const injector = new InjectBrand();
-			await injector[method](body, method === "InjectSearch" ? { pfm: fixture.pfm, region: "us", pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: fixture.pfm, region: "us" });
+			await injector[method](body, method === "InjectSearch" ? { pfm: fixture.pfm, region: "us", settings, pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: fixture.pfm, region: "us", settings });
 			const brand = itemOf(body);
 			assert.equal(brand.id, brandId);
 			assert.equal(brand.name, "Lumen");
@@ -148,7 +149,7 @@ test("existing Lumen subscription, consent, installation and pin state is preser
 		const injector = new InjectBrand();
 		const state = { isConsented: false, isInstalled: false, isSubscribed: false, isPinned: true };
 		const body = { data: { channels: { [brandId]: { id: brandId, ...state } }, canvas: { shelves } } };
-		await injector[method](body, method === "InjectSearch" ? { pfm: "desktop", region: "us", pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: "desktop", region: "us" });
+		await injector[method](body, method === "InjectSearch" ? { pfm: "desktop", region: "us", settings, pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: "desktop", region: "us", settings });
 		const brand = body.data.channels[brandId];
 		assert.deepEqual(Object.fromEntries(Object.keys(state).map(key => [key, brand[key]])), state);
 		assert.equal(brand.isApSubscription, true);
@@ -163,17 +164,17 @@ test("configuration uses the explicit region and preserves it on repeated inject
 			applicationProps: {
 				tabs: [
 					{ type: "Originals", target: { url: "https://tv.apple.com/us/channel/tvs.sbd.4000" } },
-					{ type: "ChannelsAndApps", subTabs: [{ target: { id: "tvs.sbd.1000216", url: "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216" } }] },
+					{ id: "ChannelsAndApps", type: "ChannelsAndApps", subTabs: [{ target: { id: "tvs.sbd.1000216", url: "https://tv.apple.com/us/channel/disney/tvs.sbd.1000216" } }] },
 				],
 			},
 		},
 	};
-	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "ipad", region: "tw" });
+	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "ipad", region: "tw", settings });
 	const tab = body.data.applicationProps.tabs[1].subTabs[0];
 	assert.equal(tab.target.url, `https://tv.apple.com/tw/channel/lumen/${brandId}`);
 	assert.deepEqual(tab.universalLinks, [tab.target.url]);
 	const once = structuredClone(body);
-	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "ipad", region: "tw" });
+	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "ipad", region: "tw", settings });
 	assert.deepEqual(body, once);
 });
 
@@ -181,7 +182,7 @@ test("new structures use the request storefront even when navigation filtering r
 	backend(t, { items: [] });
 	for (const path of ["/uts/v3/configurations", "/uts/v3/search/landing", "/uts/v3/search", "/uts/v3/shelves/uts.col.search.TR", "/uts/v3/shelves/uts.col.search.BR"]) {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const body = { data: { applicationProps: { tabs: [{ type: "ChannelsAndApps", subTabs: [{ target: { url: "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216" } }] }, { type: "Library" }] } } };
+		const body = { data: { applicationProps: { tabs: [{ id: "ChannelsAndApps", type: "ChannelsAndApps", subTabs: [{ target: { url: "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216" } }] }, { id: "Library", type: "Library" }] } } };
 		const response = await ResponseDev(
 			{ url: `https://uts-api.itunes.apple.com${path}?sf=143470&pfm=ipad&caller=wlk&v=100&searchTerm=Lumen`, headers: {}, $argument: `Tabs=Library&LumenKey=${lumenKey}&LogLevel=OFF` },
 			{ headers: { "Content-Type": "application/json" }, body: JSON.stringify(path === "/uts/v3/configurations" ? body : {}) },
@@ -196,8 +197,8 @@ test("new structures use the request storefront even when navigation filtering r
 test("configuration prepends a shared complete Brand target and preserves unrelated navigation", () => {
 	const injector = new InjectBrand();
 	const original = { type: "Channel", title: "Disney+", target: { id: "tvs.sbd.1000216" } };
-	const body = { data: { applicationProps: { tabs: [{ type: "WatchNow" }, { type: "ChannelsAndApps", title: "Existing title", subTabs: [original, { target: { id: brandId }, title: "Old Lumen" }] }, { type: "Library" }], untouched: true }, channels: { other: { id: "other" } } } };
-	assert.equal(injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "desktop", region: "us" }), body);
+	const body = { data: { applicationProps: { tabs: [{ type: "WatchNow" }, { id: "ChannelsAndApps", type: "ChannelsAndApps", title: "Existing title", subTabs: [original, { target: { id: brandId }, title: "Old Lumen" }] }, { id: "Library", type: "Library" }], untouched: true }, channels: { other: { id: "other" } } } };
+	assert.equal(injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "desktop", region: "us", settings }), body);
 	const tab = body.data.applicationProps.tabs[1];
 	assert.equal(tab.title, "Existing title");
 	assert.equal(tab.subTabs.length, 2);
@@ -216,7 +217,7 @@ test("configuration prepends a shared complete Brand target and preserves unrela
 	assert.deepEqual(body.data.channels.other, { id: "other" });
 	assert.equal(body.data.channels.tvs, undefined);
 	const once = structuredClone(body);
-	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "desktop", region: "us" });
+	injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "desktop", region: "us", settings });
 	assert.deepEqual(body, once);
 });
 
@@ -224,7 +225,7 @@ for (const isPinned of [false, true]) {
 	test(`ATV configuration retains sidebar pin state ${isPinned} over the Brand default`, async t => {
 		const body = {
 			data: {
-				applicationProps: { tabs: [{ type: "ChannelsAndApps", subTabs: [{ type: "Brand", isPinned, target: { id: brandId } }] }] },
+				applicationProps: { tabs: [{ id: "ChannelsAndApps", type: "ChannelsAndApps", subTabs: [{ type: "Brand", isPinned, target: { id: brandId } }] }] },
 				channels: { [brandId]: { id: brandId, isPinned: !isPinned } },
 			},
 		};

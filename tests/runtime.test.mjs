@@ -120,15 +120,36 @@ test("Storage precedence merges nested settings and preserves database defaults"
 	assert.equal(JSON.stringify(database), original);
 });
 
+test("setENV resolves functional tab names into IDs once without changing database defaults", t => {
+	t.mock.method(Storage, "getItem", () => ({}));
+	const original = JSON.stringify(database);
+	const { Settings, Configs } = setENV("iRingo", "TV", database, "Tabs=F1,MLS,Library,ChannelsAndApps,Sports&LogLevel=OFF");
+	assert.equal(Configs.Tab.F1, "tvs.sbd.241000");
+	assert.deepEqual(Settings.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000", "Library", "ChannelsAndApps", "tahoma_sports", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"]);
+	assert.equal(Configs.Tabs.find(({ id }) => id === "Library").destinationType, "Client");
+	assert.equal(Configs.Tabs.find(({ id }) => id === "ChannelsAndApps").destinationType, "SubTabs");
+	assert.equal(JSON.stringify(database), original);
+});
+
+test("stored functional tab names become request-local IDs while argument precedence remains intact", t => {
+	const stored = { TV: { Settings: { Tabs: ["F1", "MLS"] } } };
+	t.mock.method(Storage, "getItem", () => stored);
+	const persistent = setENV("iRingo", "TV", database, "Tabs=Store&LogLevel=OFF").Settings;
+	assert.deepEqual(persistent.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000"]);
+	const argument = setENV("iRingo", "TV", database, "Storage=Argument&Tabs=Store&LogLevel=OFF").Settings;
+	assert.deepEqual(argument.Tabs, ["tahoma_store"]);
+	assert.deepEqual(stored.TV.Settings.Tabs, ["F1", "MLS"]);
+});
+
 test("request-specific arguments restore globals and do not leak to subsequent calls", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const globalArgument = globalThis.$argument;
 	const first = setENV("iRingo", "TV", database, "Tabs=Sports&CountryCode.View=JP,SG&LogLevel=OFF").Settings;
-	assert.deepEqual(first.Tabs, ["Sports"]);
+	assert.deepEqual(first.Tabs, database.TV.Configs.Tab.Sports);
 	assert.deepEqual(first.CountryCode.View, ["JP", "SG"]);
 	first.CountryCode.Sports = "JP";
 	const second = setENV("iRingo", "TV", database, { LogLevel: "OFF" }).Settings;
-	assert.deepEqual(second.Tabs, database.TV.Settings.Tabs);
+	assert.deepEqual(second.Tabs, database.TV.Settings.Tabs.flatMap(tab => database.TV.Configs.Tab[tab]));
 	assert.deepEqual(second.CountryCode.View, ["SG", "TW"]);
 	assert.equal(second.CountryCode.Sports, "US");
 	assert.equal(globalThis.$argument, globalArgument);

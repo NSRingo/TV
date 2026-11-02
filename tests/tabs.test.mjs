@@ -9,12 +9,21 @@ import { Response } from "../src/process/Response.mjs";
 import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url)));
+for (const tab of fixture.body.data.applicationProps.tabs) if (!tab.target) tab.id = tab.type;
 Console.logLevel = "OFF";
 
 for (const [variant, processResponse, processRequest] of [
 	["release", Response, Request],
 	["dev", ResponseDev, RequestDev],
 ]) {
+	test(`${variant}: a native Library without an ID receives its configured ID`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const body = structuredClone(fixture.body);
+		delete body.data.applicationProps.tabs.find(({ type }) => type === "Library").id;
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+		assert.equal(JSON.parse(response.body).data.applicationProps.tabs.find(({ type }) => type === "Library").id, "Library");
+	});
+
 	test(`${variant}: F1 settings select and order the complete native Grevy tab`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Tabs=Library,F1&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });

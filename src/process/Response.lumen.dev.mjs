@@ -22,6 +22,7 @@ export async function Response($request, $response) {
 	Console.info(`FORMAT: ${FORMAT}`);
 	const { Settings, Configs } = setENV("iRingo", "TV", database, $request.$argument);
 	Console.logLevel = Settings.LogLevel;
+	Settings.Tabs = ["tvs.sbd.lumen"];
 	// 创建空数据
 	let body = {};
 	// 格式判断
@@ -61,7 +62,7 @@ export async function Response($request, $response) {
 							.toLowerCase() ?? "us";
 					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
-					const brandContext = { pfm: Platform, region: Region, settings: Settings, kinds: ["thirdParty"] };
+					const brandContext = { pfm: Platform, region: Region, settings: Settings };
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":

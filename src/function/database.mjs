@@ -8,6 +8,20 @@ export default {
 			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},
 		Configs: {
+			Tab: {
+				WatchNow: "tahoma_watchnow",
+				Originals: "tvs.sbd.4000",
+				F1: "tvs.sbd.241000",
+				MLS: "tvs.sbd.7000",
+				Sports: ["tahoma_sports", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"],
+				Kids: "tahoma_kids",
+				Store: "tahoma_store",
+				Movies: "tahoma_movies",
+				TV: "tahoma_tvshows",
+				ChannelsAndApps: "ChannelsAndApps",
+				Library: "Library",
+				Search: "tahoma_searchlanding",
+			},
 			Tabs: [
 				{ title: "主页", type: "WatchNow", universalLinks: ["https://tv.apple.com/watch-now", "https://tv.apple.com/home"], destinationType: "Target", target: { id: "tahoma_watchnow", type: "Root", url: "https://tv.apple.com/watch-now" }, isSelected: true },
 				{
@@ -47,8 +61,8 @@ export default {
 				{ title: "电影", type: "Movies", universalLinks: ["https://tv.apple.com/movies"], destinationType: "Target", target: { id: "tahoma_movies", type: "Root", url: "https://tv.apple.com/movies" } },
 				{ title: "电视节目", type: "TV", universalLinks: ["https://tv.apple.com/tv-shows"], destinationType: "Target", target: { id: "tahoma_tvshows", type: "Root", url: "https://tv.apple.com/tv-shows" } },
 				{ title: "商店", type: "Store", universalLinks: ["https://tv.apple.com/store", "https://tv.apple.com/movies", "https://tv.apple.com/tv-shows"], destinationType: "Target", target: { id: "tahoma_store", type: "Root", url: "https://tv.apple.com/store" } },
-				{ title: "频道和 App", destinationType: "SubTabs", subTabsPlacementType: "ExpandedList", type: "ChannelsAndApps", subTabs: [] },
-				{ title: "资料库", type: "Library", destinationType: "Client" },
+				{ id: "ChannelsAndApps", title: "频道和 App", destinationType: "SubTabs", subTabsPlacementType: "ExpandedList", type: "ChannelsAndApps", subTabs: [] },
+				{ id: "Library", title: "资料库", type: "Library", destinationType: "Client" },
 				{ title: "搜索", type: "Search", universalLinks: ["https://tv.apple.com/search"], destinationType: "Target", target: { id: "tahoma_searchlanding", type: "Root", url: "https://tv.apple.com/search" } },
 			],
 			i18n: {

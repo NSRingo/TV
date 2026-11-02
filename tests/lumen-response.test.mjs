@@ -6,6 +6,7 @@ import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Response } from "../src/process/Response.lumen.dev.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
+const settings = { Tabs: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
 async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone") {
@@ -95,7 +96,7 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.equal(hero.header.url, actual.data.channels["tvs.sbd.lumen"].url);
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
 		const expected = structuredClone(fixtures.channel);
-		new InjectBrand().InjectBrand(expected.data.channels, { pfm: "iphone", region: "tw" });
+		new InjectBrand().InjectBrand(expected.data.channels, { pfm: "iphone", region: "tw", settings });
 		assert.deepEqual(actual.data.channels, expected.data.channels);
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;
@@ -112,7 +113,7 @@ test("website injection mutates the supplied shelves, preserves rows and paginat
 	const originals = [...shelves];
 	body.data.canvas.nextToken = "page-two";
 	const inject = new InjectBrand();
-	assert.equal(inject.InjectWebsiteLink(shelves, { region: "tw" }), shelves);
+	assert.equal(inject.InjectWebsiteLink(shelves, { region: "tw", settings }), shelves);
 	assert.equal(body.data.canvas.shelves, shelves);
 	assert.equal(body.data.canvas.nextToken, "page-two");
 	for (const [index, row] of originals.entries()) assert.equal(shelves[index], row);
@@ -127,13 +128,13 @@ test("website injection mutates the supplied shelves, preserves rows and paginat
 	assert.equal(website.items[0].shortNote, "https://www.lumen.ax/");
 	const expected = structuredClone(body);
 	shelves.at(-1).items[0].url = "https://example.test/stale";
-	inject.InjectWebsiteLink(shelves, { region: "tw" });
+	inject.InjectWebsiteLink(shelves, { region: "tw", settings });
 	assert.deepEqual(body, expected);
 });
 
 test("website injection populates an empty shelves array", () => {
 	const shelves = [];
-	new InjectBrand().InjectWebsiteLink(shelves, { region: "us" });
+	new InjectBrand().InjectWebsiteLink(shelves, { region: "us", settings });
 	assert.equal(shelves.length, 1);
 	assert.equal(shelves[0].items[0].url, "https://www.lumen.ax/");
 });

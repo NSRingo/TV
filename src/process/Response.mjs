@@ -13,9 +13,6 @@ export async function Response($request, $response) {
 	// 解析格式
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
-	/**
-	 * @type {{Settings: import('../types').Settings}}
-	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database, $request.$argument);
 	Console.logLevel = Settings.LogLevel;
 	// 创建空数据
@@ -62,101 +59,51 @@ export async function Response($request, $response) {
 							.toLowerCase() ?? "us";
 					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
-					const brandContext = { pfm: Platform, region: Region, settings: Settings, kinds: ["apple"] };
+					const brandContext = { pfm: Platform, region: Region, settings: Settings };
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
+							for (const tab of body.data?.applicationProps?.tabs ?? []) if (!tab.target) tab.id ??= Configs.Tab[tab.type];
 							if (Caller !== "wta") {
 								// 不修改caller=wta的configurations数据
 								if (body.data?.applicationProps?.tabs) {
-									switch (url.searchParams.get("pfm")) {
-										case "iphone":
-											Settings.Tabs = Settings.Tabs.filter(type => type !== "F1" && type !== "MLS");
-											injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
-											break;
-										default:
-											injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
-											break;
-									}
+									if (Platform === "iphone") Settings.Tabs = Settings.Tabs.filter(id => id !== "tvs.sbd.241000" && id !== "tvs.sbd.7000");
+									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+									const tabs = body.data.applicationProps.tabs;
 									const newTabs = [];
-									Settings.Tabs.map(type => type === "F1" ? "Grevy" : type).forEach(type => {
-										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {
-											const tab = body.data.applicationProps.tabs.find(Tab => Tab?.type === type);
-											Console.debug(`oTab: ${JSON.stringify(tab)}`);
-											const index = body.data.applicationProps.tabs.findIndex(Tab => Tab?.type === type);
-											Console.debug(`oIndex: ${index}`);
-											if (index === 0) newTabs.unshift(tab);
-											else newTabs.push(tab);
-										} else if (Configs.Tabs.some(Tab => Tab?.type === type)) {
-											const tab = Configs.Tabs.find(Tab => Tab?.type === type);
-											Console.debug(`aTab: ${JSON.stringify(tab)}`);
-											switch (tab?.destinationType) {
-												// biome-ignore lint/suspicious/noFallthroughSwitchClause: <explanation>
-												case "SubTabs":
-													tab.subTabs = tab.subTabs.map(subTab => {
-														subTab.title = Configs.i18n?.[subTab.type]?.get(Locale) ?? tab.title;
-														return subTab;
-													});
-												case "Target":
-												case "Client":
-													tab.title = Configs.i18n?.[tab.type]?.get(Locale) ?? tab.title;
-													break;
-											}
-											switch (tab?.type) {
-												case "WatchNow":
-													newTabs.push(tab);
-													break;
-												case "Store":
-													if (Version >= 54) newTabs.push(tab);
-													break;
-												case "Movies":
-												case "TV":
-													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
-													if (Version < 54) newTabs.push(tab);
-													break;
-												case "Sports":
-												case "Kids":
-													if (Version < 54) if (Platform === "iphone") tab.secondaryEnabled = true;
-													if (Version < 54) newTabs.push(tab);
-													else {
-														switch (Platform) {
-															case "atv":
-															case "ipad":
-															case "appletv":
-															case "desktop":
-															default:
-																newTabs.push(tab);
-																break;
-															case "iphone":
-																break;
-														}
-													}
-													break;
-												case "Search":
-													newTabs.push(tab);
-													break;
-												case "ChannelsAndApps":
-													if (Version >= 74)
-														switch (Platform) {
-															case "atv":
-															case "ipad":
-															case "appletv":
-																newTabs.push(tab);
-																break;
-															case "desktop":
-															case "iphone":
-															default:
-																break;
-														}
-													break;
-												case "Library":
-												default:
-													newTabs.push(tab);
-													break;
-											}
+									for (const id of Settings.Tabs) {
+										const index = tabs.findIndex(tab => (tab.target?.id ?? tab.id) === id);
+										if (index !== -1) {
+											if (index === 0) newTabs.unshift(tabs[index]);
+											else newTabs.push(tabs[index]);
+											continue;
 										}
-									});
-									Console.debug(`newTabs: ${JSON.stringify(newTabs, null, 2)}`);
+										const tab = Configs.Tabs.find(tab => (tab.target?.id ?? tab.id) === id);
+										if (!tab) continue;
+										if (tab.subTabs) for (const subTab of tab.subTabs) subTab.title = Configs.i18n?.[subTab.type]?.get(Locale) ?? tab.title;
+										tab.title = Configs.i18n?.[tab.type]?.get(Locale) ?? tab.title;
+										switch (id) {
+											case "tahoma_store":
+												if (Version < 54) continue;
+												break;
+											case "tahoma_movies":
+											case "tahoma_tvshows":
+												if (Version >= 54) continue;
+												if (Platform === "iphone") tab.secondaryEnabled = true;
+												break;
+											case "tahoma_sports":
+											case "tahoma_kids":
+												if (Platform === "iphone") {
+													if (Version >= 54) continue;
+													tab.secondaryEnabled = true;
+												}
+												break;
+											case "ChannelsAndApps":
+												if (Version < 74 || !["atv", "ipad", "appletv"].includes(Platform)) continue;
+												break;
+										}
+										newTabs.push(tab);
+									}
 									body.data.applicationProps.tabs = newTabs;
 								}
 							}

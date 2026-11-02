@@ -8,6 +8,7 @@ import { Response as ResponseRelease } from "../src/process/Response.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-settings.json", import.meta.url)));
 const brandId = "tvs.sbd.lumen";
+const settings = { Tabs: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
 for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
@@ -16,7 +17,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const channels = body.data.channels;
 		channels[brandId] = { id: brandId, isSubscribed: false, isInstalled: false, isConsented: false };
 		const injector = new InjectBrand();
-		assert.equal(injector.InjectBrand(channels, { pfm: platform, region: "tw" }), channels);
+		assert.equal(injector.InjectBrand(channels, { pfm: platform, region: "tw", settings }), channels);
 		assert.equal(body.data.channels, channels);
 		assert.equal(channels.tvs, undefined);
 		for (const [id, brand] of Object.entries(fixtures.channels.data.channels)) assert.deepEqual(channels[id], brand);
@@ -30,7 +31,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		assert.equal(brand.isConsented, false);
 		assert.deepEqual(brand.appBundleIds, [["iphone", "ipad"].includes(platform) ? "com.apple.tv" : "com.apple.TVWatchList"]);
 		const once = structuredClone(body);
-		injector.InjectBrand(channels, { pfm: platform, region: "tw" });
+		injector.InjectBrand(channels, { pfm: platform, region: "tw", settings });
 		assert.deepEqual(body, once);
 	});
 }
@@ -59,12 +60,12 @@ test("settings retains App consent objects and all account preferences", () => {
 	const consent = body.data.brandConsentSettings;
 	const sidebar = body.data.brandSidebarSetting;
 	const injector = new InjectBrand();
-	assert.equal(injector.InjectUTSUserSettings(sidebar), sidebar);
+	assert.equal(injector.InjectUTSUserSettings(sidebar, { settings }), sidebar);
 	assert.equal(body.data.brandConsentSettings, consent);
 	assert.equal(body.data.brandSidebarSetting, sidebar);
 	assert.equal(sidebar.tvs, undefined);
 	const once = structuredClone(body);
-	injector.InjectUTSUserSettings(sidebar);
+	injector.InjectUTSUserSettings(sidebar, { settings });
 	assert.deepEqual(body, once);
 	delete body.data.brandSidebarSetting[brandId];
 	assert.deepEqual(body, fixtures.settings);
@@ -73,7 +74,7 @@ test("settings retains App consent objects and all account preferences", () => {
 test("settings preserves an existing hidden/pinned Lumen record and extensions by reference", () => {
 	const state = { isHidden: true, isPinned: true, custom: "preserved" };
 	const body = { data: { brandSidebarSetting: { [brandId]: state } } };
-	new InjectBrand().InjectUTSUserSettings(body.data.brandSidebarSetting);
+	new InjectBrand().InjectUTSUserSettings(body.data.brandSidebarSetting, { settings });
 	assert.equal(body.data.brandSidebarSetting[brandId], state);
 	assert.deepEqual(state, { isHidden: true, isPinned: true, custom: "preserved" });
 });

@@ -24,6 +24,7 @@ export default function setENV(name, platforms, database, argument = globalThis.
 	const { Settings, Caches, Configs } = profile;
 	/***************** Settings *****************/
 	if (!Array.isArray(Settings?.Tabs)) _.set(Settings, "Tabs", Settings?.Tabs ? [Settings.Tabs.toString()] : []);
+	Settings.Tabs = Settings.Tabs.flatMap(tab => Configs.Tab[tab] ?? []);
 	Console.info(`typeof Settings: ${typeof Settings}`, `Settings: ${JSON.stringify(Settings, null, 2)}`);
 	/***************** Caches *****************/
 	//Console.debug(`typeof Caches: ${typeof Caches}`, `Caches: ${JSON.stringify(Caches)}`);

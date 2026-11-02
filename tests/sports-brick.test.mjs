@@ -10,9 +10,9 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-f1-home.json", import.meta.url)));
 const official = fixture.body.data.canvas.shelves[0];
 const ids = official.items.map(({ id }) => id);
-const tabs = ["F1", "MLS", "Sports"];
+const tabs = ids;
 const anchorId = "uts.col.home-popular-movies";
-const options = { pfm: "iphone", region: "us", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
+const options = { pfm: "iphone", region: "us", settings: { ...database.TV.Settings, Tabs: ids } };
 Console.logLevel = "OFF";
 
 test("sports brick preserves existing row, cards, unknown entries and brand state by reference", () => {
@@ -60,7 +60,7 @@ for (const missing of ids) {
 for (let mask = 0; mask < 8; mask++) {
 	test(`sports brick creation respects enabled Tabs combination ${mask}`, () => {
 		const selected = tabs.filter((_, index) => mask & (1 << index));
-		const settings = { ...database.TV.Settings, Tabs: selected };
+		const settings = { ...options.settings, Tabs: selected };
 		const before = { id: "before", items: [] };
 		const anchor = { id: anchorId, items: [] };
 		const after = { id: "after", items: [] };
@@ -116,7 +116,7 @@ test("new sports links share Sports for F1 and MLB, preserve MLS settings and su
 	]) {
 		const shelves = [{ id: anchorId, items: [] }];
 		const channels = {};
-		const settings = { ...database.TV.Settings, CountryCode: { ...database.TV.Settings.CountryCode, Sports: sports, Originals: originals } };
+		const settings = { ...options.settings, CountryCode: { ...database.TV.Settings.CountryCode, Sports: sports, Originals: originals } };
 		new InjectBrand().InjectBrick(shelves, channels, { pfm: options.pfm, region: "tw", settings });
 		for (const [index, item] of shelves[0].items.entries()) {
 			assert.equal(new URL(item.url).pathname.split("/")[1], regions[index]);
