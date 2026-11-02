@@ -69,7 +69,15 @@ export async function Response($request, $response) {
 							if (Caller !== "wta") {
 								// 不修改caller=wta的configurations数据
 								if (body.data?.applicationProps?.tabs) {
-									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+									switch (url.searchParams.get("pfm")) {
+										case "iphone":
+											Settings.Tabs = Settings.Tabs.filter(type => type !== "Grevy" && type !== "MLS");
+											injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+											break;
+										default:
+											injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+											break;
+									}
 									const newTabs = [];
 									Settings.Tabs.forEach(type => {
 										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {

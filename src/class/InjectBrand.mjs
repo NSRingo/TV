@@ -53,13 +53,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.0
+ * @version 1.2.1
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.0";
+		this.Version = "1.2.1";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 

@@ -39,7 +39,7 @@ for (const [variant, processRequest] of [["release", Request], ["dev", RequestDe
 
 for (const fixture of baseline.cases) {
 	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
-	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "retains navigation with ungated Apple channels from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
+	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "retains platform navigation from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		// 固定历史 tab 配置，继续验证旧基线；当前默认值由 tabs.test.mjs 覆盖。
 		const tabsArgument = fixture.name.startsWith("tabs-") ? "&Tabs=WatchNow,Originals,MLS,Sports,Kids,Store,Movies,TV,ChannelsAndApps,Library,Search" : "";
@@ -74,8 +74,8 @@ for (const fixture of baseline.cases) {
 			}
 			if (fixture.name.startsWith("tabs-")) {
 				actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
-				// 苹果频道统一按结构补入，MLS 不再受旧平台/版本门槛限制。
-				if (!expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, officialAppleTabs.find(({ type }) => type === "MLS"));
+				// iPhone 不补入 MLS；其余平台沿用当前的频道注入。
+				if (new URL(fixture.request.url).searchParams.get("pfm") !== "iphone" && !expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, officialAppleTabs.find(({ type }) => type === "MLS"));
 				// 注入模板使用完整官方配置，替换旧基线中的预定义苹果导航。
 				expected = expected.map(tab => officialAppleTabs.find(({ type }) => type === tab.type) ?? tab);
 			}

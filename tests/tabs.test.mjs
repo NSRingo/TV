@@ -35,13 +35,11 @@ for (const [variant, processResponse, processRequest] of [
 		["atv", 100],
 		["appletv", 100],
 		["desktop", 91],
-		["iphone", 100],
-		["iPhone", 1],
 	]) {
-		test(`${variant}: an existing tabs array gets Formula 1 regardless of ${platform} v${version}`, async t => {
+		test(`${variant}: ${platform} v${version} gets missing Formula 1 and MLS navigation`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const body = structuredClone(fixture.body);
-			body.data.applicationProps.tabs.splice(3, 1);
+			body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => !["Grevy", "MLS"].includes(type));
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
 			url.searchParams.set("v", version);
@@ -50,9 +48,26 @@ for (const [variant, processResponse, processRequest] of [
 			const index = tabs.findIndex(({ type }) => type === "Grevy");
 			assert.equal(index, 3);
 			assert.equal(tabs[index - 1].type, "Originals");
-			assert.deepEqual(tabs[index].target, fixture.body.data.applicationProps.tabs[3].target);
-			assert.deepEqual(tabs[index].universalLinks, ["https://tv.apple.com/f1"]);
-			assert.deepEqual(tabs[index].images, fixture.body.data.applicationProps.tabs[3].images);
+			assert.deepEqual(tabs.slice(index, index + 2), fixture.body.data.applicationProps.tabs.filter(({ type }) => ["Grevy", "MLS"].includes(type)));
+		});
+	}
+
+	for (const [platform, version] of [["iphone", 100], ["iphone", 1]]) {
+		test(`${variant}: ${platform} v${version} only gets Apple TV root navigation`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			const body = structuredClone(fixture.body);
+			body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => ["WatchNow", "Library"].includes(type));
+			const url = new URL(fixture.url);
+			url.searchParams.set("pfm", platform);
+			url.searchParams.set("v", version);
+			for (const argument of ["LogLevel=OFF", "Tabs=WatchNow,Originals,Grevy,MLS,Library&LogLevel=OFF"]) {
+				const response = await processResponse({ url: url.toString(), headers: {}, $argument: argument }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+				const tabs = JSON.parse(response.body).data.applicationProps.tabs;
+				assert.deepEqual(tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type }) => type), ["Originals"]);
+				assert.deepEqual(tabs.find(({ type }) => type === "Originals"), fixture.body.data.applicationProps.tabs.find(({ type }) => type === "Originals"));
+				assert.equal(tabs[0].type, "WatchNow");
+				assert.ok(tabs.some(({ type }) => type === "Library"));
+			}
 		});
 	}
 
@@ -67,19 +82,23 @@ for (const [variant, processResponse, processRequest] of [
 		assert.deepEqual(actual, expected);
 	});
 
-	test(`${variant}: existing Apple navigation is preserved as complete server objects`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const body = structuredClone(fixture.body);
-		const types = ["Originals", "Grevy", "MLS"];
-		const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-		for (const tab of expected) {
-			tab.title = `服务器本地化标题 ${tab.type}`;
-			tab.images = { defaultImage: { url: `https://images.example.test/${tab.type}.png`, width: 100, height: 100 } };
-		}
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-		const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-		assert.deepEqual(actual, expected);
-	});
+	for (const platform of ["desktop", "iphone"]) {
+		test(`${variant}: ${platform} retains selected Apple navigation as complete server objects`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			const body = structuredClone(fixture.body);
+			const types = ["Originals", "Grevy", "MLS"];
+			const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+			for (const tab of expected) {
+				tab.title = `服务器本地化标题 ${tab.type}`;
+				tab.images = { defaultImage: { url: `https://images.example.test/${tab.type}.png`, width: 100, height: 100 } };
+			}
+			const url = new URL(fixture.url);
+			url.searchParams.set("pfm", platform);
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
+			assert.deepEqual(actual, platform === "iphone" ? expected.filter(({ type }) => type === "Originals") : expected);
+		});
+	}
 
 	test(`${variant}: a missing tabs array skips navigation injection`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
