@@ -144,11 +144,13 @@ for (const [variant, processResponse, processRequest] of [
 			}
 		});
 
-		test(`${variant}: Formula 1 uses its own US region for ${path}`, async t => {
+		test(`${variant}: Formula 1 follows the Sports region for ${path}`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			for (const [argument, storefront] of [
 				["", "143441"],
-				["CountryCode.Grevy=TW", "143470"],
+				["CountryCode.Sports=TW", "143470"],
+				["CountryCode.Sports=AUTO", "143465"],
+				["CountryCode.Grevy=TW&CountryCode.Sports=JP", "143462"],
 			]) {
 				const url = new URL(path, "https://uts-api.itunes.apple.com");
 				url.searchParams.set("sf", "143465");

@@ -159,7 +159,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 });
 
 test("Apple selection and country settings only control supplementation", () => {
-	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Grevy: "JP" } };
+	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
 	new InjectBrand().InjectSearchLanding(body, { ...context, settings, kinds: ["apple"] });
 	assert.deepEqual(
@@ -196,7 +196,7 @@ test("mixed registry keeps sidebar, website and external search capabilities thi
 test("one injector keeps Apple image objects and request settings isolated", () => {
 	const injector = new InjectBrand();
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Grevy: "JP" } };
+	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	injector.InjectWatchNowLockup(first, { ...context, settings, kinds: ["apple"] });
 	first.data.canvas.shelves[0].items[0].images.shelfItemImage.width = 1;
 	first.data.channels[appleIds[1]].images.logoGlyph.width = 1;

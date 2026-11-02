@@ -190,30 +190,6 @@ export interface Settings {
          */
         Originals?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
     /**
-         * [F1（一级方程式赛车）] 国家或地区代码
-         *
-         * 选择此分类请求使用的国家或地区；AUTO 保留原值。
-         *
-         * @remarks
-         *
-         * Possible values:
-         * - `'AUTO'` - 自动（保留原请求地区）
-         * - `'CN'` - 中国大陆
-         * - `'HK'` - 中国香港
-         * - `'TW'` - 中国台湾
-         * - `'SG'` - 新加坡
-         * - `'US'` - 美国
-         * - `'JP'` - 日本
-         * - `'AU'` - 澳大利亚
-         * - `'GB'` - 英国
-         * - `'KR'` - 韩国
-         * - `'CA'` - 加拿大
-         * - `'IE'` - 爱尔兰
-         *
-         * @defaultValue "US"
-         */
-        Grevy?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
-    /**
          * [体育节目] 国家或地区代码
          *
          * 选择此分类请求使用的国家或地区；AUTO 保留原值。

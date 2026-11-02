@@ -144,7 +144,6 @@ const countryNames: Record<string, string> = {
 	WatchNow: "主页",
 	Channels: "频道与 App",
 	Originals: "Apple TV+",
-	Grevy: "F1（一级方程式赛车）",
 	Sports: "体育节目",
 	Kids: "儿童",
 	Store: "商店",

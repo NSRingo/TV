@@ -31,7 +31,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
  * @property {Record<'tahoma_watchnow'|'tahoma_searchlanding', Object>} [cards] - 苹果频道按官方页面根 ID 区分的卡片图片。
  * @property {Record<string, boolean>} [metadata] - 苹果品牌的公开能力标志，不含账户状态。
- * @property {'Originals'} [countryCodeKey] - MLS 兼容旧地区设置；其余苹果频道直接使用 tab.type。
+ * @property {'Originals'|'Sports'} [countryCodeKey] - 苹果频道沿用的地区分类；省略时使用 tab.type。
  * @property {string} [searchURL] - 第三方影视搜索端点。
  * @property {string} [website] - 第三方官网外链。
  * @property {string} [hexColor] - 第三方品牌背景色。
@@ -190,6 +190,7 @@ export default class InjectBrand {
 				id: "tvs.sbd.241000",
 				name: "Formula 1",
 				url: "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000",
+				countryCodeKey: "Sports",
 				placements: ["channelLockup", "brandLockup", "uts.col.tv-plus-sports-nav-brick", "tahoma_searchlanding"],
 				tab: {
 					destinationType: "Target",

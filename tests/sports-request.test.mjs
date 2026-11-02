@@ -23,6 +23,21 @@ for (const [variant, processRequest] of [["release", Request], ["dev", RequestDe
 		}
 	});
 
+	test(`${variant}: Formula 1 brand context shares Sports country settings without changing platform handling`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const { $request } = await processRequest({
+			url: "https://uts-api.itunes.apple.com/uts/v3/sporting-events/umc.cse.synthetic?ctx_brand=tvs.sbd.241000&pfm=desktop&sf=143470&locale=zh-Hant",
+			headers: { "X-Apple-Store-Front": "143470-18,33", "x-apple-store-front": "143470-18,33" },
+			$argument: "CountryCode.Sports=JP&CountryCode.Grevy=TW&LogLevel=OFF",
+		});
+		const actual = new URL($request.url);
+		assert.equal(actual.searchParams.get("sf"), "143462");
+		assert.equal(actual.searchParams.get("pfm"), "desktop");
+		assert.equal(actual.searchParams.get("locale"), "zh-Hant");
+		assert.equal($request.headers["X-Apple-Store-Front"], "143462-18,33");
+		assert.equal($request.headers["x-apple-store-front"], "143462-18,33");
+	});
+
 	test(`${variant}: other sporting events retain configured Sports storefront routing`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		for (const brand of [undefined, "tvs.sbd.synthetic"]) {

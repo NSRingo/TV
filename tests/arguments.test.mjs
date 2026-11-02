@@ -48,7 +48,8 @@ test("public tab settings replace Kids with Formula 1 in Apple's navigation orde
 	assert.equal(tabs.defaultValue.includes("Kids"), false);
 	assert.deepEqual(tabs.defaultValue.slice(0, 4), ["WatchNow", "Originals", "Grevy", "MLS"]);
 	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Kids").defaultValue, "US");
-	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Grevy").defaultValue, "US");
+	assert.equal(argsFull.some(({ key }) => key === "CountryCode.Grevy"), false);
+	assert.equal(database.TV.Settings.CountryCode.Grevy, undefined);
 });
 
 test("Lumen search authentication is optional and exposed only in dev arguments", () => {

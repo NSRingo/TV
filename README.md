@@ -41,7 +41,7 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Locale、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
-Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）使用 Apple 原生类型 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，`CountryCode.Grevy=US`。
+Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）使用 Apple 原生类型 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，地区与其他体育内容共用 `CountryCode.Sports`。
 
 Apple TV、F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象，包含官方标题、目标地址、背景色、通用链接和四组侧栏 SVG；服务器已有的 tab 整体保留。提取样本与原始响应哈希记录在 `tests/fixtures/us-tabs.json`。
 
