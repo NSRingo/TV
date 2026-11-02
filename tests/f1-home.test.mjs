@@ -27,7 +27,7 @@ for (const [variant, processResponse] of [
 								{ id: "uts.shlfsect.moretv", ...container },
 							],
 						}
-					: { id: "uts.col.tv-plus-sports-nav-brick", displayType, ...container };
+					: { id: displayType === "brick" ? "uts.col.tv-plus-sports-nav-brick" : "legacy-channel-row", displayType, ...container };
 			const body = { data: { canvas: { shelves: [shelf], nextToken: "canvas-preserved" } } };
 			const request = { url: "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/tahoma_watchnow?pfm=iphone&v=1&sf=143470", headers: {}, $argument: "LogLevel=OFF" };
 			const response = await processResponse(request, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

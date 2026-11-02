@@ -695,7 +695,7 @@ export default class InjectBrand {
 	 */
 	InjectBrick(shelves, channels, options) {
 		for (const config of this.#Config.bricks) {
-			let index = shelves.findIndex(({ id, displayType }) => id === config.id && displayType === config.displayType);
+			let index = shelves.findIndex(({ id }) => id === config.id);
 			const state = shelves[index];
 			if (index === -1) index = shelves.findIndex(({ id }) => id === "uts.col.home-popular-movies");
 			if (index === -1) continue;
