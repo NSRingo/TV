@@ -109,7 +109,7 @@ const tabs: ArgumentItem = {
 	options: [
 		{ key: "WatchNow", label: "主页（立即观看）" },
 		{ key: "Originals", label: "Apple TV+（原创内容）" },
-		{ key: "Grevy", label: "F1（一级方程式赛车）" },
+		{ key: "F1", label: "F1（一级方程式赛车）" },
 		{ key: "MLS", label: "MLS" },
 		{ key: "Sports", label: "体育节目" },
 		{ key: "Store", label: "商店" },

@@ -15,6 +15,15 @@ for (const [variant, processResponse, processRequest] of [
 	["release", Response, Request],
 	["dev", ResponseDev, RequestDev],
 ]) {
+	test(`${variant}: F1 settings select and order the complete native Grevy tab`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Tabs=Library,F1&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
+		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
+		assert.deepEqual(tabs.filter(({ type }) => type !== "ChannelsAndApps").map(({ type }) => type), ["Library", "Grevy"]);
+		assert.deepEqual(tabs.find(({ type }) => type === "Grevy"), fixture.body.data.applicationProps.tabs.find(({ type }) => type === "Grevy"));
+		assert.equal(tabs.some(({ type }) => type === "F1"), false);
+	});
+
 	test(`${variant}: native US Formula 1 stays between Apple TV and MLS, with Search first`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
@@ -60,7 +69,7 @@ for (const [variant, processResponse, processRequest] of [
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
 			url.searchParams.set("v", version);
-			for (const argument of ["LogLevel=OFF", "Tabs=WatchNow,Originals,Grevy,MLS,Library&LogLevel=OFF"]) {
+			for (const argument of ["LogLevel=OFF", "Tabs=WatchNow,Originals,F1,MLS,Library&LogLevel=OFF"]) {
 				const response = await processResponse({ url: url.toString(), headers: {}, $argument: argument }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 				const tabs = JSON.parse(response.body).data.applicationProps.tabs;
 				assert.deepEqual(tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type }) => type), ["Originals"]);

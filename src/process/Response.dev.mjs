@@ -80,7 +80,7 @@ export async function Response($request, $response) {
 								if (body.data?.applicationProps?.tabs) {
 									switch (url.searchParams.get("pfm")) {
 										case "iphone":
-											Settings.Tabs = Settings.Tabs.filter(type => type !== "Grevy" && type !== "MLS");
+											Settings.Tabs = Settings.Tabs.filter(type => type !== "F1" && type !== "MLS");
 											injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
 											break;
 										default:
@@ -90,7 +90,7 @@ export async function Response($request, $response) {
 									//body.data.applicationProps.requiredParamsMap.WithoutUtsk.locale = "zh_Hans";
 									//body.data.applicationProps.requiredParamsMap.Default.locale = "zh_Hans";
 									const newTabs = [];
-									Settings.Tabs.forEach(type => {
+									Settings.Tabs.map(type => type === "F1" ? "Grevy" : type).forEach(type => {
 										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {
 											const tab = body.data.applicationProps.tabs.find(Tab => Tab?.type === type);
 											Console.debug(`oTab: ${JSON.stringify(tab)}`);

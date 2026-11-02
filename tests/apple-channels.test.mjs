@@ -96,7 +96,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 			}
 			const brand = { ...fixtures.samples[0].body.data.channels[appleIds[1]], url };
 			const body = { data: { canvas: { shelves: [shelf] }, channels: { [appleIds[1]]: brand } } };
-			const settings = { ...database.TV.Settings, Tabs: ["Grevy"] };
+			const settings = { ...database.TV.Settings, Tabs: ["F1"] };
 			const options = { ...context, settings, kinds: ["apple"] };
 			switch (rootId) {
 				case "tahoma_watchnow":
@@ -161,7 +161,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 });
 
 test("Apple selection and country settings only control supplementation", () => {
-	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	const settings = { ...database.TV.Settings, Tabs: ["F1"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
 	new InjectBrand().InjectSearchLanding(body, { ...context, settings, kinds: ["apple"] });
 	assert.deepEqual(
@@ -198,7 +198,7 @@ test("mixed registry keeps sidebar, website and external search capabilities thi
 test("one injector keeps Apple image objects and request settings isolated", () => {
 	const injector = new InjectBrand();
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	const settings = { ...database.TV.Settings, Tabs: ["Grevy"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	const settings = { ...database.TV.Settings, Tabs: ["F1"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	injector.InjectWatchNowLockup(first, { ...context, settings, kinds: ["apple"] });
 	first.data.canvas.shelves[0].items[0].images.shelfItemImage.width = 1;
 	first.data.channels[appleIds[1]].images.logoGlyph.width = 1;

@@ -20,7 +20,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {Array<'channelLockup'|'brandLockup'|'uts.shlfsect.moretv'|'tahoma_searchlanding'>} placements - 官方 displayType 或完整 shelf、section、页面根 ID。
  * @property {Object} tab - 官方导航模板；Target 为苹果根 tab，SubTabs 为第三方所属分组。
  * @property {string} tab.title - 导航标题。
- * @property {'Originals'|'Grevy'|'MLS'|'ChannelsAndApps'} tab.type - 官方导航类型，直接用于选取与归组。
+ * @property {'Originals'|'Grevy'|'MLS'|'ChannelsAndApps'} tab.type - 官方导航类型；F1 设置对应 Grevy，归组保留原值。
  * @property {'Target'|'SubTabs'} tab.destinationType - 官方导航目标类型。
  * @property {string[]} [tab.universalLinks] - 苹果根 tab 的通用链接。
  * @property {Object} [tab.target] - 苹果根 tab 的 Brand 目标。
@@ -710,7 +710,7 @@ export default class InjectBrand {
 					switch (item.type) {
 						case "Brand": {
 							const brand = this.#Config.brands.find(({ id }) => id === item.id);
-							if (options.settings.Tabs.includes(brand.tab.type)) channels[brand.id] = this.#BuildBrand(brand, options, channels[brand.id]);
+							if (options.settings.Tabs.includes(brand.tab.type === "Grevy" ? "F1" : brand.tab.type)) channels[brand.id] = this.#BuildBrand(brand, options, channels[brand.id]);
 							break;
 						}
 					}
@@ -916,7 +916,7 @@ export default class InjectBrand {
 			switch (item.type) {
 				case "Brand": {
 					const brand = this.#Config.brands.find(({ id }) => id === item.id);
-					tabType = brand.tab.type;
+					tabType = brand.tab.type === "Grevy" ? "F1" : brand.tab.type;
 					countryCodeKey = brand.countryCodeKey ?? tabType;
 					break;
 				}
@@ -1067,7 +1067,7 @@ export default class InjectBrand {
 		for (const config of candidates) {
 			switch (config.kind) {
 				case "apple":
-					switch (settings.Tabs.includes(config.tab.type)) {
+					switch (settings.Tabs.includes(config.tab.type === "Grevy" ? "F1" : config.tab.type)) {
 						case true:
 							selected.push(config);
 							break;

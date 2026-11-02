@@ -10,7 +10,7 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-f1-home.json", import.meta.url)));
 const official = fixture.body.data.canvas.shelves[0];
 const ids = official.items.map(({ id }) => id);
-const tabs = ["Grevy", "MLS", "Sports"];
+const tabs = ["F1", "MLS", "Sports"];
 const anchorId = "uts.col.home-popular-movies";
 const options = { pfm: "iphone", region: "us", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
 Console.logLevel = "OFF";

@@ -39,14 +39,15 @@ test("public tab settings replace Kids with Formula 1 in Apple's navigation orde
 	const tabs = argsFull.find(({ key }) => key === "Tabs");
 	assert.deepEqual(
 		tabs.options.slice(0, 4).map(({ key }) => key),
-		["WatchNow", "Originals", "Grevy", "MLS"],
+		["WatchNow", "Originals", "F1", "MLS"],
 	);
 	assert.equal(
 		tabs.options.some(({ key }) => key === "Kids"),
 		false,
 	);
 	assert.equal(tabs.defaultValue.includes("Kids"), false);
-	assert.deepEqual(tabs.defaultValue.slice(0, 4), ["WatchNow", "Originals", "Grevy", "MLS"]);
+	assert.equal(tabs.options.some(({ key }) => key === "Grevy"), false);
+	assert.deepEqual(tabs.defaultValue.slice(0, 4), ["WatchNow", "Originals", "F1", "MLS"]);
 	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Kids").defaultValue, "US");
 	assert.equal(argsFull.some(({ key }) => key === "CountryCode.Grevy"), false);
 	assert.equal(database.TV.Settings.CountryCode.Grevy, undefined);

@@ -41,9 +41,9 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Locale、Storage、LogLevel；full/dev 额外提供 Tabs 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
-Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）使用 Apple 原生类型 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，地区与其他体育内容共用 `CountryCode.Sports`。
+Tabs 默认不含儿童，argument 的 Tabs 选项也不再提供儿童；`CountryCode.Kids` 与原有儿童 tab 处理逻辑保持不变。F1（一级方程式赛车）的 Tabs 设置值为 `F1`，Apple 原生导航类型为 `Grevy`、品牌 `tvs.sbd.241000`，默认排在 Apple TV 与 MLS 之间，地区与其他体育内容共用 `CountryCode.Sports`。
 
-Watch Now 的官方体育行包含 F1、MLS 和 Friday Night Baseball（MLB）。已有行原位补齐；缺行时在“热门电影”前创建，没有该定位行的分页保持原样。Tabs 的 Grevy、MLS、Sports 分别控制三项补入，原站已有卡片保留；F1/MLB 使用 Sports 地区，MLS 沿用 Originals。
+Watch Now 的官方体育行包含 F1、MLS 和 Friday Night Baseball（MLB）。已有行原位补齐；缺行时在“热门电影”前创建，没有该定位行的分页保持原样。Tabs 的 F1、MLS、Sports 分别控制三项补入，原站已有卡片保留；F1/MLB 使用 Sports 地区，MLS 沿用 Originals。
 
 Apple TV、F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象，包含官方标题、目标地址、背景色、通用链接和四组侧栏 SVG；服务器已有的 tab 整体保留。提取样本与原始响应哈希记录在 `tests/fixtures/us-tabs.json`。
 
@@ -59,7 +59,7 @@ Apple TV、F1、MLS、Lumen 的身份、素材和插入位置集中在 `InjectBr
 | F1 / MLS | Grevy / MLS 根 tab | channelLockup / brandLockup、uts.col.tv-plus-sports-nav-brick | 官方 Browse 网格 |
 | Lumen | ChannelsAndApps 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
 
-配置响应已有 `tabs` 时，先按 `pfm` 过滤本次 `Settings.Tabs`：iPhone 移除 F1（`Grevy`）和 MLS，其他平台保持用户设置。导航注入和排序共用过滤后的设置，选中的服务器 tab 完整保留。首页和搜索卡片仍不按平台或版本限制，不创建缺少的导航容器或首页行，也不补入 moretv。搜索同时覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，使用搜索专用卡片素材；dev 默认顺序为 Lumen → Apple TV → F1 → MLS，保留其他卡片和分页。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。Lumen 的搜索后端、鉴权及侧栏行为保持原有范围，官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
+配置响应已有 `tabs` 时，先按 `pfm` 过滤本次 `Settings.Tabs`：iPhone 移除 F1 和 MLS，其他平台保持用户设置。导航注入和排序共用过滤后的设置，选中的服务器 tab 完整保留。首页和搜索卡片仍不按平台或版本限制，不创建缺少的导航容器或首页行，也不补入 moretv。搜索同时覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，使用搜索专用卡片素材；dev 默认顺序为 Lumen → Apple TV → F1 → MLS，保留其他卡片和分页。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。Lumen 的搜索后端、鉴权及侧栏行为保持原有范围，官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
 
 dev 在 `arguments-builder.dev.config.ts` 中另提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。有值时由 `InjectSearch` 查询 Lumen 并合并到 Apple 搜索结果；留空或只填空白时跳过 Lumen 搜索，包括频道入口和影视结果。此鉴权值只从本次 argument 读取，不参与下表的 BoxJs / Storage 合并，也不写入品牌或响应正文。
 

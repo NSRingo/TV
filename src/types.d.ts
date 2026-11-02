@@ -47,7 +47,7 @@ export interface Settings {
      * Possible values:
      * - `'WatchNow'` - 主页（立即观看）
      * - `'Originals'` - Apple TV+（原创内容）
-     * - `'Grevy'` - F1（一级方程式赛车）
+     * - `'F1'` - F1（一级方程式赛车）
      * - `'MLS'` - MLS
      * - `'Sports'` - 体育节目
      * - `'Store'` - 商店
@@ -57,9 +57,9 @@ export interface Settings {
      * - `'Library'` - 资料库
      * - `'Search'` - 搜索
      *
-     * @defaultValue ["WatchNow","Originals","Grevy","MLS","Sports","Store","Movies","TV","ChannelsAndApps","Library","Search"]
+     * @defaultValue ["WatchNow","Originals","F1","MLS","Sports","Store","Movies","TV","ChannelsAndApps","Library","Search"]
      */
-    Tabs?: ('WatchNow' | 'Originals' | 'Grevy' | 'MLS' | 'Sports' | 'Store' | 'Movies' | 'TV' | 'ChannelsAndApps' | 'Library' | 'Search')[];
+    Tabs?: ('WatchNow' | 'Originals' | 'F1' | 'MLS' | 'Sports' | 'Store' | 'Movies' | 'TV' | 'ChannelsAndApps' | 'Library' | 'Search')[];
     CountryCode?: {
     /**
          * [配置文件] 国家或地区代码

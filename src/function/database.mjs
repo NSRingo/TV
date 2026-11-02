@@ -4,7 +4,7 @@ export default {
 			ThirdParty: false,
 			isWorkaroundSSLPinning: true,
 			Locale: "AUTO",
-			Tabs: ["WatchNow", "Originals", "Grevy", "MLS", "Sports", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
+			Tabs: ["WatchNow", "Originals", "F1", "MLS", "Sports", "Store", "Movies", "TV", "ChannelsAndApps", "Library", "Search"],
 			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},
 		Configs: {
