@@ -78,7 +78,7 @@ export async function Response($request, $response) {
 							if (Caller !== "wta") {
 								body = injectBrand.InjectUTSConfigurationTabs(body, brandContext);
 								// caller=wta跳过原导航整理，仍注入配置频道
-								if (Array.isArray(body?.data?.applicationProps?.tabs)) {
+								if (body.data?.applicationProps?.tabs) {
 									//body.data.applicationProps.requiredParamsMap.WithoutUtsk.locale = "zh_Hans";
 									//body.data.applicationProps.requiredParamsMap.Default.locale = "zh_Hans";
 									const newTabs = [];

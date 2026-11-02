@@ -570,20 +570,18 @@ export default class InjectBrand {
 	 */
 	InjectUTSConfigurationTabs(body, options) {
 		const tabs = body.data?.applicationProps?.tabs;
-		switch (Array.isArray(tabs)) {
-			case true:
-				for (const config of this.#SelectConfig(options).all) {
-					switch (config.tab.destinationType) {
-						case "Target":
-							switch (tabs.some(({ type }) => type === config.tab.type)) {
-								case false:
-									tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
-									break;
-							}
+		if (tabs) {
+			for (const config of this.#SelectConfig(options).all) {
+				switch (config.tab.destinationType) {
+					case "Target":
+						switch (tabs.some(({ type }) => type === config.tab.type)) {
+							case false:
+								tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
 							break;
 					}
+						break;
 				}
-				break;
+			}
 		}
 		return body;
 	}

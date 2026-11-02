@@ -138,7 +138,7 @@ export async function Response($request, $response) {
 	 */
 	function removeEmptyGenres(shelf) {
 		for (const item of shelf.items ?? []) {
-			switch (Array.isArray(item.genres) && item.genres.length === 0) {
+			switch (item.genres?.length === 0) {
 				case true:
 					delete item.genres;
 					break;

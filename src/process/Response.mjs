@@ -69,7 +69,7 @@ export async function Response($request, $response) {
 							if (Caller !== "wta") {
 								body = injectBrand.InjectUTSConfigurationTabs(body, brandContext);
 								// 不修改caller=wta的configurations数据
-								if (Array.isArray(body?.data?.applicationProps?.tabs)) {
+								if (body.data?.applicationProps?.tabs) {
 									const newTabs = [];
 									Settings.Tabs.forEach(type => {
 										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {
