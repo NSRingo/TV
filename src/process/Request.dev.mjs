@@ -251,7 +251,13 @@ export async function Request($request) {
 							else if (url.pathname.includes("/uts/v3/movies/")) Type = "Movies";
 							else if (url.pathname.includes("/uts/v3/shows/")) Type = "TV";
 							else if (url.pathname.includes("/uts/v3/sporting-events/")) {
-								Type = "Sports";
+								switch (url.searchParams.get("ctx_brand")) {
+									case "tvs.sbd.7000": // MLS
+										break;
+									default:
+										Type = "Sports";
+										break;
+								}
 								//if (Settings["ThirdParty"])
 								if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
 							} else if (url.pathname.includes("/uts/v3/canvases/Sports/")) {
