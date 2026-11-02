@@ -67,9 +67,9 @@ export async function Response($request, $response) {
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
 							if (Caller !== "wta") {
-								body = injectBrand.InjectUTSConfigurationTabs(body, brandContext);
 								// 不修改caller=wta的configurations数据
 								if (body.data?.applicationProps?.tabs) {
+									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
 									const newTabs = [];
 									Settings.Tabs.forEach(type => {
 										if (body.data.applicationProps.tabs.some(Tab => Tab?.type === type)) {

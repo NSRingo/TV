@@ -12,21 +12,21 @@ const appleIds = ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"];
 const context = { pfm: "iphone", region: "tw", settings: database.TV.Settings, kinds: ["apple", "thirdParty"] };
 Console.logLevel = "OFF";
 
-test("Apple root tabs are selected from the registry without platform/version restrictions", () => {
+test("Apple root tabs use supplied settings and preserve existing entries", () => {
 	const injector = new InjectBrand();
+	const options = { ...context, settings: structuredClone(context.settings) };
 	const search = { type: "Search", custom: "preserved" };
-	const body = { data: { applicationProps: { tabs: [search] } } };
-	assert.equal(injector.InjectUTSConfigurationTabs(body, context), body);
-	assert.equal(body.data.applicationProps.tabs[0], search);
+	const tabs = [search];
+	assert.equal(injector.InjectUTSConfigurationTabs(tabs, options), tabs);
+	assert.deepEqual(options.settings, context.settings);
+	assert.equal(tabs[0], search);
 	assert.deepEqual(
-		body.data.applicationProps.tabs.slice(1).map(({ type }) => type),
+		tabs.slice(1).map(({ type }) => type),
 		["Originals", "Grevy", "MLS"],
 	);
-	assert.equal(body.data.channels, undefined);
-	const once = structuredClone(body);
-	injector.InjectUTSConfigurationTabs(body, context);
-	assert.deepEqual(body, once);
-	assert.deepEqual(injector.InjectUTSConfigurationTabs({}, context), {});
+	const once = structuredClone(tabs);
+	injector.InjectUTSConfigurationTabs(tabs, options);
+	assert.deepEqual(tabs, once);
 });
 
 for (const fixture of fixtures.samples) {

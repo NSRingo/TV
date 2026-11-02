@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
+import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Request } from "../src/process/Request.mjs";
 import { Request as RequestDev } from "../src/process/Request.dev.mjs";
 import { Response } from "../src/process/Response.mjs";
@@ -80,9 +81,11 @@ for (const [variant, processResponse, processRequest] of [
 		assert.deepEqual(actual, expected);
 	});
 
-	test(`${variant}: a missing tabs array does not create F1 navigation`, async t => {
+	test(`${variant}: a missing tabs array skips navigation injection`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
+		const injectTabs = t.mock.method(InjectBrand.prototype, "InjectUTSConfigurationTabs");
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
+		assert.equal(injectTabs.mock.callCount(), 0);
 		assert.equal(
 			(JSON.parse(response.body).data.applicationProps.tabs ?? []).some(({ type }) => type === "Grevy"),
 			false,

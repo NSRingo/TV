@@ -563,27 +563,24 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 在已有 tabs 数组中补齐选中的苹果频道；普通导航排序仍由 Response 处理。
-	 * @param {Object} body - 已解析的 UTS 配置正文；缺少 tabs 数组时保持原样。
-	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 决定苹果频道选取。
-	 * @returns {Object} 原 body 引用；已有 tab 保留，不创建品牌字典。
+	 * 按传入的 settings.Tabs 原地补齐选中的苹果频道；平台限制和普通导航排序由 Response 处理。
+	 * @param {Object[]} tabs - 调用方已确认存在的 UTS 根导航数组。
+	 * @param {Pick<BrandContext, 'kinds'|'settings'>} options - 本次请求的频道选择设置。
+	 * @returns {Object[]} 原 tabs 引用；已有 tab 保留。
 	 */
-	InjectUTSConfigurationTabs(body, options) {
-		const tabs = body.data?.applicationProps?.tabs;
-		if (tabs) {
-			for (const config of this.#SelectConfig(options).all) {
-				switch (config.tab.destinationType) {
-					case "Target":
-						switch (tabs.some(({ type }) => type === config.tab.type)) {
-							case false:
-								tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
+	InjectUTSConfigurationTabs(tabs, options) {
+		for (const config of this.#SelectConfig(options).all) {
+			switch (config.tab.destinationType) {
+				case "Target":
+					switch (tabs.some(({ type }) => type === config.tab.type)) {
+						case false:
+							tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
 							break;
 					}
-						break;
-				}
+					break;
 			}
 		}
-		return body;
+		return tabs;
 	}
 
 	/**
