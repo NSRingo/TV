@@ -72,7 +72,8 @@ export async function Response($request, $response) {
 										case "Rooms":
 											switch (Boolean(body.data?.canvas)) {
 												case true:
-													body = injectBrand.InjectBrand(body, brandContext);
+													body.data.channels ??= {};
+													injectBrand.InjectBrand(body.data.channels, brandContext);
 													for (const shelf of body.data.canvas.shelves ?? []) {
 														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
 														removeEmptyGenres(shelf);
@@ -86,7 +87,8 @@ export async function Response($request, $response) {
 								case "shelves":
 									switch (Boolean(body.data?.shelf)) {
 										case true:
-											body = injectBrand.InjectBrand(body, brandContext);
+											body.data.channels ??= {};
+											injectBrand.InjectBrand(body.data.channels, brandContext);
 											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
 											removeEmptyGenres(body.data.shelf);
 											break;

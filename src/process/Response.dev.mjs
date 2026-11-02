@@ -1,4 +1,4 @@
-import { Console, fetch } from "@nsnanocat/util";
+import { Console, fetch, Lodash as _ } from "@nsnanocat/util";
 import InjectBrand from "../class/InjectBrand.mjs";
 import database from "../function/database.mjs";
 import setENV from "../function/setENV.mjs";
@@ -291,7 +291,8 @@ export async function Response($request, $response) {
 							body = await injectBrand.InjectSearch(body, { ...brandContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
 							break;
 						case "/uts/v3/channels":
-							body = injectBrand.InjectBrand(body, brandContext);
+							_.set(body, "data.channels", body.data?.channels ?? {});
+							injectBrand.InjectBrand(body.data.channels, brandContext);
 							break;
 						case "/uts/v3/user/settings":
 							body = injectBrand.InjectUTSUserSettings(body, brandContext);

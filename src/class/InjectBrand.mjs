@@ -468,16 +468,15 @@ export default class InjectBrand {
 
 	/**
 	 * 将配置派生的完整 Brand 原地写入品牌接口或资源响应共用的 data.channels 字典。
-	 * @param {Object} body - 已解析的品牌接口、频道、Room 或 shelf 正文。
+	 * @param {Record<string, Object>} channels - 原响应的 `body.data.channels` 字典，由调用方确认存在或初始化。
 	 * @param {BrandContext} options - 本次请求上下文；kinds 含 apple 时必须提供 settings。
-	 * @returns {Object} 原 body 引用；已有品牌的订阅、安装、同意和固定状态保留。
+	 * @returns {Record<string, Object>} 原 `body.data.channels` 字典引用；已有品牌的订阅、安装、同意和固定状态保留。
 	 */
-	InjectBrand(body, options) {
+	InjectBrand(channels, options) {
 		for (const config of this.#SelectConfig(options).all) {
-			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
-			_.set(body, ["data", "channels", channel.id], channel);
+			channels[config.id] = this.#BuildBrand(config, options, channels[config.id]);
 		}
-		return body;
+		return channels;
 	}
 
 	/**

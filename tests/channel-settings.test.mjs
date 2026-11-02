@@ -16,7 +16,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const channels = body.data.channels;
 		channels[brandId] = { id: brandId, isSubscribed: false, isInstalled: false, isConsented: false };
 		const injector = new InjectBrand();
-		assert.equal(injector.InjectBrand(body, { pfm: platform, region: "tw" }), body);
+		assert.equal(injector.InjectBrand(channels, { pfm: platform, region: "tw" }), channels);
 		assert.equal(body.data.channels, channels);
 		assert.equal(channels.tvs, undefined);
 		for (const [id, brand] of Object.entries(fixtures.channels.data.channels)) assert.deepEqual(channels[id], brand);
@@ -30,14 +30,15 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		assert.equal(brand.isConsented, false);
 		assert.deepEqual(brand.appBundleIds, [["iphone", "ipad"].includes(platform) ? "com.apple.tv" : "com.apple.TVWatchList"]);
 		const once = structuredClone(body);
-		injector.InjectBrand(body, { pfm: platform, region: "tw" });
+		injector.InjectBrand(channels, { pfm: platform, region: "tw" });
 		assert.deepEqual(body, once);
 	});
 }
 
-test("shared Brand creates a missing dictionary without adding navigation or preferences", () => {
-	const body = {};
-	assert.equal(new InjectBrand().InjectBrand(body, { pfm: "iphone", region: "us" }), body);
+test("dev channels creates a missing dictionary without adding navigation or preferences", async t => {
+	t.mock.method(Storage, "getItem", () => ({}));
+	const response = await ResponseDev({ url: "https://uts-api.itunes.apple.com/uts/v3/channels?pfm=iphone&sf=143441", headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: "{}" });
+	const body = JSON.parse(response.body);
 	assert.deepEqual(Object.keys(body.data), ["channels"]);
 	assert.equal(body.data.channels[brandId].id, brandId);
 });
