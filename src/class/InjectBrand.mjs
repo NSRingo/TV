@@ -53,13 +53,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.1
+ * @version 1.2.2
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.1";
+		this.Version = "1.2.2";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -520,7 +520,7 @@ export default class InjectBrand {
 	/**
 	 * 原地首插配置中的频道导航，缺少 ChannelsAndApps 分组或 subTabs 时创建。
 	 * 导航 target 与 data.channels[id] 共用同一完整 Brand。
-	 * @param {Object} body - 已解析的 UTS 配置正文。
+	 * @param {Object} body - 原响应正文，同时读写 `body.data.applicationProps.tabs` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；仅 ChannelsAndApps 分组生成子导航。
 	 * @returns {Object} 原 body 引用。
 	 */
@@ -561,9 +561,9 @@ export default class InjectBrand {
 
 	/**
 	 * 按传入的 settings.Tabs 原地补齐选中的苹果频道；平台限制和普通导航排序由 Response 处理。
-	 * @param {Object[]} tabs - 调用方已确认存在的 UTS 根导航数组。
+	 * @param {Object[]} tabs - 原响应的 `body.data.applicationProps.tabs` 数组，由调用方确认存在。
 	 * @param {Pick<BrandContext, 'kinds'|'settings'>} options - 本次请求的频道选择设置。
-	 * @returns {Object[]} 原 tabs 引用；已有 tab 保留。
+	 * @returns {Object[]} 原 `body.data.applicationProps.tabs` 数组引用；已有 tab 保留。
 	 */
 	InjectUTSConfigurationTabs(tabs, options) {
 		for (const config of this.#SelectConfig(options).all) {
@@ -583,7 +583,7 @@ export default class InjectBrand {
 	/**
 	 * 按配置补入已有频道行、体育 brick 和 moretv；苹果与第三方使用各自位置。
 	 * 没有目标行时保持正文原样，不创建首页行。
-	 * @param {Object} body - 已解析的首页正文，频道行位于 data.canvas.shelves。
+	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；位置来自各频道 placements，不按平台限制。
 	 * @returns {Object} 原 body 引用。
 	 */
@@ -593,13 +593,19 @@ export default class InjectBrand {
 			switch (shelf.displayType) {
 				case "channelLockup":
 				case "brandLockup":
-					this.#InjectCards(body, shelf, configs[shelf.displayType], options, "tahoma_watchnow");
+					if (configs[shelf.displayType].length) {
+						body.data.channels ??= {};
+						this.#InjectCards(body.data.channels, shelf, configs[shelf.displayType], options, "tahoma_watchnow");
+					}
 					break;
 				case "doorLockupWithSections":
 					for (const section of shelf.sections ?? []) {
 						switch (section.id) {
 							case "uts.shlfsect.moretv":
-								this.#InjectCards(body, section, configs[section.id], options, "tahoma_watchnow");
+								if (configs[section.id].length) {
+									body.data.channels ??= {};
+									this.#InjectCards(body.data.channels, section, configs[section.id], options, "tahoma_watchnow");
+								}
 								break;
 						}
 					}
@@ -607,7 +613,10 @@ export default class InjectBrand {
 				case "brick":
 					switch (shelf.id) {
 						case "uts.col.tv-plus-sports-nav-brick":
-							this.#InjectCards(body, shelf, configs[shelf.id], options, "tahoma_watchnow");
+							if (configs[shelf.id].length) {
+								body.data.channels ??= {};
+								this.#InjectCards(body.data.channels, shelf, configs[shelf.id], options, "tahoma_watchnow");
+							}
 							break;
 					}
 					break;
@@ -619,7 +628,7 @@ export default class InjectBrand {
 	/**
 	 * 在原站 Browse 网格补齐苹果频道并首插第三方；缺少网格时仅为第三方创建。
 	 * 两条 landing 路径共用此结构，不生成 Room 或搜索结果 BR 行。
-	 * @param {Object} body - 已解析的搜索落地页正文。
+	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；苹果频道使用 settings.Tabs 与对应地区设置。
 	 * @returns {Object} 原 body 引用。
 	 */
@@ -648,7 +657,10 @@ export default class InjectBrand {
 						configs = thirdParty;
 						break;
 				}
-				this.#InjectCards(body, shelf, configs, options, "tahoma_searchlanding");
+				if (configs.length) {
+					body.data.channels ??= {};
+					this.#InjectCards(body.data.channels, shelf, configs, options, "tahoma_searchlanding");
+				}
 				break;
 			}
 		}
@@ -658,7 +670,7 @@ export default class InjectBrand {
 	/**
 	 * 查询频道影视后端并原地写入搜索结果；频道名完整匹配时才加入频道入口。
 	 * 主响应使用 data.canvas.shelves，官方 TR/BR 导航使用 data.shelf。
-	 * @param {Object} body - 已解析的搜索主响应或 TR/BR 导航正文。
+	 * @param {Object} body - 原响应正文，读写 `body.data.channels` 以及 `body.data.canvas.shelves`（主搜索）或 `body.data.shelf`（TR/BR）。
 	 * @param {BrandContext & BrandSearchOptions} options - 本次请求上下文与搜索参数；只查询选中的第三方后端。
 	 * @returns {Promise<Object>} 解析为原 body 引用；无鉴权或空词不查询，BR 导航不查询影视后端。
 	 */
@@ -948,22 +960,22 @@ export default class InjectBrand {
 	/**
 	 * 苹果按原生顺序补缺项，第三方沿用首插；卡片与品牌字典分别使用对应协议结构。
 	 * @private
-	 * @param {Object} body - 原响应正文，用于保留或补入 data.channels[id]。
-	 * @param {Object} container - 已找到的 shelf 或 section，原地修改其 items。
-	 * @param {BrandConfig[]} configs - SelectConfig 按当前位置归组后的频道配置。
+	 * @param {Record<string, Object>} channels - 原响应的 `body.data.channels` 字典，由调用方确认存在或初始化。
+	 * @param {Object} container - 原响应的 `body.data.canvas.shelves[]` 或 `body.data.canvas.shelves[].sections[]` 对象，原地修改其 `items`。
+	 * @param {BrandConfig[]} configs - SelectConfig 按当前位置归组后的频道配置，由调用方确认非空。
 	 * @param {BrandContext} options - 传给 BuildBrand 的本次请求上下文。
 	 * @param {'tahoma_watchnow'|'tahoma_searchlanding'} rootId - 官方页面根 ID，直接选取苹果频道 cards 素材。
 	 * @returns {void} 原地补入卡片与品牌，保留已有苹果卡片及其 URL。
 	 */
-	#InjectCards(body, container, configs, options, rootId) {
+	#InjectCards(channels, container, configs, options, rootId) {
 		const items = container.items ?? [];
 		const appleOrder = this.#Config.filter(({ kind }) => kind === "apple").map(({ id }) => id);
 		const thirdPartyBrands = [];
 		for (const config of configs) {
-			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
+			const channel = this.#BuildBrand(config, options, channels[config.id]);
 			switch (config.kind) {
 				case "apple":
-					_.set(body, ["data", "channels", channel.id], channel);
+					channels[channel.id] = channel;
 					switch (items.some(({ id }) => id === config.id)) {
 						case false: {
 							// 先找后方原生频道；没有时接在前方频道之后，均不存在则首插。
@@ -998,19 +1010,13 @@ export default class InjectBrand {
 					break;
 			}
 		}
-		switch (configs.length) {
+		switch (thirdPartyBrands.length) {
 			case 0:
+				container.items = items;
 				break;
 			default:
-				switch (thirdPartyBrands.length) {
-					case 0:
-						container.items = items;
-						break;
-					default:
-						container.items = [...thirdPartyBrands, ...items.filter(({ id }) => !thirdPartyBrands.some(brand => brand.id === id))];
-						for (const brand of thirdPartyBrands) _.set(body, ["data", "channels", brand.id], brand);
-						break;
-				}
+				container.items = [...thirdPartyBrands, ...items.filter(({ id }) => !thirdPartyBrands.some(brand => brand.id === id))];
+				for (const brand of thirdPartyBrands) channels[brand.id] = brand;
 				break;
 		}
 	}
