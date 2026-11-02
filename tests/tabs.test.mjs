@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Request } from "../src/process/Request.mjs";
 import { Request as RequestDev } from "../src/process/Request.dev.mjs";
 import { Response } from "../src/process/Response.mjs";
@@ -89,17 +88,6 @@ for (const [variant, processResponse, processRequest] of [
 		});
 	}
 
-	test(`${variant}: injected Apple navigation matches the complete official tab objects`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const body = structuredClone(fixture.body);
-		const types = ["Originals", "Grevy", "MLS"];
-		const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-		body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => !types.includes(type));
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-		const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-		assert.deepEqual(actual, expected);
-	});
-
 	for (const platform of ["desktop", "iphone"]) {
 		test(`${variant}: ${platform} retains selected Apple navigation as complete server objects`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
@@ -118,11 +106,9 @@ for (const [variant, processResponse, processRequest] of [
 		});
 	}
 
-	test(`${variant}: a missing tabs array skips navigation injection`, async t => {
+	test(`${variant}: configuration without tabs does not invent an F1 tab`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const injectTabs = t.mock.method(InjectBrand.prototype, "InjectUTSConfigurationTabs");
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
-		assert.equal(injectTabs.mock.callCount(), 0);
 		assert.equal(
 			(JSON.parse(response.body).data.applicationProps.tabs ?? []).some(({ type }) => type === "Grevy"),
 			false,

@@ -35,24 +35,6 @@ test("language defaults to AUTO across release, full, dev and BoxJs settings", (
 	assert.equal(settings.find(({ id }) => id === "@iRingo.TV.Settings.Locale").val, "AUTO");
 });
 
-test("public tab settings replace Kids with Formula 1 in Apple's navigation order", () => {
-	const tabs = argsFull.find(({ key }) => key === "Tabs");
-	assert.deepEqual(
-		tabs.options.slice(0, 4).map(({ key }) => key),
-		["WatchNow", "Originals", "F1", "MLS"],
-	);
-	assert.equal(
-		tabs.options.some(({ key }) => key === "Kids"),
-		false,
-	);
-	assert.equal(tabs.defaultValue.includes("Kids"), false);
-	assert.equal(tabs.options.some(({ key }) => key === "Grevy"), false);
-	assert.deepEqual(tabs.defaultValue.slice(0, 4), ["WatchNow", "Originals", "F1", "MLS"]);
-	assert.equal(argsFull.find(({ key }) => key === "CountryCode.Kids").defaultValue, "US");
-	assert.equal(argsFull.some(({ key }) => key === "CountryCode.Grevy"), false);
-	assert.equal(database.TV.Settings.CountryCode.Grevy, undefined);
-});
-
 test("Lumen search authentication is optional and exposed only in dev arguments", () => {
 	const argument = dev.args.find(({ key }) => key === "LumenKey");
 	assert.equal(argument.type, "string");

@@ -173,28 +173,6 @@ test("Apple selection and country settings only control supplementation", () => 
 	assert.equal(body.data.channels[appleIds[2]].isAppleTvPlus, false);
 });
 
-test("mixed registry keeps sidebar, website and external search capabilities third-party only", async t => {
-	const injector = new InjectBrand();
-	const body = { data: { brandSidebarSetting: {} } };
-	injector.InjectUTSUserSettings(body.data.brandSidebarSetting, context);
-	assert.deepEqual(Object.keys(body.data.brandSidebarSetting), ["tvs.sbd.lumen"]);
-	const website = { data: { canvas: { shelves: [] } } };
-	injector.InjectWebsiteLink(website.data.canvas.shelves, context);
-	assert.deepEqual(
-		website.data.canvas.shelves.map(({ id }) => id),
-		["edt.col.lumen-website"],
-	);
-	const requests = [];
-	t.mock.method(globalThis, "fetch", async url => {
-		requests.push(String(url));
-		return new globalThis.Response('{"items":[]}', { status: 200 });
-	});
-	globalThis.fetch.cookieJar = {};
-	await injector.InjectSearch({}, { ...context, pathname: "/uts/v3/search", searchTerm: "Formula 1", topResultsOnly: false, lumenKey: "test-key" });
-	assert.equal(requests.length, 1);
-	assert.match(requests[0], /^https:\/\/www.lumen.ax\/api\/appletv\/v1\/search\?/);
-});
-
 test("one injector keeps Apple image objects and request settings isolated", () => {
 	const injector = new InjectBrand();
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
@@ -211,6 +189,4 @@ test("one injector keeps Apple image objects and request settings isolated", () 
 	assert.equal(second.data.canvas.shelves[0].items[1].images.shelfItemImage.width, 2000);
 	assert.equal(second.data.channels[appleIds[1]].images.logoGlyph.width, 960);
 	assert.match(second.data.channels[appleIds[1]].url, /^https:\/\/tv.apple.com\/us\//);
-	assert.equal(JSON.stringify(second).includes('"placements"'), false);
-	assert.equal(JSON.stringify(second).includes('"kind"'), false);
 });

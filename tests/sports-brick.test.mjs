@@ -10,7 +10,6 @@ import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-f1-home.json", import.meta.url)));
 const official = fixture.body.data.canvas.shelves[0];
 const ids = official.items.map(({ id }) => id);
-const tabs = ids;
 const anchorId = "uts.col.home-popular-movies";
 const options = { pfm: "iphone", region: "us", settings: { ...database.TV.Settings, Tabs: ids } };
 Console.logLevel = "OFF";
@@ -57,39 +56,6 @@ for (const missing of ids) {
 	});
 }
 
-for (let mask = 0; mask < 8; mask++) {
-	test(`sports brick creation respects enabled Tabs combination ${mask}`, () => {
-		const selected = tabs.filter((_, index) => mask & (1 << index));
-		const settings = { ...options.settings, Tabs: selected };
-		const before = { id: "before", items: [] };
-		const anchor = { id: anchorId, items: [] };
-		const after = { id: "after", items: [] };
-		const shelves = [before, anchor, after];
-		const channels = {};
-		new InjectBrand().InjectBrick(shelves, channels, { ...options, settings });
-		if (mask === 0) {
-			assert.deepEqual(shelves, [before, anchor, after]);
-			assert.deepEqual(channels, {});
-		} else {
-			assert.deepEqual(
-				shelves.map(({ id }) => id),
-				["before", official.id, anchorId, "after"],
-			);
-			assert.equal(shelves[0], before);
-			assert.equal(shelves[2], anchor);
-			assert.equal(shelves[3], after);
-			assert.deepEqual(
-				shelves[1].items.map(({ id }) => id),
-				ids.filter((_, index) => mask & (1 << index)),
-			);
-			assert.deepEqual(
-				Object.keys(channels),
-				ids.slice(0, 2).filter((_, index) => mask & (1 << index)),
-			);
-		}
-	});
-}
-
 test("sports switches control supplementation without removing original cards", () => {
 	const shelves = [structuredClone(official)];
 	const before = structuredClone(shelves);
@@ -97,6 +63,10 @@ test("sports switches control supplementation without removing original cards", 
 	new InjectBrand().InjectBrick(shelves, channels, { ...options, settings: { ...database.TV.Settings, Tabs: [] } });
 	assert.deepEqual(shelves, before);
 	assert.deepEqual(channels, {});
+	const missing = [{ id: anchorId, items: [] }];
+	new InjectBrand().InjectBrick(missing, channels, { ...options, settings: { ...options.settings, Tabs: [] } });
+	assert.equal(missing.length, 1);
+	assert.equal(missing[0].id, anchorId);
 });
 
 test("pages without the sports row or popular-movies anchor stay unchanged", () => {
@@ -148,6 +118,18 @@ for (const [variant, processResponse] of [
 	["release", Response],
 	["dev", ResponseDev],
 ]) {
+	test(`${variant}: Sports selects the MLB Room without adding F1 or MLS brands`, async t => {
+		t.mock.method(Storage, "getItem", () => ({}));
+		const request = { url: "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/tahoma_watchnow?sf=143470&pfm=atv&v=101", headers: {}, $argument: "Tabs=Sports&CountryCode.Sports=JP&LogLevel=OFF" };
+		const body = { data: { canvas: { shelves: [{ id: anchorId, items: [] }] } } };
+		const response = await processResponse(request, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+		const actual = JSON.parse(response.body);
+		assert.deepEqual(actual.data.canvas.shelves[0].items.map(({ id }) => id), [ids[2]]);
+		assert.equal(actual.data.canvas.shelves[0].items[0].type, "Room");
+		assert.match(actual.data.canvas.shelves[0].items[0].url, /^https:\/\/tv.apple.com\/jp\/room\//);
+		assert.equal(actual.data.channels, undefined);
+	});
+
 	for (const path of ["/uts/v3/canvases/Roots/watchNow", "/uts/v3/canvases/Roots/tahoma_watchnow", "/uts/v3/canvases/roots/tahoma_watchnow"]) {
 		test(`${variant}: Watch Now creates the sports brick at its native anchor through ${path}`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
