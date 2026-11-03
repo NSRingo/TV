@@ -19,6 +19,7 @@ Console.logLevel = "OFF";
 
 test("third-party Config independently overrides both brand flags, including explicit false", async () => {
 	// 只替换私有配置生成各组样本，不为测试增加公开配置接口。
+	// Replace private configuration only, without adding a public configuration API for tests.
 	const source = readFileSync(new URL("../src/class/InjectBrand.mjs", import.meta.url), "utf8").replace('"@nsnanocat/util"', JSON.stringify(import.meta.resolve("@nsnanocat/util")));
 	for (const brandType of ["Channel", "App"]) {
 		for (const isApSubscription of [undefined, true, false]) {
@@ -27,7 +28,7 @@ test("third-party Config independently overrides both brand flags, including exp
 				const configured = source.replace('brandType: "Channel",', `...${JSON.stringify(config)},`);
 				const { default: ConfiguredInjectBrand } = await import(`data:text/javascript;base64,${Buffer.from(configured).toString("base64")}`);
 				const body = { data: { channels: { [brandId]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
-				new ConfiguredInjectBrand({ settings }).InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
+				new ConfiguredInjectBrand({ settings, pfm: "atv" }).InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
 				const brand = body.data.channels[brandId];
 				assert.equal(brand.isApSubscription, isApSubscription ?? (brandType === "Channel"), JSON.stringify(config));
 				assert.equal(brand.isFirstParty, isFirstParty ?? (brandType === "Channel"), JSON.stringify(config));

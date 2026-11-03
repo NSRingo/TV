@@ -2,7 +2,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 
 /**
  * @typedef {Object} BrandContext
- * @property {string|null} [pfm] - 请求的官方 pfm 参数，用于品牌宿主字段；省略时使用桌面宿主。
+ * @property {string|null} [pfm] - 请求的官方平台；desktop 或缺少时不补入 App，其他品牌据此选择宿主 / Official platform; desktop or missing values exclude Apps and select the host for other brands.
  * @property {string} region - 本次响应的小写地区码。
  * @property {string} [locale] - 响应入口已确定的语言；省略时使用英文 / Locale resolved by the response entrypoint; defaults to English when omitted.
  * @property {Omit<import('../types').Settings, 'Brands'> & {Brands: string[]}} settings - setENV 已将 Brands 转换为 ID 数组的请求设置 / Request settings with Brands resolved to IDs by setENV.
@@ -15,7 +15,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {boolean} [isFirstParty] - 第三方内置接入标志；指定时优先，省略时按 brandType 派生。
  * @property {string} id - Brand 完整 ID。
  * @property {string} name - 品牌名称。
- * @property {string} url - 频道 URL；第三方模板中的 {id} 由 Brand ID 替换。
+ * @property {string} [url] - 频道 URL；第三方模板支持 {id} 与 {region} / Brand URL, supporting {id} and {region} in third-party templates.
  * @property {Object} tab - 苹果根导航或第三方频道子导航模板；共用分组保存在 #Config.ChannelsAndApps。
  * @property {string} [tab.title] - 苹果根导航标题；第三方子导航使用 Brand 标题。
  * @property {string} tab.type - 官方导航类型，只用于协议输出。
@@ -26,8 +26,21 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {Record<string, Object>} [tab.images] - 官方侧栏图像。
  * @property {boolean} [tab.canBeHiddenFromNavigation] - 第三方子导航是否允许隐藏。
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
+ * @property {Object} [mobileAppIcon] - iPhone/iPad 的官方 App 图标 / Official App icon for iPhone and iPad.
+ * @property {string[]} [appAdamIds] - 外部 App 的真实商店 ID / Actual App Store IDs of the external App.
+ * @property {string[]} [appBundleIds] - 外部 App 的真实 bundle ID / Actual bundle IDs of the external App.
+ * @property {string} [appName] - 外部 App 名称 / External App name.
+ * @property {string} [appStoreUrl] - 外部 App 的商店链接 / External App Store URL.
  * @property {Record<'tahoma_watchnow'|'tahoma_searchlanding', Object>} [cards] - 苹果频道按官方页面根 ID 区分的卡片图片。
- * @property {Record<string, boolean>} [metadata] - 苹果品牌的公开能力标志，不含账户状态。
+ * @property {Record<string, boolean>} [metadata] - 苹果品牌的公开能力标志，不含账户状态 / Public Apple brand capabilities, without account state.
+ * @property {boolean} [isAppleTvPlus] - Apple TV+ 品牌标志 / Apple TV+ brand flag.
+ * @property {boolean} [isItunes] - iTunes 品牌标志 / iTunes brand flag.
+ * @property {boolean} [isTvAppBrand] - TV app 聚合品牌标志 / TV app aggregate brand flag.
+ * @property {boolean} [isWatchlistEnabled] - 关注列表能力 / Watchlist capability.
+ * @property {boolean} [shouldTrackPlayActivity] - 观看活动上报能力 / Playback activity tracking capability.
+ * @property {boolean} [isConsented] - 缺少原站状态时采用的同意状态 / Consent state used when upstream state is absent.
+ * @property {boolean} [isInstalled] - 缺少原站状态时采用的安装状态 / Installation state used when upstream state is absent.
+ * @property {boolean} [isSubscribed] - 缺少原站状态时采用的订阅状态 / Subscription state used when upstream state is absent.
  * @property {string} [searchURL] - 第三方影视搜索端点。
  * @property {string} [website] - 第三方官网外链。
  * @property {string} [hexColor] - 第三方品牌背景色。
@@ -44,18 +57,18 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.6
+ * @version 1.3.0
  */
 export default class InjectBrand {
 	/**
-	 * 初始化本实例启用的品牌及补入模板的名称；地区等请求参数由各注入方法接收。
-	 * Initialize enabled brands and names in supplementary templates; injection methods receive the remaining request context.
-	 * @param {Pick<BrandContext, 'settings'|'locale'>} options - 品牌设置与入口已确定的语言 / Brand settings and the locale resolved by the entrypoint.
+	 * 按品牌设置和平台初始化配置并本地化名称；地区等参数由各注入方法接收。
+	 * Initialize brands for the selected settings and platform, then localize names; injection methods receive the remaining context.
+	 * @param {Pick<BrandContext, 'settings'|'locale'|'pfm'>} options - 品牌设置、官方平台与已确定的语言 / Brand settings, official platform and resolved locale.
 	 */
-	constructor({ settings, locale = "en" }) {
+	constructor({ settings, locale = "en", pfm }) {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.6";
-		this.#Config.brands = this.#Config.brands.filter(({ id }) => settings.Brands.includes(id));
+		this.Version = "1.3.0";
+		this.#Config.brands = this.#Config.brands.filter(({ id, brandType }) => settings.Brands.includes(id) && (brandType !== "App" || (pfm && pfm !== "desktop")));
 		this.#Config.ChannelsAndApps.title = this.#Localize(this.#Config.ChannelsAndApps.title, locale);
 		for (const config of this.#Config.brands) {
 			config.name = this.#Localize(config.name, locale);
@@ -338,7 +351,7 @@ export default class InjectBrand {
 
 				id: "tvs.sbd.lumen",
 				name: "Lumen",
-				url: "https://tv.apple.com/us/channel/lumen/{id}",
+				url: "https://tv.apple.com/{region}/channel/lumen/{id}",
 				searchURL: "https://www.lumen.ax/api/appletv/v1/search",
 				website: "https://www.lumen.ax/",
 				hexColor: "#080809",
@@ -571,7 +584,7 @@ export default class InjectBrand {
 	 * 按配置补入已有频道行和 moretv；苹果与第三方使用各自位置。
 	 * 没有目标行时保持正文原样，不创建首页行。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
-	 * @param {BrandContext} options - 本次请求上下文；settings.Brands 使用 ID，不按平台限制 / Request context with resolved brand IDs, without platform restrictions.
+	 * @param {BrandContext} options - 本次请求上下文；使用已启用的品牌配置补入卡片 / Request context; supplement cards from the enabled brand configurations.
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectWatchNowLockup(body, options) {
@@ -589,7 +602,7 @@ export default class InjectBrand {
 					for (const section of shelf.sections ?? []) {
 						switch (section.id) {
 							case "uts.shlfsect.moretv":
-								const channels = configs.filter(({ id }) => id === "tvs.sbd.lumen");
+								const channels = configs.filter(({ brandType }) => brandType);
 								if (channels.length) {
 									body.data.channels ??= {};
 									this.#InjectCards(body.data.channels, section, channels, options, "tahoma_watchnow");
@@ -635,9 +648,11 @@ export default class InjectBrand {
 	 */
 	InjectSearchLanding(body, options) {
 		let shelf = body.data?.canvas?.shelves?.find(({ displayType, isGrid }) => displayType === "brick" && isGrid);
+		const configs = [];
 		for (const config of this.#Config.brands) {
-			switch (config.id) {
-				case "tvs.sbd.lumen":
+			switch (config.brandType) {
+				case "Channel":
+				case "App":
 					if (!shelf) {
 						shelf = this.#BuildSearchLandingShelf(config);
 						_.set(body, "data.canvas.shelves", body.data?.canvas?.shelves ?? []);
@@ -645,11 +660,14 @@ export default class InjectBrand {
 					}
 					break;
 				default:
-					if (!shelf || shelf.id === "edt.col.lumen-browse") continue;
+					if (!shelf || shelf.id?.endsWith("-browse")) continue;
 					break;
 			}
+			configs.push(config);
+		}
+		if (configs.length) {
 			body.data.channels ??= {};
-			this.#InjectCards(body.data.channels, shelf, [config], options, "tahoma_searchlanding");
+			this.#InjectCards(body.data.channels, shelf, configs, options, "tahoma_searchlanding");
 		}
 		return body;
 	}
@@ -865,12 +883,13 @@ export default class InjectBrand {
 	 */
 	#BuildBrandSubTab(config, channel, state) {
 		return {
+			...state,
 			...config.tab,
 			// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
 			brandType: config.brandType,
 			title: channel.title,
 			isPinned: state?.isPinned ?? channel.isPinned,
-			images: { defaultImage: { ...channel.images.appIcon } },
+			images: { ...state?.images, defaultImage: { ...channel.images.appIcon } },
 			target: channel,
 			universalLinks: [channel.url],
 		};
@@ -968,86 +987,87 @@ export default class InjectBrand {
 	 * 保留原站苹果 Brand；缺少时使用公开元数据，第三方沿用各自接入定义。
 	 * @private
 	 * @param {BrandConfig} config - #Config.brands 中的服务身份、端点和素材。
-	 * @param {BrandContext} options - pfm 只决定宿主字段，地区由本次设置选择。
+	 * @param {BrandContext} options - 平台用于默认宿主和图标，URL 按配置模板选择地区 / Platform selects the default host and icon; configured URL templates select the region.
 	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装、同意和固定状态。
 	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md
 	 */
 	#BuildBrand(config, { pfm, region, settings }, state) {
-		// 只匹配宿主字段，不按平台限制注入；官方 iPhone/ipad 与 desktop/appletv 返回不同宿主。
-		let appHost;
+		// Config 的 App 身份优先，缺少时采用官方平台宿主；移动端图标逐字段回退。
+		// Configured App identity takes precedence over the platform host; mobile icons fall back field by field.
+		const images = { ...config.images };
+		let appHost, defaults;
 		switch (pfm) {
 			case "iphone":
 			case "ipad":
 				appHost = { appAdamIds: ["1174078549"], appBundleIds: ["com.apple.tv"], appName: "Apple TV" };
+				images.appIcon = config.mobileAppIcon ?? images.appIcon;
 				break;
 			default:
 				appHost = { appAdamIds: ["1171145244"], appBundleIds: ["com.apple.TVWatchList"], appName: "TV" };
 				break;
 		}
-		if (!config.brandType) {
-			if (state) return state;
-			const country = config.id === "tvs.sbd.241000" ? settings.CountryCode.Sports : settings.CountryCode.Originals;
-			return {
-				id: config.id,
-				name: config.name,
-				title: config.name,
-				type: "Brand",
-				url: config.url.replace("/us/", `/${country === "AUTO" ? region : country.toLowerCase()}/`),
-				hexColor: "#000000",
-				...config.metadata,
-				...appHost,
-				images: Object.fromEntries(Object.entries(config.images).map(([key, image]) => [key, { ...image }])),
-			};
+		switch (config.brandType) {
+			case "Channel":
+				defaults = { isApSubscription: true, isFirstParty: true, isConsented: true, isInstalled: true, isSubscribed: true };
+				break;
+			case "App":
+				defaults = { isApSubscription: false, isFirstParty: false };
+				break;
+			default: {
+				if (state) return state;
+				const country = config.id === "tvs.sbd.241000" ? settings.CountryCode.Sports : settings.CountryCode.Originals;
+				return {
+					id: config.id,
+					name: config.name,
+					title: config.name,
+					type: "Brand",
+					url: config.url.replace("/us/", `/${country === "AUTO" ? region : country.toLowerCase()}/`),
+					hexColor: "#000000",
+					...config.metadata,
+					...appHost,
+					images: Object.fromEntries(Object.entries(images).map(([key, image]) => [key, { ...image }])),
+				};
+			}
 		}
-		const channel = {
+		return {
+			...state,
 			id: config.id,
 			name: config.name,
-			title: config.name,
-			type: "Brand",
-			flavor: "FullBleed",
-			url: config.url.replace("{id}", config.id).replace("/us/", `/${region}/`),
-			searchURL: config.searchURL,
-			intents: ["NAVIGATE"],
-			isPinned: state?.isPinned ?? false,
-			...appHost,
-			hexColor: config.hexColor,
-			isApSubscription: config.isApSubscription,
-			isAppleMusicImmersiveBrand: false,
-			isAppleTvPlus: false,
-			// 已有响应状态优先；缺省沿用 Lumen 后端的显示状态，不代表真实订阅或播放授权。
-			isConsented: state?.isConsented ?? true,
-			isFirstParty: config.isFirstParty,
-			isInstalled: state?.isInstalled ?? true,
-			isItunes: false,
-			isMountainBrand: false,
-			isStaging: false,
-			isSubscribed: state?.isSubscribed ?? true,
+			title: config.title ?? state?.title ?? config.name,
+			type: config.type ?? "Brand",
+			flavor: config.flavor ?? "FullBleed",
+			url: (config.url ?? `https://tv.apple.com/{region}/channel/{id}`).replace("{id}", config.id).replace("{region}", region),
+			searchURL: config.searchURL ?? state?.searchURL,
+			intents: [...(config.intents ?? state?.intents ?? ["NAVIGATE"])],
+			isPinned: state?.isPinned ?? config.isPinned ?? false,
+			appAdamIds: [...(config.appAdamIds ?? appHost.appAdamIds)],
+			appBundleIds: [...(config.appBundleIds ?? appHost.appBundleIds)],
+			appName: config.appName ?? appHost.appName,
+			appStoreUrl: config.appStoreUrl ?? state?.appStoreUrl,
+			hexColor: config.hexColor ?? state?.hexColor,
+			// Config 显式 true/false 优先；缺省由 Channel/App 的默认值决定，不代表真实授权。
+			// Explicit Config flags take precedence; Channel/App defaults do not establish playback authorization.
+			isApSubscription: config.isApSubscription ?? defaults.isApSubscription,
+			isAppleMusicImmersiveBrand: config.isAppleMusicImmersiveBrand ?? state?.isAppleMusicImmersiveBrand ?? false,
+			isAppleTvPlus: config.isAppleTvPlus ?? state?.isAppleTvPlus ?? false,
+			// 已有账户状态优先；Channel 保留原显示默认值，App 不补造缺失的账户状态。
+			// Preserve upstream account state; Channels retain their display defaults and Apps leave missing account state unset.
+			isConsented: state?.isConsented ?? config.isConsented ?? defaults.isConsented,
+			isFirstParty: config.isFirstParty ?? defaults.isFirstParty,
+			isInstalled: state?.isInstalled ?? config.isInstalled ?? defaults.isInstalled,
+			isItunes: config.isItunes ?? state?.isItunes ?? false,
+			isMountainBrand: config.isMountainBrand ?? state?.isMountainBrand ?? false,
+			isStaging: config.isStaging ?? state?.isStaging ?? false,
+			isSubscribed: state?.isSubscribed ?? config.isSubscribed ?? defaults.isSubscribed,
 			// true 对应 tvs.sbd.3000（TV app 聚合品牌），并非“在 TV 内播放”的开关。
-			isTvAppBrand: false,
-			// Lumen 后端尚未声明继续观看/进度上报能力，不能照搬官方 Channel 的开启值。
-			isWatchlistEnabled: false,
-			shouldTrackPlayActivity: false,
-			images: Object.fromEntries(Object.entries(config.images).map(([key, image]) => [key, { ...image }])),
+			// true identifies the TV app aggregate brand, not an in-app playback switch.
+			isTvAppBrand: config.isTvAppBrand ?? state?.isTvAppBrand ?? false,
+			// 缺少继续观看/进度上报声明时关闭，不能照搬官方 Channel 的开启值。
+			// Missing watchlist/tracking declarations default to false rather than copying official Channel capabilities.
+			isWatchlistEnabled: config.isWatchlistEnabled ?? state?.isWatchlistEnabled ?? false,
+			shouldTrackPlayActivity: config.shouldTrackPlayActivity ?? state?.shouldTrackPlayActivity ?? false,
+			images: { ...state?.images, ...Object.fromEntries(Object.entries(images).map(([key, image]) => [key, { ...image }])) },
 		};
-		// Config 显式 true/false 优先；未指定时 Channel=true、App=false。
-		// true 派生 Subscription，归一化图片取 shelfImage、来源 overlay 取 whiteLogo，并阻止 App 页脚。
-		// false 在当前其他分类标志为 false 时派生 Punchout，图片改取 appIcon；不决定真实播放授权。
-		// brandType=App 接入必须配真实外部 App 的 appBundleIds、appAdamIds、appName，不能沿用上述 Apple TV 宿主。
-		switch (channel.isApSubscription) {
-			case undefined:
-				channel.isApSubscription = config.brandType === "Channel";
-				break;
-		}
-		// 此开关独立于 isApSubscription；Config 显式 true/false 优先，未指定时 Channel=true、App=false。
-		// true 阻止 connectedAppFooter，但不参与 channelType 分类，也不代表品牌归 Apple 所有或获得授权。
-		// false 且 isApSubscription=false、isConsented=true 时，非桌面 Channel 页面可能生成打开/安装及管理 App 页脚。
-		// 页脚按 appBundleIds[0] 构造 app:// 动作，不读取 Brand.url；缺少 bundle ID 会导致空动作解引用并显示 errorTemplate。
-		switch (channel.isFirstParty) {
-			case undefined:
-				channel.isFirstParty = config.brandType === "Channel";
-				break;
-		}
-		return channel;
 	}
 }
