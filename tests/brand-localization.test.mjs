@@ -21,10 +21,10 @@ const sportsTitles = {
 };
 Console.logLevel = "OFF";
 
-test("constructor uses the resolved context locale without reapplying language settings", () => {
+test("build uses the resolved method locale without reapplying constructor or language settings", () => {
 	const options = { ...context, locale: "en-US", settings: { ...settings, Locale: "zh-Hans" } };
 	const tabs = [];
-	new InjectBrand(options).InjectUTSConfigurationTabs(tabs, options);
+	new InjectBrand({ ...options, locale: "zh-Hans" }).InjectUTSConfigurationTabs(tabs, options);
 	const expected = fixture.samples.find(({ locale }) => locale === options.locale);
 	assert.equal(tabs.find(({ type }) => type === "Grevy").title, expected.configuration.tabs.find(({ target }) => target?.id === f1Id).title);
 });
@@ -59,13 +59,14 @@ for (const sample of fixture.samples) {
 	}
 
 	test(`${sample.locale}: F1 cards and the known English sports header localize while existing cards are preserved`, () => {
-		const injector = new InjectBrand({ settings, locale: sample.locale });
+		const options = { ...context, locale: sample.locale };
+		const injector = new InjectBrand({ settings });
 		for (const [method, shelf] of [
 			["InjectWatchNowLockup", { displayType: "brandLockup", items: [] }],
 			["InjectSearchLanding", { displayType: "brick", isGrid: true, items: [] }],
 		]) {
 			const body = { data: { canvas: { shelves: [shelf] } } };
-			injector[method](body, context);
+			injector[method](body, options);
 			assert.equal(shelf.items.find(({ id }) => id === f1Id).title, f1.title);
 			assert.equal(body.data.channels[f1Id].title, f1.title);
 		}
@@ -73,12 +74,15 @@ for (const sample of fixture.samples) {
 		shelf.items = shelf.items.filter(({ id }) => id !== f1Id);
 		const before = structuredClone(shelf);
 		before.header.title = sportsTitles[sample.locale];
-		injector.InjectBrick([shelf], {}, context);
+		injector.InjectBrick([shelf], {}, options);
 		assert.equal(shelf.items.find(({ id }) => id === f1Id).title, f1.title);
 		assert.deepEqual({ ...shelf, items: shelf.items.filter(({ id }) => id !== f1Id) }, before);
+		const once = structuredClone(shelf);
+		injector.InjectBrick([shelf], {}, options);
+		assert.deepEqual(shelf, once);
 		const channels = structuredClone(sports.body.data.channels);
 		const original = channels[f1Id];
-		injector.InjectChannels(channels, context);
+		injector.InjectChannels(channels, options);
 		assert.equal(channels[f1Id], original);
 		assert.deepEqual(channels[f1Id], sports.body.data.channels[f1Id]);
 	});
@@ -86,7 +90,7 @@ for (const sample of fixture.samples) {
 	test(`${sample.locale}: supplementary sports brick localizes its header and captured card names`, () => {
 		const options = { ...context, locale: sample.locale };
 		const shelves = [{ id: "uts.col.home-popular-movies", items: [] }];
-		new InjectBrand(options).InjectBrick(shelves, {}, options);
+		new InjectBrand({ settings }).InjectBrick(shelves, {}, options);
 		const shelf = shelves[0];
 		assert.equal(shelf.header.title, sportsTitles[sample.locale]);
 		assert.equal(shelf.items.find(({ id }) => id === f1Id).title, f1.title);
@@ -96,8 +100,8 @@ for (const sample of fixture.samples) {
 	test(`${sample.locale}: search BR uses the shared label and preserves existing localized headers`, async t => {
 		t.mock.method(globalThis, "fetch", async () => new globalThis.Response(JSON.stringify({ items: [] }), { status: 200 }));
 		globalThis.fetch.cookieJar = {};
-		const injector = new InjectBrand({ settings, locale: sample.locale });
-		const options = { ...context, pathname: "/uts/v3/shelves/uts.col.search.BR", searchTerm: "Lumen", topResultsOnly: false, lumenKey: "test-key" };
+		const injector = new InjectBrand({ settings });
+		const options = { ...context, locale: sample.locale, pathname: "/uts/v3/shelves/uts.col.search.BR", searchTerm: "Lumen", topResultsOnly: false, lumenKey: "test-key" };
 		const body = {};
 		await injector.InjectSearch(body, options);
 		assert.equal(body.data.shelf.title, sample.channelsAndApps.title);
@@ -108,6 +112,17 @@ for (const sample of fixture.samples) {
 		assert.deepEqual(shelf.header, header);
 	});
 }
+
+test("one injector uses each method locale and keeps the original name for later builds", () => {
+	const injector = new InjectBrand({ settings, locale: "ko-KR" });
+	for (const locale of ["zh-Hans", "ja-JP", "en-US"]) {
+		const channels = {};
+		injector.InjectChannels(channels, { ...context, locale });
+		const sample = fixture.samples.find(sample => sample.locale === locale);
+		const title = sample.configuration.tabs.find(({ target }) => target?.id === f1Id).title;
+		assert.deepEqual([channels[f1Id].name, channels[f1Id].title], [title, title]);
+	}
+});
 
 test("editing one response's channel group does not affect another response", () => {
 	const injector = new InjectBrand({ settings });

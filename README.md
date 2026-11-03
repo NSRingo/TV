@@ -51,9 +51,11 @@ F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象�
 
 地区设置只切换内容地区。`Locale` 默认 `AUTO`，原样保留 App 提供的语言参数和请求头，不添加、截断或按地区覆盖语言代码；手动选择语言时，仅覆盖 UTS 接口的 `locale` 参数。
 
-补入内容的入口名称、“频道和 App”分组名及体育 Brick 标题由 `InjectBrand.#Localize` 集中映射。响应入口依次取显式 `Locale`、URL `locale`、`X-Apple-I-Locale`、`Accept-Language` 的首选语言，将确定后的 `locale` 放入 `brandContext` 直接传给构造器；class 只使用该结果，不解析请求头或重新判断设置。缺少语言或没有对应译文时使用英文原文。F1 的简体名称为“一级方程式锦标赛”，繁体为“一級方程式賽車”，粤语繁体为“一級方程式”；同时提供官方日文、韩文名称，MLS、Lumen 保留原名。日区体育 Brick 的 MLB Room 卡片 `title` 为“Apple TV フライデーナイト ベースボール”。新增体育行标题按英文原文译写：简繁中文为“探索 F1、MLS 和 MLB”，日文为“F1、MLS、MLBをチェック”，并覆盖粤语繁体和韩文。新增导航、品牌、卡片及搜索 BR 的分组名共用该表；服务器已有的导航、品牌、卡片和本地化行标题仍保留；体育行的已知英文标题使用模板译文，其他说明文字不参与映射。原生 tab 和新建“频道和 App”分组共用 `#BuildTab`，复制目标、通用链接或子项数组，避免响应之间共享可变导航对象。官方配置、搜索及体育 shelf 响应的文字投影见 `tests/fixtures/brand-localization.json`；体育行标题的译文不作为官方抓包文案，也不代表真机显示验证。
+响应入口将确定后的 `locale` 放入 `brandContext`，Inject 原样传给 Build。构造器只筛选品牌和平台，配置保留原文；Build 先组装对象，再调用 `#Localize(object, ["name", "title"], locale)`，由便捷方法统一按字段路径取值、查表并写回。缺省语言使用英文，没有译文的字段保持原状，不创建缺失字段。品牌子导航、频道卡片和搜索结果行复用 `channel.title`；导航 Build 复制目标、通用链接或子项数组，避免响应之间共享可变导航对象。
 
-F1、MLS、MLB、Lumen、Netflix 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, locale?, pfm? }`，按转换后的 `settings.Brands` 裁剪品牌配置并本地化补入文字；App 类型在 desktop 或缺少 pfm 时不补入。以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
+映射范围仍为品牌及入口名称、“频道和 App”分组名和体育 Brick 标题，不扩展 Browse、Top Results 或停用官网外链的翻译。F1 的简体名称为“一级方程式锦标赛”，繁体为“一級方程式賽車”，粤语繁体为“一級方程式”；同时提供官方日文、韩文名称，MLS、Lumen 保留原名。日区体育 Brick 的 MLB Room 卡片 `title` 为“Apple TV フライデーナイト ベースボール”。新增体育行标题按英文原文译写：简繁中文为“探索 F1、MLS 和 MLB”，日文为“F1、MLS、MLBをチェック”，并覆盖粤语繁体和韩文。服务器已有的导航、品牌、卡片和本地化行标题仍保留；体育行的已知英文标题在 Build 中通过同一取值方法转换，其他说明文字不参与映射。官方配置、搜索及体育 shelf 响应的文字投影见 `tests/fixtures/brand-localization.json`；体育行标题的译文不作为官方抓包文案，也不代表真机显示验证。
+
+F1、MLS、MLB、Lumen、Netflix 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, pfm? }`，按转换后的 `settings.Brands` 和平台裁剪品牌配置；App 类型在 desktop 或缺少 pfm 时不补入。以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
 
 Lumen 资源 response 按请求 `v` 区分行头部协议：`v<84` 保留后端顶层 `shelf.title` 和已有字段，`v>=84` 为普通行补 `shelf.header.title` / 查看更多导航，并为 epicStage 补完整 Brand header；缺少 `v` 时沿用现有现代 header 修复。顶层 title、内容与分页继续保留。分界来自原站 v83/v84 的 iPhone、iPad、tvOS 与独立 shelf 对照，详见 [TVKit 版本调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/shelf-header-version-investigation.md)；本地回放与测试不代表真机显示验证。
 

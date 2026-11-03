@@ -61,35 +61,27 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 export default class InjectBrand {
 	/**
-	 * 按品牌设置和平台初始化配置并本地化名称；地区等参数由各注入方法接收。
-	 * Initialize brands for the selected settings and platform, then localize names; injection methods receive the remaining context.
-	 * @param {Pick<BrandContext, 'settings'|'locale'|'pfm'>} options - 品牌设置、官方平台与已确定的语言 / Brand settings, official platform and resolved locale.
+	 * 按品牌设置和平台初始化配置；语言、地区等参数由各注入方法传给 Build。
+	 * Initialize brands for the selected settings and platform; injection methods pass locale, region and other context to builders.
+	 * @param {Pick<BrandContext, 'settings'|'pfm'>} options - 品牌设置与官方平台 / Brand settings and official platform.
 	 */
-	constructor({ settings, locale = "en", pfm }) {
+	constructor({ settings, pfm }) {
 		this.Name = "InjectBrand";
 		this.Version = "1.3.0";
 		this.#Config.brands = this.#Config.brands.filter(({ id, brandType }) => settings.Brands.includes(id) && (brandType !== "App" || (pfm && pfm !== "desktop")));
-		this.#Config.ChannelsAndApps.title = this.#Localize(this.#Config.ChannelsAndApps.title, locale);
-		for (const config of this.#Config.brands) {
-			config.name = this.#Localize(config.name, locale);
-			if (config.tab.title) config.tab.title = this.#Localize(config.tab.title, locale);
-		}
-		for (const brick of this.#Config.bricks) {
-			brick.header.title = this.#Localize(brick.header.title, locale);
-			for (const item of brick.items) item.title = this.#Localize(item.title, locale);
-		}
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
 	/**
-	 * 映射补入模板的入口名称、频道分组名与体育行标题；没有译文时保留原文。
-	 * Map entry names, channel-group names and sports headers in supplementary templates, preserving text without a translation.
+	 * 本地化已构建对象的指定字段；没有译文的字段保持原样。
+	 * Localize selected fields of a built object, leaving fields without a translation unchanged.
 	 * @private
-	 * @param {string} name - 模板中的英文原文 / Original English text in the template.
+	 * @param {Object} object - 本次 Build 构建的对象 / Object built for this response.
+	 * @param {string[]} paths - 需要本地化的字段路径 / Field paths to localize.
 	 * @param {string} [locale="en"] - 本次 Build 的语言，兼容请求头的下划线分隔符 / Locale for this build, allowing underscores from request headers.
-	 * @returns {string} 本地化文字或原文 / Localized text or the original text.
+	 * @returns {Object} 原对象引用 / The same object reference.
 	 */
-	#Localize(name, locale = "en") {
+	#Localize(object, paths, locale = "en") {
 		const names = {
 			"Formula 1": { "zh-Hans": "一级方程式锦标赛", "zh-Hant": "一級方程式賽車", yue: "一級方程式", ja: "フォーミュラ1", ko: "포뮬러 1" },
 			"Channels & Apps": { "zh-Hans": "频道和 App", "zh-Hant": "頻道和 App", yue: "頻道和 App", ja: "チャンネル＆アプリ", ko: "채널 및 앱" },
@@ -98,7 +90,11 @@ export default class InjectBrand {
 		};
 		const normalized = locale.trim().replaceAll("_", "-").toLowerCase();
 		const language = normalized.split("-")[0] === "zh" ? (/^zh-(?:hant|tw|hk|mo)(?:-|$)/.test(normalized) ? "zh-Hant" : "zh-Hans") : normalized.split("-")[0];
-		return names[name]?.[language] ?? name;
+		for (const path of paths) {
+			const value = names[_.get(object, path)]?.[language];
+			if (value !== undefined) _.set(object, path, value);
+		}
+		return object;
 	}
 
 	/**
@@ -722,7 +718,7 @@ export default class InjectBrand {
 	 * @returns {Promise<Object>} 解析为原 body 引用；无鉴权或空词不查询，BR 导航不查询影视后端。
 	 */
 	async InjectSearch(body, options) {
-		const { region, pathname, searchTerm, topResultsOnly, lumenKey } = options;
+		const { pathname, searchTerm, topResultsOnly, lumenKey } = options;
 		const keyword = searchTerm.trim().toLowerCase();
 		// 脚本内部请求不经过 Surge Header Rewrite，鉴权必须随本次查询显式传入。
 		const headers = { "X-Lumen-Key": lumenKey?.trim() };
@@ -730,7 +726,7 @@ export default class InjectBrand {
 		const channels = configs.map(config => this.#BuildBrand(config, options, body.data?.channels?.[config.id]));
 		// 只有频道名称匹配搜索词时，才向官方 TR/BR 加入频道入口。
 		const brands = channels.filter(({ name }) => name.toLowerCase() === keyword);
-		const categories = this.#BuildSearchCategoryShelves(region, searchTerm);
+		const categories = this.#BuildSearchCategoryShelves(options, searchTerm);
 		switch (pathname) {
 			case "/uts/v3/search":
 			case "/uts/v3/shelves/uts.col.search.TR": {
@@ -854,22 +850,22 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 按原生顺序补入启用的 Brand/Room 卡片，保留已有行、卡片和未知字段；已知英文行标题使用模板译文。
-	 * Supplement enabled Brand/Room cards in native order, preserving existing rows, cards and unknown fields; use the template translation for the known English header.
+	 * 按原生顺序补入启用的 Brand/Room 卡片，在输出时本地化行标题和新增卡片名称，保留已有卡片和未知字段。
+	 * Supplement enabled Brand/Room cards in native order, localizing headers and new card names on output while preserving existing cards and unknown fields.
 	 * @private
-	 * @param {Object} config - #Config.bricks 中保存的官方 brick 模板。
-	 * @param {BrandContext} options - F1/MLB 使用 Sports 地区，MLS 沿用 Originals；AUTO 保留请求地区。
-	 * @param {Object} [state] - 已有 shelf；缺少时复制模板，避免后续响应修改配置。
-	 * @returns {Object} 原位补齐的已有 shelf 或新建 shelf；全关时不添加卡片。
+	 * @param {Object} config - #Config.bricks 中保存的官方 brick 原文模板 / Unlocalized official brick template from #Config.bricks.
+	 * @param {BrandContext} options - 本次语言与地区设置；F1/MLB 使用 Sports，MLS 使用 Originals / Locale and region settings; F1/MLB use Sports and MLS uses Originals.
+	 * @param {Object} [state] - 已有 shelf；缺少时复制模板 / Existing shelf; copy the template when absent.
+	 * @returns {Object} 原位补齐的已有 shelf 或新建 shelf；全关时不添加卡片 / Existing shelf supplemented in place or a new shelf; no cards are added when all brands are disabled.
 	 */
-	#BuildBrick(config, { region, settings }, state) {
+	#BuildBrick(config, { region, locale, settings }, state) {
 		const shelf = state ?? { ...config, header: { ...config.header }, cachingPolicy: { ...config.cachingPolicy }, url: config.url.replace("/us/", `/${region}/`), items: [] };
-		if (shelf.header?.title === "Explore F1, MLS, and MLB") shelf.header.title = config.header.title;
+		this.#Localize(shelf, ["header.title"], locale);
 		for (const [position, item] of config.items.entries()) {
 			if (!settings.Brands.includes(item.id) || shelf.items.some(({ id }) => id === item.id)) continue;
 			const country = item.id === "tvs.sbd.7000" ? settings.CountryCode.Originals : settings.CountryCode.Sports;
 			const itemRegion = country === "AUTO" ? region : country.toLowerCase();
-			const card = { ...item, url: item.url.replace("/us/", `/${itemRegion}/`), images: { shelfItemImage: { ...item.images.shelfItemImage } } };
+			const card = this.#Localize({ ...item, url: item.url.replace("/us/", `/${itemRegion}/`), images: { shelfItemImage: { ...item.images.shelfItemImage } } }, ["title"], locale);
 			if (item.intents) card.intents = [...item.intents];
 			const later = config.items.slice(position + 1);
 			let index = later.map(({ id }) => shelf.items.findIndex(entry => entry.id === id)).find(index => index >= 0) ?? -1;
@@ -924,7 +920,7 @@ export default class InjectBrand {
 	 * @returns {Object} 本次响应的独立导航对象 / Independent navigation object for this response.
 	 */
 	#BuildTab(template, { locale }) {
-		return { ...template, title: this.#Localize(template.title, locale), ...(template.target ? { target: { ...template.target }, universalLinks: [...template.universalLinks] } : { subTabs: [...template.subTabs] }) };
+		return this.#Localize({ ...template, ...(template.target ? { target: { ...template.target }, universalLinks: [...template.universalLinks] } : { subTabs: [...template.subTabs] }) }, ["title"], locale);
 	}
 
 	/**
@@ -966,17 +962,15 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 组装 data.canvas.shelves[] 或 data.shelf 使用的官方 TR、BR 分类模板。
+	 * 组装 data.canvas.shelves[] 或 data.shelf 使用的官方 TR、BR 分类，并按本次语言生成标题。
+	 * Build official TR/BR categories for data.canvas.shelves[] or data.shelf, generating titles for this locale.
 	 * @private
-	 * @param {string} region - 用于分类导航 URL 的小写地区码。
-	 * @param {string} term - 需要编码到分类导航 URL 的原始搜索词。
-	 * @returns {Object[]} TR、BR 顺序的分类模板，保留官方标题与 ID 契约。
+	 * @param {BrandContext} context - 使用其中的地区码和已确定的语言 / Context containing the region and resolved locale.
+	 * @param {string} term - 需要编码到分类导航 URL 的原始搜索词 / Original search term to encode in category URLs.
+	 * @returns {Object[]} TR、BR 顺序的分类对象，保留官方 ID 契约 / Category objects in TR/BR order, preserving official IDs.
 	 */
-	#BuildSearchCategoryShelves(region, term) {
-		return [
-			{ id: "uts.col.search.TR", title: "Top Results", displayType: "cardLockup", slug: "top-results" },
-			{ id: "uts.col.search.BR", title: this.#Config.ChannelsAndApps.title, displayType: "lockup", slug: "channels--apps" },
-		].map(({ slug, ...category }) => ({
+	#BuildSearchCategoryShelves({ region, locale }, term) {
+		return [{ id: "uts.col.search.TR", title: "Top Results", displayType: "cardLockup", slug: "top-results" }, this.#Localize({ id: "uts.col.search.BR", title: "Channels & Apps", displayType: "lockup", slug: "channels--apps" }, ["title"], locale)].map(({ slug, ...category }) => ({
 			...category,
 			header: { title: category.title, supportsSeeAllView: true, url: `https://tv.apple.com/${region}/shelf/${slug}/${category.id}?searchTerm=${encodeURIComponent(term)}` },
 			url: `https://tv.apple.com/${region}/collection/${slug}/${category.id}?searchTerm=${encodeURIComponent(term)}`,
@@ -1038,15 +1032,16 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 保留原站苹果 Brand；缺少时使用公开元数据，第三方沿用各自接入定义。
+	 * 保留原站苹果 Brand；新建品牌时本地化名称，第三方沿用各自接入定义与已有标题优先级。
+	 * Preserve upstream Apple brands; localize newly built brand names, retaining third-party integration definitions and title precedence.
 	 * @private
-	 * @param {BrandConfig} config - #Config.brands 中的服务身份、端点和素材。
-	 * @param {BrandContext} options - 平台用于宿主和 App 图标；Netflix URL 固定美服 / Platform selects the host and App icon; Netflix URLs use the US storefront.
-	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装、同意和固定状态。
-	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand。
+	 * @param {BrandConfig} config - #Config.brands 中的服务身份、端点、素材与原文名称 / Service identity, endpoints, images and unlocalized names from #Config.brands.
+	 * @param {BrandContext} options - 本次语言、平台与地区；平台决定宿主和 App 图标，Netflix URL 固定美服 / Locale, platform and region; platform selects the host and App icon, while Netflix URLs use the US storefront.
+	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装、同意和固定状态 / Existing brand record, preserving subscription, installation, consent and pinning state.
+	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand / Complete Brand shared by navigation, cards and data.channels[id].
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md
 	 */
-	#BuildBrand(config, { pfm, region, settings }, state) {
+	#BuildBrand(config, { pfm, region, locale, settings }, state) {
 		// Config 的 App 身份优先，缺少时采用官方平台宿主；移动端图标逐字段回退。
 		// Configured App identity takes precedence over the platform host; mobile icons fall back field by field.
 		const images = { ...config.images };
@@ -1071,7 +1066,7 @@ export default class InjectBrand {
 			default: {
 				if (state) return state;
 				const country = config.id === "tvs.sbd.241000" ? settings.CountryCode.Sports : settings.CountryCode.Originals;
-				return {
+				const brand = {
 					id: config.id,
 					name: config.name,
 					title: config.name,
@@ -1082,9 +1077,10 @@ export default class InjectBrand {
 					...appHost,
 					images: Object.fromEntries(Object.entries(images).map(([key, image]) => [key, { ...image }])),
 				};
+				return this.#Localize(brand, ["name", "title"], locale);
 			}
 		}
-		return {
+		const brand = {
 			...state,
 			id: config.id,
 			name: config.name,
@@ -1123,5 +1119,6 @@ export default class InjectBrand {
 			shouldTrackPlayActivity: config.shouldTrackPlayActivity ?? state?.shouldTrackPlayActivity ?? false,
 			images: { ...state?.images, ...Object.fromEntries(Object.entries(images).map(([key, image]) => [key, { ...image }])) },
 		};
+		return this.#Localize(brand, ["name", "title"], locale);
 	}
 }
