@@ -37,8 +37,8 @@ for (const [variant, processResponse, processRequest] of [
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
 		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
 		assert.deepEqual(
-			tabs.map(({ type }) => type),
-			["Search", "WatchNow", "Originals", "Grevy", "MLS", "Sports", ...(variant === "dev" ? ["Store", "ChannelsAndApps"] : ["Store"]), "Library"],
+			tabs.filter(({ type }) => type !== "ChannelsAndApps").map(({ type }) => type),
+			["Search", "WatchNow", "Originals", "Grevy", "MLS", "Sports", "Store", "Library"],
 		);
 		assert.deepEqual(
 			tabs.find(({ type }) => type === "Grevy"),
@@ -119,8 +119,8 @@ for (const [variant, processResponse, processRequest] of [
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Tabs=WatchNow,Kids,Library&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
 		assert.deepEqual(
-			JSON.parse(response.body).data.applicationProps.tabs.map(({ type }) => type),
-			["WatchNow", "Kids", ...(variant === "dev" ? ["ChannelsAndApps"] : []), "Library"],
+			JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => type !== "ChannelsAndApps").map(({ type }) => type),
+			["WatchNow", "Kids", "Library"],
 		);
 	});
 

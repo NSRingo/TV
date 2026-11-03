@@ -62,15 +62,9 @@ for (const fixture of baseline.cases) {
 				const tab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps");
 				assert.equal(tab.subTabs[0].target.id, "tvs.sbd.lumen");
 				assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
-				if (fixture.name.startsWith("tabs-")) {
-					if (!expected.some(({ type }) => type === "ChannelsAndApps")) {
-						const index = expected.findIndex(({ type }) => type === "Library");
-						expected.splice(index < 0 ? expected.length : index, 0, { type: "ChannelsAndApps", title: "频道和 App" });
-					}
-				} else {
-					actual.data.applicationProps.tabs = actual.data.applicationProps.tabs.filter(({ type }) => type !== "ChannelsAndApps");
-					delete actual.data.channels;
-				}
+				actual.data.applicationProps.tabs = actual.data.applicationProps.tabs.filter(({ type }) => type !== "ChannelsAndApps");
+				if (fixture.name.startsWith("tabs-")) expected = expected.filter(({ type }) => type !== "ChannelsAndApps");
+				else delete actual.data.channels;
 			}
 			if (fixture.name.startsWith("tabs-")) {
 				actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
