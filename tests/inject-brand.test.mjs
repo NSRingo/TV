@@ -22,14 +22,16 @@ test("third-party Config independently overrides both brand flags, including exp
 	// Replace private configuration only, without adding a public configuration API for tests.
 	const source = readFileSync(new URL("../src/class/InjectBrand.mjs", import.meta.url), "utf8").replace('"@nsnanocat/util"', JSON.stringify(import.meta.resolve("@nsnanocat/util")));
 	for (const brandType of ["Channel", "App"]) {
+		const id = brandType === "Channel" ? brandId : "tvs.sbd.9000";
+		const selected = { Brands: [id] };
 		for (const isApSubscription of [undefined, true, false]) {
 			for (const isFirstParty of [undefined, true, false]) {
 				const config = { brandType, isApSubscription, isFirstParty };
-				const configured = source.replace('brandType: "Channel",', `...${JSON.stringify(config)},`);
+				const configured = source.replace(`brandType: "${brandType}",`, `...${JSON.stringify(config)},`);
 				const { default: ConfiguredInjectBrand } = await import(`data:text/javascript;base64,${Buffer.from(configured).toString("base64")}`);
-				const body = { data: { channels: { [brandId]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
-				new ConfiguredInjectBrand({ settings, pfm: "atv" }).InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
-				const brand = body.data.channels[brandId];
+				const body = { data: { channels: { [id]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
+				new ConfiguredInjectBrand({ settings: selected, pfm: "atv" }).InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings: selected });
+				const brand = body.data.channels[id];
 				assert.equal(brand.isApSubscription, isApSubscription ?? (brandType === "Channel"), JSON.stringify(config));
 				assert.equal(brand.isFirstParty, isFirstParty ?? (brandType === "Channel"), JSON.stringify(config));
 				assert.equal(body.data.applicationProps.tabs[0].subTabs[0].brandType, brandType);

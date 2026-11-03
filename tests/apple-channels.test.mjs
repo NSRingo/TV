@@ -69,7 +69,7 @@ for (const fixture of fixtures.samples) {
 					const items = actual.data.canvas.shelves[0].items;
 					assert.deepEqual(
 						items.filter(({ type }) => type === "Brand").map(({ id }) => id),
-						["tvs.sbd.lumen", ...appleIds],
+						["tvs.sbd.lumen", ...(platform === "desktop" ? [] : ["tvs.sbd.9000"]), ...appleIds],
 					);
 					for (const item of originalItems)
 						assert.deepEqual(

@@ -111,6 +111,7 @@ const brands: ArgumentItem = {
 		{ key: "MLS", label: "MLS" },
 		{ key: "MLB", label: "MLB（Friday Night Baseball）" },
 		{ key: "Lumen", label: "Lumen" },
+		{ key: "Netflix", label: "Netflix" },
 	],
 	description: "选择要注入的品牌，多个值以逗号分隔；自动选择注入位置，保留原站已有导航与卡片。",
 };
@@ -144,6 +145,7 @@ const countryNames: Record<string, string> = {
 	View: "内容详情地区优先级",
 	WatchNow: "主页",
 	Channels: "频道与 App",
+	Netflix: "Netflix",
 	Originals: "Apple TV+",
 	Sports: "体育节目",
 	Kids: "儿童",

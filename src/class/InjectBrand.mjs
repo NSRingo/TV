@@ -396,6 +396,48 @@ export default class InjectBrand {
 					canBeHiddenFromNavigation: true,
 				},
 			},
+			{
+				isApSubscription: false,
+				isFirstParty: false,
+				brandType: "App",
+				id: "tvs.sbd.9000",
+				name: "Netflix",
+				url: "https://tv.apple.com/us/channel/netflix/tvs.sbd.9000",
+				appAdamIds: ["363590051"],
+				appBundleIds: ["com.netflix.Netflix"],
+				appName: "Netflix",
+				appStoreUrl: "https://itunes.apple.com/app/id363590051?mt=8",
+				isTvAppBrand: false,
+				isAppleTvPlus: false,
+				isItunes: false,
+				isWatchlistEnabled: false,
+				shouldTrackPlayActivity: false,
+				images: {
+					appIcon: {
+						height: 768,
+						supportsLayeredImage: true,
+						url: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/00/13/44/00134444-de00-232a-57e5-baa75ce19cbf/App_Icon-marketing.lsr/{w}x{h}.{f}",
+						width: 1280,
+					},
+					logoGlyph: {
+						height: 58,
+						supportsLayeredImage: false,
+						url: "https://is1-ssl.mzstatic.com/image/thumb/zkkWXoJCcF9mZkak44N6-A/{w}x{h}.{f}",
+						width: 110,
+					},
+				},
+				mobileAppIcon: {
+					height: 1024,
+					supportsLayeredImage: false,
+					url: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/49/40/c4/4940c495-d5d5-00ac-0d3b-65945eb7e4a2/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/{w}x{h}.{f}",
+					width: 1024,
+				},
+				tab: {
+					type: "Brand",
+					destinationType: "Target",
+					canBeHiddenFromNavigation: true,
+				},
+			},
 		],
 		bricks: [
 			{
@@ -987,7 +1029,7 @@ export default class InjectBrand {
 	 * 保留原站苹果 Brand；缺少时使用公开元数据，第三方沿用各自接入定义。
 	 * @private
 	 * @param {BrandConfig} config - #Config.brands 中的服务身份、端点和素材。
-	 * @param {BrandContext} options - 平台用于默认宿主和图标，URL 按配置模板选择地区 / Platform selects the default host and icon; configured URL templates select the region.
+	 * @param {BrandContext} options - 平台用于宿主和 App 图标；Netflix URL 固定美服 / Platform selects the host and App icon; Netflix URLs use the US storefront.
 	 * @param {Object} [state] - 已有品牌记录；保留其订阅、安装、同意和固定状态。
 	 * @returns {Object} 导航、卡片和 data.channels[id] 共用的完整 Brand。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md

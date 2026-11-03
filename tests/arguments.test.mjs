@@ -32,6 +32,16 @@ test("language defaults to AUTO across release, full, dev and BoxJs settings", (
 	assert.equal(settings.find(({ id }) => id === "@iRingo.TV.Settings.Locale").val, "AUTO");
 });
 
+test("Netflix exposes the standard country setting with US as its default", () => {
+	const argument = argsFull.find(({ key }) => key === "CountryCode.Netflix");
+	assert.equal(argument.name, "[Netflix] 国家或地区代码");
+	assert.equal(argument.defaultValue, "US");
+	assert.equal(argument.options[0].key, "AUTO");
+	const setting = new ArgumentsBuilder({ args: argsFull }).buildBoxJsSettings("@iRingo.TV.Settings").find(({ id }) => id === "@iRingo.TV.Settings.CountryCode.Netflix");
+	assert.equal(setting.val, "US");
+	assert.equal(setting.type, "selects");
+});
+
 test("Lumen search authentication is optional and exposed across all settings", () => {
 	for (const config of [release, full, dev]) {
 		const argument = config.args.find(({ key }) => key === "LumenKey");
@@ -58,7 +68,7 @@ test("BoxJs keys and defaults are generated from the full parameter set", () => 
 test("brand selection exposes only supported brands and retires Tabs", () => {
 	assert.deepEqual(
 		argsFull.find(({ key }) => key === "Brands").options.map(({ key }) => key),
-		["F1", "MLS", "MLB", "Lumen"],
+		["F1", "MLS", "MLB", "Lumen", "Netflix"],
 	);
 	for (const config of [release, full, dev])
 		assert.equal(

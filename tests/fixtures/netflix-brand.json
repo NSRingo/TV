@@ -1,0 +1,67 @@
+{
+	"note": "Public Netflix Brand projections from apple.TVKit verification/netflix/origin-observations.json, observed 2026-11-03. Platform/storefront GET replays, not native UI or playback validation. No account state included.",
+	"atv": {
+		"id": "tvs.sbd.9000",
+		"name": "Netflix",
+		"title": "Netflix",
+		"type": "Brand",
+		"appAdamIds": ["363590051"],
+		"appBundleIds": ["com.netflix.Netflix"],
+		"appName": "Netflix",
+		"appStoreUrl": "https://itunes.apple.com/app/id363590051?mt=8",
+		"images": {
+			"appIcon": {
+				"height": 768,
+				"supportsLayeredImage": true,
+				"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/00/13/44/00134444-de00-232a-57e5-baa75ce19cbf/App_Icon-marketing.lsr/{w}x{h}.{f}",
+				"width": 1280
+			},
+			"logoGlyph": {
+				"height": 58,
+				"supportsLayeredImage": false,
+				"url": "https://is1-ssl.mzstatic.com/image/thumb/zkkWXoJCcF9mZkak44N6-A/{w}x{h}.{f}",
+				"width": 110
+			}
+		},
+		"url": "https://tv.apple.com/us/channel/netflix/tvs.sbd.9000",
+		"isApSubscription": false,
+		"isFirstParty": false,
+		"isTvAppBrand": false,
+		"isAppleTvPlus": false,
+		"isItunes": false,
+		"isWatchlistEnabled": false,
+		"shouldTrackPlayActivity": false
+	},
+	"iphone": {
+		"id": "tvs.sbd.9000",
+		"name": "Netflix",
+		"title": "Netflix",
+		"type": "Brand",
+		"appAdamIds": ["363590051"],
+		"appBundleIds": ["com.netflix.Netflix"],
+		"appName": "Netflix",
+		"appStoreUrl": "https://itunes.apple.com/app/id363590051?mt=8",
+		"images": {
+			"appIcon": {
+				"height": 1024,
+				"supportsLayeredImage": false,
+				"url": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/49/40/c4/4940c495-d5d5-00ac-0d3b-65945eb7e4a2/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/{w}x{h}.{f}",
+				"width": 1024
+			},
+			"logoGlyph": {
+				"height": 58,
+				"supportsLayeredImage": false,
+				"url": "https://is1-ssl.mzstatic.com/image/thumb/zkkWXoJCcF9mZkak44N6-A/{w}x{h}.{f}",
+				"width": 110
+			}
+		},
+		"url": "https://tv.apple.com/us/channel/netflix/tvs.sbd.9000",
+		"isApSubscription": false,
+		"isFirstParty": false,
+		"isTvAppBrand": false,
+		"isAppleTvPlus": false,
+		"isItunes": false,
+		"isWatchlistEnabled": false,
+		"shouldTrackPlayActivity": false
+	}
+}

@@ -45,11 +45,11 @@ test("dev channels creates a missing dictionary without adding navigation or pre
 });
 
 for (const body of [{}, { data: {} }, { data: { brandSidebarSetting: {} } }]) {
-	test(`dev settings creates only a missing sidebar entry: ${JSON.stringify(body)}`, async t => {
+	test(`dev settings creates only missing sidebar entries: ${JSON.stringify(body)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await ResponseDev({ url: "https://uts-api.itunes.apple.com/uts/v3/user/settings?pfm=iphone&sf=143441", headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 		const actual = JSON.parse(response.body);
-		assert.deepEqual(actual.data.brandSidebarSetting, { [brandId]: { isHidden: false, isPinned: false } });
+		assert.deepEqual(actual.data.brandSidebarSetting, { [brandId]: { isHidden: false, isPinned: false }, "tvs.sbd.9000": { isHidden: false, isPinned: false } });
 		assert.equal(actual.data.brandConsentSettings, undefined);
 		assert.equal(actual.data.channels, undefined);
 	});
@@ -97,6 +97,8 @@ for (const [variant, processResponse] of [
 					assert.equal(actual.data.channels[brandId].type, "Brand");
 					assert.equal(new URL(actual.data.channels[brandId].url).pathname.split("/")[1], "us");
 					delete actual.data.channels[brandId];
+					assert.equal(actual.data.channels["tvs.sbd.9000"].appName, "Netflix");
+					delete actual.data.channels["tvs.sbd.9000"];
 					for (const id of ["tvs.sbd.241000", "tvs.sbd.7000"]) {
 						assert.equal(actual.data.channels[id].isFirstParty, true);
 						assert.equal(actual.data.channels[id].isApSubscription, true);
@@ -107,6 +109,8 @@ for (const [variant, processResponse] of [
 				case "/uts/v3/user/settings":
 					assert.deepEqual(actual.data.brandSidebarSetting[brandId], { isHidden: false, isPinned: false });
 					delete actual.data.brandSidebarSetting[brandId];
+					assert.deepEqual(actual.data.brandSidebarSetting["tvs.sbd.9000"], { isHidden: false, isPinned: false });
+					delete actual.data.brandSidebarSetting["tvs.sbd.9000"];
 					break;
 			}
 			assert.deepEqual(actual, source);

@@ -20,12 +20,16 @@ export async function Request($request) {
 	Console.logLevel = Settings.LogLevel;
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");
+	const StoreFrontH = url.searchParams.get("sfh");
+	const Region = url.searchParams.get("region");
+	const Country = url.searchParams.get("country");
 	const Locale = url.searchParams.get("locale");
 	Console.info(`StoreFront: ${StoreFront}`, `Locale: ${Locale}`);
 	// 创建空数据
 	let body = {};
 	// 设置默认类型
 	let Type = "Other";
+	const Brand = url.searchParams.get("ctx_brand");
 	// 方法判断
 	switch ($request.method) {
 		case "POST":
@@ -138,15 +142,7 @@ export async function Request($request) {
 					switch (url.pathname) {
 						case "/uts/v3/configurations": {
 							Type = "Configs";
-							const Region = url.searchParams.get("region"),
-								Country = url.searchParams.get("country"),
-								StoreFrontH = url.searchParams.get("sfh");
 							Console.info(`Region: ${Region}`, `Country: ${Country}`, `StoreFrontH: ${StoreFrontH}`);
-							if (Settings.CountryCode[Type] !== "AUTO") {
-								if (Region) url.searchParams.set("region", Settings.CountryCode[Type] ?? Region);
-								if (Country) url.searchParams.set("country", Settings.CountryCode[Type] ?? Country);
-								if (StoreFrontH) url.searchParams.set("sfh", StoreFrontH.replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]));
-							}
 							break;
 						}
 						case "/uts/v3/user/settings":
@@ -171,6 +167,11 @@ export async function Request($request) {
 						case "/uts/v3/canvases/Channels/tvs.sbd.241000":
 						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.241000":
 							Type = "Sports";
+							break;
+						case "/uts/v3/canvases/Channels/tvs.sbd.9000":
+						case "/uts/v3/channels/tvs.sbd.9000":
+						case "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.9000":
+							Type = "Netflix";
 							break;
 						case "/uts/v3/channels":
 						case "/uts/v2/brands":
@@ -235,32 +236,48 @@ export async function Request($request) {
 							break;
 						default:
 							//if (Settings["ThirdParty"]) url.searchParams.set("pfm", (Platform === "desktop") ? "ipad" : Platform);
-							if (url.searchParams.get("ctx_brand") === "tvs.sbd.4000") Type = "Originals";
-							else if (url.searchParams.get("ctx_brand") === "tvs.sbd.241000") Type = "Sports";
-							else if (url.pathname.includes("/uts/v3/canvases/Channels/")) Type = "Channels";
-							else if (url.pathname.includes("/uts/v2/brands/")) Type = "Channels";
-							else if (url.pathname.includes("/uts/v3/movies/")) Type = "Movies";
-							else if (url.pathname.includes("/uts/v3/shows/")) Type = "TV";
-							else if (url.pathname.includes("/uts/v3/sporting-events/")) {
-								switch (url.searchParams.get("ctx_brand")) {
-									case "tvs.sbd.7000": // MLS
-										break;
-									default:
+							switch (Brand) {
+								case "tvs.sbd.4000":
+									Type = "Originals";
+									break;
+								case "tvs.sbd.241000":
+									Type = "Sports";
+									break;
+								case "tvs.sbd.9000":
+									Type = "Netflix";
+									break;
+								default:
+									if (url.pathname.includes("/uts/v3/canvases/Channels/")) Type = "Channels";
+									else if (url.pathname.includes("/uts/v2/brands/")) Type = "Channels";
+									else if (url.pathname.includes("/uts/v3/movies/")) Type = "Movies";
+									else if (url.pathname.includes("/uts/v3/shows/")) Type = "TV";
+									else if (url.pathname.includes("/uts/v3/sporting-events/")) {
+										switch (Brand) {
+											case "tvs.sbd.7000": // MLS
+												break;
+											default:
+												Type = "Sports";
+												break;
+										}
+										//if (Settings["ThirdParty"])
+										if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
+									} else if (url.pathname.includes("/uts/v3/canvases/Sports/")) {
 										Type = "Sports";
-										break;
-								}
-								//if (Settings["ThirdParty"])
-								if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
-							} else if (url.pathname.includes("/uts/v3/canvases/Sports/")) {
-								Type = "Sports";
-								//if (Settings["ThirdParty"])
-								if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
-							} else if (url.pathname.includes("/uts/v3/canvases/Persons/")) Type = "Persons";
-							else if (url.pathname.includes("/uts/v3/canvases/Rooms/")) Type = "Others";
-							//else if (url.pathname.includes("/uts/v3/playables/")) Type = "Others";
-							//else if (url.pathname.includes("/uts/v3/shelves/")) Type = "Others";
-							else Type = "Others";
+										//if (Settings["ThirdParty"])
+										if (Platform === "desktop") url.searchParams.set("pfm", "ipad");
+									} else if (url.pathname.includes("/uts/v3/canvases/Persons/")) Type = "Persons";
+									else if (url.pathname.includes("/uts/v3/canvases/Rooms/")) Type = "Others";
+									//else if (url.pathname.includes("/uts/v3/playables/")) Type = "Others";
+									//else if (url.pathname.includes("/uts/v3/shelves/")) Type = "Others";
+									else Type = "Others";
+									break;
+							}
 							break;
+					}
+					if (Configs.Storefront[Settings.CountryCode[Type]]) {
+						if (Region) url.searchParams.set("region", Settings.CountryCode[Type]);
+						if (Country) url.searchParams.set("country", Settings.CountryCode[Type]);
+						if (StoreFrontH) url.searchParams.set("sfh", StoreFrontH.replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]));
 					}
 					break;
 				}
@@ -289,9 +306,9 @@ export async function Request($request) {
 		case "TRACE":
 			break;
 	}
-	if ($request.headers?.["X-Apple-Store-Front"]) $request.headers["X-Apple-Store-Front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["X-Apple-Store-Front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["X-Apple-Store-Front"];
-	if ($request.headers?.["x-apple-store-front"]) $request.headers["x-apple-store-front"] = Configs.Storefront[Settings.CountryCode[Type]] ? $request.headers["x-apple-store-front"].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]) : $request.headers["x-apple-store-front"];
-	if (StoreFront) url.searchParams.set("sf", Configs.Storefront[Settings.CountryCode[Type]] ?? StoreFront);
+	for (const key of Object.keys($request.headers ?? {}))
+		if (key.toLowerCase() === "x-apple-store-front" && Configs.Storefront[Settings.CountryCode[Type]]) $request.headers[key] = $request.headers[key].replace(/\d{6}/, Configs.Storefront[Settings.CountryCode[Type]]);
+	if (StoreFront || Configs.Storefront[Settings.CountryCode[Type]]) url.searchParams.set("sf", Configs.Storefront[Settings.CountryCode[Type]] ?? StoreFront);
 	Console.info(`StoreFront: ${url.searchParams.get("sf")}`, `Locale = ${url.searchParams.get("locale")}`);
 	$request.url = url.toString();
 	Console.debug(`$request.url: ${$request.url}`);

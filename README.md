@@ -41,7 +41,7 @@ Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions
 
 参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Locale、LumenKey、Storage、LogLevel；full/dev 额外提供 Brands 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
 
-`Brands` 替代已废除的 `Tabs`，只接受 `F1`、`MLS`、`MLB`、`Lumen`，所有入口默认全部启用。品牌数组只控制补入，不删除原站已有导航或卡片，也不决定排序；旧 `Tabs` 设置不再生效。Apple TV（Originals）的导航、品牌元数据和卡片完全沿用原站，不参与品牌选择或补入。`Brands=[]` 或 BoxJs 全不选会关闭全部补入。`WatchNow`、`Sports`、`Store`、`Movies`、`TV`、`ChannelsAndApps`、`Library`、`Search` 等普通导航保持服务器提供的内容与相对顺序，不再按设置筛选、补建、补写 id 或切换版本模板。`CountryCode` 的地区选择继续独立生效。
+`Brands` 替代已废除的 `Tabs`，只接受 `F1`、`MLS`、`MLB`、`Lumen`、`Netflix`，默认全部启用，Netflix 仅在明确的非 desktop 平台补入。已有明确的 Brands 选择保持原意，不自动追加新品牌。品牌数组只控制补入，不删除原站已有导航或卡片，也不决定排序；旧 `Tabs` 设置不再生效。Apple TV（Originals）的导航、品牌元数据和卡片完全沿用原站，不参与品牌选择或补入。`Brands=[]` 或 BoxJs 全不选会关闭全部补入。`WatchNow`、`Sports`、`Store`、`Movies`、`TV`、`ChannelsAndApps`、`Library`、`Search` 等普通导航保持服务器提供的内容与相对顺序，不再按设置筛选、补建、补写 id 或切换版本模板。`CountryCode` 的地区选择继续独立生效；`CountryCode.Netflix` 默认美服，支持手动选择地区和 AUTO。
 
 例如 `Brands=F1,MLB` 只补入 F1 与 MLB；MLB 沿用 Friday Night Baseball 的 Room 入口。F1 的原生导航类型为 `Grevy`、品牌 ID 为 `tvs.sbd.241000`，与其他体育内容共用 `CountryCode.Sports`。
 
@@ -53,21 +53,26 @@ F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象�
 
 补入内容的入口名称、“频道和 App”分组名及体育 Brick 标题由 `InjectBrand.#Localize` 集中映射。响应入口依次取显式 `Locale`、URL `locale`、`X-Apple-I-Locale`、`Accept-Language` 的首选语言，将确定后的 `locale` 放入 `brandContext` 直接传给构造器；class 只使用该结果，不解析请求头或重新判断设置。缺少语言或没有对应译文时使用英文原文。F1 的简体名称为“一级方程式锦标赛”，繁体为“一級方程式賽車”，粤语繁体为“一級方程式”；同时提供官方日文、韩文名称，MLS、Lumen 保留原名。日区体育 Brick 的 MLB Room 卡片 `title` 为“Apple TV フライデーナイト ベースボール”。新增体育行标题按英文原文译写：简繁中文为“探索 F1、MLS 和 MLB”，日文为“F1、MLS、MLBをチェック”，并覆盖粤语繁体和韩文。新增导航、品牌、卡片及搜索 BR 的分组名共用该表；服务器已有的导航、品牌、卡片和本地化行标题仍保留；体育行的已知英文标题使用模板译文，其他说明文字不参与映射。官方配置、搜索及体育 shelf 响应的文字投影见 `tests/fixtures/brand-localization.json`；体育行标题的译文不作为官方抓包文案，也不代表真机显示验证。
 
-F1、MLS、MLB、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, locale?, pfm? }`，按转换后的 `settings.Brands` 裁剪品牌配置并本地化补入文字；App 类型在 desktop 或缺少 pfm 时不补入。以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
+F1、MLS、MLB、Lumen、Netflix 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, locale?, pfm? }`，按转换后的 `settings.Brands` 裁剪品牌配置并本地化补入文字；App 类型在 desktop 或缺少 pfm 时不补入。以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
 
 Lumen 资源 response 按请求 `v` 区分行头部协议：`v<84` 保留后端顶层 `shelf.title` 和已有字段，`v>=84` 为普通行补 `shelf.header.title` / 查看更多导航，并为 epicStage 补完整 Brand header；缺少 `v` 时沿用现有现代 header 修复。顶层 title、内容与分页继续保留。分界来自原站 v83/v84 的 iPhone、iPad、tvOS 与独立 shelf 对照，详见 [TVKit 版本调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/shelf-header-version-investigation.md)；本地回放与测试不代表真机显示验证。
 
-第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`。Channel 与 App 共用品牌构造，身份和公开能力逐字段优先取 Config，缺少时采用原站值或默认值；`isApSubscription`、`isFirstParty` 的缺省值由 switch 按 Channel=true / App=false 确定，显式 false 不会被覆盖。Lumen 配置为 `Channel`；App 身份由 Config 指定，缺少时采用对应平台的 Apple TV 宿主。安装、订阅、同意和固定状态保留原站值。所有注入入口和 Lumen 资源脚本共用品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；已有隐藏状态、其他侧栏字段和扩展图像保留，默认侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
+第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`。Channel 与 App 共用品牌构造，身份和公开能力逐字段优先取 Config，缺少时采用原站值或默认值；`isApSubscription`、`isFirstParty` 的缺省值由 switch 按 Channel=true / App=false 确定，显式 false 不会被覆盖。Lumen 配置为 `Channel`，Netflix 配置为 `App` 并提供真实 App 身份；缺少身份配置时采用对应平台的 Apple TV 宿主。安装、订阅、同意和固定状态保留原站值。所有注入入口和 Lumen 资源脚本共用品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；已有隐藏状态、其他侧栏字段和扩展图像保留，默认侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
+
+Netflix 使用真实 `tvs.sbd.9000`、App Store ID `363590051` 和 bundle ID `com.netflix.Netflix`，沿用品牌的正常导航、首页和 Browse 卡片注入路径。安装、订阅、同意状态缺失时保持缺失；侧栏偏好仅补缺失的 `{isHidden:false,isPinned:false}`，不生成或改写 App 同意记录。ATV/appletv 使用官方 1280×768 分层 appIcon，iPhone/iPad 使用 1024×1024 PNG；公开字段投影保存在 `tests/fixtures/netflix-brand.json`，来源与限制见 [Netflix 集成调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/netflix-integration-investigation.md)。
+
+Netflix 入口导航到 `https://tv.apple.com/us/channel/netflix/tvs.sbd.9000`，接受当前原站空 fallback 页面。单品牌查询、频道画布、对应 Up Next shelf，以及默认路由中带 `ctx_brand=tvs.sbd.9000` 的内容或 shelf 请求归入 Netflix 分类，使用 `CountryCode.Netflix`，默认 `US`；手动选择地区时采用对应 storefront，AUTO 保留原请求地区。地区设置独立于 Brands、平台和请求方法；App 入口仍仅在非 desktop 补入。各分类共用地区处理，调整 sf、已有 sfh、region/country 和 storefront 请求头并保留后缀，语言沿用 Locale；公共 configurations、channels 全集、user/settings 和搜索等已分类接口继续使用各自设置。此阶段不新增节目编排、影视搜索后端、App 直开动作或观看同步。tvOS、iPhone/iPad 的入口、图标、点击和固定/隐藏后重开的真机验收仍待完成。
 
 | 频道 | 导航 | 首页已有结构 | 搜索落地页 |
 | --- | --- | --- | --- |
 | F1 / MLS | Grevy / MLS 根 tab | channelLockup / brandLockup、uts.col.tv-plus-sports-nav-brick | 官方 Browse 网格 |
 | MLB | 无一级导航 | uts.col.tv-plus-sports-nav-brick 中的 Room 卡片 | 不补入 |
 | Lumen | ChannelsAndApps 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
+| Netflix | 非 desktop 的 ChannelsAndApps App 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
 
-`InjectBrand` 自行决定品牌注入位置：已有苹果导航整体保留，缺少 F1、MLS 时按 Apple TV → F1 → MLS 顺序，以已有品牌、主页和资料库定位补入，不重排原导航。iPhone 不补入缺少的 F1、MLS 一级导航，但保留服务器已有入口，且不影响首页和搜索卡片。缺少苹果导航容器时不创建；Lumen 则在已有 `ChannelsAndApps` 中补入子项，缺少分组时在 Library 前创建，没有 Library 时追加。
+`InjectBrand` 自行决定品牌注入位置：已有苹果导航整体保留，缺少 F1、MLS 时按 Apple TV → F1 → MLS 顺序，以已有品牌、主页和资料库定位补入，不重排原导航。iPhone 不补入缺少的 F1、MLS 一级导航，但保留服务器已有入口，且不影响首页和搜索卡片。缺少苹果导航容器时不创建；Lumen、Netflix 在已有 `ChannelsAndApps` 中按 Config 数组的自然顺序补入，排列为 Lumen → Netflix → 原有其他子项，单独启用任意一个也可注入。缺少分组时在 Library 前创建，没有 Library 时追加。
 
-首页频道卡片只补入已有行，体育行沿用“热门电影”定位点；第三方品牌可补入已有 moretv 分组，App 类型不限制卡片注入。搜索落地页覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，按 Config 中的第三方品牌 → 原站已有 Apple TV → F1 → MLS 的相对顺序补入，保留其他卡片和分页；Channel 与 App 均可在缺少 Browse 网格时创建第三方网格。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
+首页频道卡片只补入已有行，体育行沿用“热门电影”定位点；Lumen、Netflix 可补入已有 moretv 分组，App 类型不限制卡片注入。搜索落地页覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，按 Lumen → Netflix → 原站已有 Apple TV → F1 → MLS 的相对顺序补入，保留其他卡片和分页；Channel 与 App 均可在缺少 Browse 网格时创建第三方网格。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
 
 所有参数入口均提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。只有 `Brands` 包含 Lumen 且密钥非空时，`InjectSearch` 才查询 Lumen 并合并频道入口和影视结果；留空或只填空白时跳过搜索注入。该设置遵循下表的 BoxJs / Storage 合并顺序，不写入品牌或响应正文。
 

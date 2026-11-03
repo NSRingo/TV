@@ -49,10 +49,11 @@ export interface Settings {
      * - `'MLS'` - MLS
      * - `'MLB'` - MLB（Friday Night Baseball）
      * - `'Lumen'` - Lumen
+     * - `'Netflix'` - Netflix
      *
-     * @defaultValue ["F1","MLS","MLB","Lumen"]
+     * @defaultValue ["F1","MLS","MLB","Lumen","Netflix"]
      */
-    Brands?: ('F1' | 'MLS' | 'MLB' | 'Lumen')[];
+    Brands?: ('F1' | 'MLS' | 'MLB' | 'Lumen' | 'Netflix')[];
     /**
      * [Lumen] 搜索鉴权 X-Lumen-Key
      *
@@ -166,6 +167,30 @@ export interface Settings {
          * @defaultValue "AUTO"
          */
         Channels?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
+    /**
+         * [Netflix] 国家或地区代码
+         *
+         * 选择此分类请求使用的国家或地区；AUTO 保留原值。
+         *
+         * @remarks
+         *
+         * Possible values:
+         * - `'AUTO'` - 自动（保留原请求地区）
+         * - `'CN'` - 中国大陆
+         * - `'HK'` - 中国香港
+         * - `'TW'` - 中国台湾
+         * - `'SG'` - 新加坡
+         * - `'US'` - 美国
+         * - `'JP'` - 日本
+         * - `'AU'` - 澳大利亚
+         * - `'GB'` - 英国
+         * - `'KR'` - 韩国
+         * - `'CA'` - 加拿大
+         * - `'IE'` - 爱尔兰
+         *
+         * @defaultValue "US"
+         */
+        Netflix?: 'AUTO' | 'CN' | 'HK' | 'TW' | 'SG' | 'US' | 'JP' | 'AU' | 'GB' | 'KR' | 'CA' | 'IE';
     /**
          * [Apple TV+] 国家或地区代码
          *

@@ -103,9 +103,9 @@ test("Storage precedence merges nested settings and preserves database defaults"
 test("setENV resolves brand names into IDs without selecting ordinary navigation", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const original = JSON.stringify(database);
-	globalThis.$argument = qs.parse("Brands=Originals,F1,MLS,MLB,Lumen,WatchNow,Sports,Store,Movies,TV,ChannelsAndApps,Library,Search&LogLevel=OFF");
+	globalThis.$argument = qs.parse("Brands=Originals,F1,MLS,MLB,Lumen,Netflix,WatchNow,Sports,Store,Movies,TV,ChannelsAndApps,Library,Search&LogLevel=OFF");
 	const { Settings } = setENV("iRingo", "TV", database);
-	assert.deepEqual(Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
+	assert.deepEqual(Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen", "tvs.sbd.9000"]);
 	assert.equal(JSON.stringify(database), original);
 });
 
@@ -137,7 +137,7 @@ test("empty BoxJs and argument arrays disable brand injection with normal Storag
 		globalThis.$argument = { Storage: "Argument", Brands: [], LogLevel: "OFF" };
 		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, []);
 		globalThis.$argument = { Storage: "database", Brands: [], LogLevel: "OFF" };
-		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen", "tvs.sbd.9000"]);
 	}
 });
 
