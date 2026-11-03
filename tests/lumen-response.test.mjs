@@ -24,12 +24,43 @@ test("deselected Lumen leaves backend resources unchanged", async t => {
 	}
 });
 
-async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone") {
+async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone", version = "101") {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const response = { status: 200, headers: { "Content-Type": "application/json;charset=utf-8" }, body: JSON.stringify(body) };
-	const result = await Response({ url: `${origin}${path}?pfm=${platform}&sf=143470&v=101`, headers: {}, $argument: "LogLevel=OFF" }, response);
+	const query = new URLSearchParams({ pfm: platform, sf: "143470" });
+	if (version !== null) query.set("v", version);
+	const result = await Response({ url: `${origin}${path}?${query}`, headers: {}, $argument: "LogLevel=OFF" }, response);
 	assert.equal(result, response);
 	return JSON.parse(result.body);
+}
+
+// 原站 HBO 的 v83/v84 相邻版本在普通行、品牌头部与独立 shelf 上确认了 header 分界。
+// Adjacent origin HBO v83/v84 responses confirm the header boundary for content rows, brand headers, and standalone shelves.
+for (const version of ["82", "83", "84", "101", null]) {
+	test(`Lumen v=${version ?? "absent"}: uses the matching shelf header format`, async t => {
+		for (const platform of ["iphone", "atv", "appletv", "ipad", "desktop"]) {
+			for (const [path, input] of [
+				["/uts/v3/canvases/Channels/tvs.sbd.lumen", fixtures.channel],
+				["/uts/v3/canvases/Rooms/edt.item.lumen", fixtures.channel],
+				["/uts/v3/shelves/edt.col.lumen-lib-284", { data: { shelf: fixtures.channel.data.canvas.shelves[1] } }],
+			]) {
+				const actual = await replay(t, path, input, undefined, platform, version);
+				const shelves = actual.data.shelf ? [actual.data.shelf] : actual.data.canvas.shelves;
+				const row = shelves.at(-1);
+				assert.equal(row.title, "其他剧集");
+				if (version === "82" || version === "83") {
+					assert.deepEqual(shelves, input.data.shelf ? [input.data.shelf] : input.data.canvas.shelves);
+				} else {
+					assert.equal(row.header.title, "其他剧集");
+					assert.equal(row.header.supportsSeeAllView, true);
+					assert.equal(row.header.url, "https://tv.apple.com/us/shelf/lumen/edt.col.lumen-lib-284");
+					if (actual.data.canvas) assert.equal(shelves[0].header.entity.id, "tvs.sbd.lumen");
+				}
+				assert.deepEqual(row.items, fixtures.channel.data.canvas.shelves[1].items);
+				assert.deepEqual(await replay(t, path, actual, undefined, platform, version), actual);
+			}
+		}
+	});
 }
 
 for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases/Rooms/edt.item.lumen", "/uts/v3/shelves/edt.col.lumen-lib-284"]) {

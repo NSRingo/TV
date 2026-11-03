@@ -55,6 +55,8 @@ F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象�
 
 F1、MLS、MLB、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, locale? }`，按转换后的 `settings.Brands` 裁剪品牌配置并本地化补入文字，以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与 Lumen 注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
 
+Lumen 资源 response 按请求 `v` 区分行头部协议：`v<84` 保留后端顶层 `shelf.title` 和已有字段，`v>=84` 为普通行补 `shelf.header.title` / 查看更多导航，并为 epicStage 补完整 Brand header；缺少 `v` 时沿用现有现代 header 修复。顶层 title、内容与分页继续保留。分界来自原站 v83/v84 的 iPhone、iPad、tvOS 与独立 shelf 对照，详见 [TVKit 版本调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/shelf-header-version-investigation.md)；本地回放与测试不代表真机显示验证。
+
 第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`；`isApSubscription`、`isFirstParty` 可在配置中独立指定 true/false，各自省略时由内部 Build 方法按 `Channel=true / App=false` 派生。Lumen 配置为 `Channel`，两项默认均为 true；所有注入入口和 Lumen 资源脚本共用该品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
 
 | 频道 | 导航 | 首页已有结构 | 搜索落地页 |

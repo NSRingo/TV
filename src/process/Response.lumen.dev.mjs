@@ -56,7 +56,8 @@ export async function Response($request, $response) {
 			switch (url.hostname) {
 				case "www.lumen.ax": {
 					const Platform = url.searchParams.get("pfm"),
-						StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0];
+						StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0],
+						Version = Number(url.searchParams.get("v") ?? 84);
 					const Region =
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
@@ -79,7 +80,7 @@ export async function Response($request, $response) {
 													body.data.channels ??= {};
 													injectBrand.InjectChannels(body.data.channels, brandContext);
 													for (const shelf of body.data.canvas.shelves ?? []) {
-														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
+														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"], Version);
 														removeEmptyGenres(shelf);
 													}
 													// body.data.canvas.shelves ??= [];
@@ -94,7 +95,7 @@ export async function Response($request, $response) {
 										case true:
 											body.data.channels ??= {};
 											injectBrand.InjectChannels(body.data.channels, brandContext);
-											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
+											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"], Version);
 											removeEmptyGenres(body.data.shelf);
 											break;
 									}
@@ -155,12 +156,18 @@ export async function Response($request, $response) {
 	}
 
 	/**
-	 * 原地补齐频道 canvas 与独立 shelf 共用的官方行头部，保留已有 header 字段。
-	 * @param {Object} shelf - 待修改的行。
-	 * @param {Object} channel - InjectBrand 组装的完整 Lumen Brand，直接复用。
-	 * @returns {Object} 原 shelf 引用。
+	 * v84 起补齐频道 canvas 与独立 shelf 的官方行头部；更旧版本保留后端结构与已有 header 字段。
+	 * Complete canvas and standalone shelf headers from v84 onward; preserve backend structure and existing headers for older versions.
+	 * @param {Object} shelf - 待修改的行 / Shelf to update.
+	 * @param {Object} channel - InjectBrand 组装的完整 Lumen Brand / Complete Lumen Brand built by InjectBrand.
+	 * @param {number} version - 请求 v；缺失时沿用现代 header 修复 / Request v; missing values retain the modern header repair.
+	 * @returns {Object} 原 shelf 引用 / Original shelf reference.
+	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/shelf-header-version-investigation.md
 	 */
-	function setShelfHeader(shelf, channel) {
+	function setShelfHeader(shelf, channel, version) {
+		// 原站 v83/v84 对照确认 header 自 v84 起引入；旧版使用顶层 title，因此保留后端结构，避免为旧请求生成新协议格式。
+		// Origin v83/v84 comparisons confirm that headers begin at v84; older responses use top-level title, so preserve their backend structure rather than generate the newer schema.
+		if (version < 84) return shelf;
 		switch (shelf?.displayType) {
 			case "lockup":
 				_.set(shelf, "header", {
