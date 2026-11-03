@@ -43,13 +43,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.4
+ * @version 1.2.5
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.4";
+		this.Version = "1.2.5";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -587,7 +587,7 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 先查找 ChannelsAndApps 分组，缺少时补齐外层结构，再原地首插频道导航。
+	 * 先查找 ChannelsAndApps 分组，缺少时补齐外层结构并插在 Library 前，没有 Library 时放末尾。
 	 * 导航 target 与 data.channels[id] 共用同一完整 Brand。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.applicationProps.tabs` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；所选 ID 对应的频道生成子导航。
@@ -596,7 +596,11 @@ export default class InjectBrand {
 	InjectUTSConfigurationChannelsAndApps(body, options) {
 		let tab = body.data?.applicationProps?.tabs?.find(({ type }) => type === "ChannelsAndApps");
 		for (const config of this.#Config.brands.filter(({ id, tab }) => !tab.target && options.settings.Tabs.includes(id)).reverse()) {
-			if (!tab) _.set(body, "data.applicationProps.tabs", [...(body.data?.applicationProps?.tabs ?? []), (tab = this.#Config.ChannelsAndApps)]);
+			if (!tab) {
+				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
+				const index = body.data.applicationProps.tabs.findIndex(({ type }) => type === "Library");
+				body.data.applicationProps.tabs.splice(index === -1 ? body.data.applicationProps.tabs.length : index, 0, (tab = this.#Config.ChannelsAndApps));
+			}
 			body.data.channels ??= {};
 			const channel = (body.data.channels[config.id] = this.#BuildBrand(config, options, body.data.channels[config.id]));
 			const index = tab.subTabs.findIndex(({ target }) => target.id === config.id);

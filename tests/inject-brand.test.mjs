@@ -244,10 +244,10 @@ test("configuration injection survives caller=wta and Tabs excluding ChannelsAnd
 		);
 		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
 		assert.deepEqual(
-			tabs.map(({ type }) => type).sort(),
+			tabs.map(({ type }) => type),
 			["ChannelsAndApps", "Library"],
 		);
-		assert.equal(tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0].target.id, brandId);
+		assert.equal(tabs[0].subTabs[0].target.id, brandId);
 	}
 });
 
