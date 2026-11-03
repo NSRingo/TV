@@ -57,9 +57,9 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
 					const brandContext = { pfm: Platform, region: Region, settings: Settings };
+					const injectBrand = new InjectBrand(brandContext);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
@@ -68,7 +68,7 @@ export async function Response($request, $response) {
 								// 不修改caller=wta的configurations数据
 								if (body.data?.applicationProps?.tabs) {
 									if (Platform === "iphone") Settings.Tabs = Settings.Tabs.filter(id => id !== "tvs.sbd.241000" && id !== "tvs.sbd.7000");
-									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs);
 									const tabs = body.data.applicationProps.tabs;
 									const newTabs = [];
 									for (const id of Settings.Tabs) {

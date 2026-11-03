@@ -16,7 +16,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const body = structuredClone(fixtures.channels);
 		const channels = body.data.channels;
 		channels[brandId] = { id: brandId, isSubscribed: false, isInstalled: false, isConsented: false };
-		const injector = new InjectBrand();
+		const injector = new InjectBrand({ settings });
 		assert.equal(injector.InjectChannels(channels, { pfm: platform, region: "tw", settings }), channels);
 		assert.equal(body.data.channels, channels);
 		assert.equal(channels.tvs, undefined);
@@ -59,13 +59,13 @@ test("settings retains App consent objects and all account preferences", () => {
 	const body = structuredClone(fixtures.settings);
 	const consent = body.data.brandConsentSettings;
 	const sidebar = body.data.brandSidebarSetting;
-	const injector = new InjectBrand();
-	assert.equal(injector.InjectUTSUserSettings(sidebar, { settings }), sidebar);
+	const injector = new InjectBrand({ settings });
+	assert.equal(injector.InjectUTSUserSettings(sidebar), sidebar);
 	assert.equal(body.data.brandConsentSettings, consent);
 	assert.equal(body.data.brandSidebarSetting, sidebar);
 	assert.equal(sidebar.tvs, undefined);
 	const once = structuredClone(body);
-	injector.InjectUTSUserSettings(sidebar, { settings });
+	injector.InjectUTSUserSettings(sidebar);
 	assert.deepEqual(body, once);
 	delete body.data.brandSidebarSetting[brandId];
 	assert.deepEqual(body, fixtures.settings);
@@ -74,7 +74,7 @@ test("settings retains App consent objects and all account preferences", () => {
 test("settings preserves an existing hidden/pinned Lumen record and extensions by reference", () => {
 	const state = { isHidden: true, isPinned: true, custom: "preserved" };
 	const body = { data: { brandSidebarSetting: { [brandId]: state } } };
-	new InjectBrand().InjectUTSUserSettings(body.data.brandSidebarSetting, { settings });
+	new InjectBrand({ settings }).InjectUTSUserSettings(body.data.brandSidebarSetting);
 	assert.equal(body.data.brandSidebarSetting[brandId], state);
 	assert.deepEqual(state, { isHidden: true, isPinned: true, custom: "preserved" });
 });

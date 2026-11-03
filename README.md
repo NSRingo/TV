@@ -49,7 +49,7 @@ Apple TV、F1、MLS 的导航模板直接采用原站 configurations 的完整 t
 
 地区设置只切换内容地区。`Locale` 默认 `AUTO`，原样保留 App 提供的语言参数和请求头，不添加、截断或按地区覆盖语言代码；手动选择语言时，仅覆盖 UTS 接口的 `locale` 参数。
 
-Apple TV、F1、MLS、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Tab` 将功能名称映射为 ID；`setENV` 在配置合并后一次性将 `Settings.Tabs` 转为 ID 数组，后续导航排序、品牌、集合及 brick 注入均直接使用 ID。Sports 同时选择体育根页和 MLB Room。Library、ChannelsAndApps 的配置与响应对象补齐 id；官方导航的 type、图片字段和目标对象保留为协议数据，不用于反推设置。方法按调用接收 `{ pfm, region, settings }`，settings.Tabs 必须是转换后的 ID 数组；release 不选择 Lumen，dev 和 Lumen 修复入口沿用各自的频道注入范围。
+Apple TV、F1、MLS、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Tab` 将功能名称映射为 ID；`setENV` 在配置合并后一次性将 `Settings.Tabs` 转为 ID 数组，后续导航排序、品牌、集合及 brick 注入均直接使用 ID。Sports 同时选择体育根页和 MLB Room。Library、ChannelsAndApps 的配置与响应对象补齐 id；官方导航的 type、图片字段和目标对象保留为协议数据，不用于反推设置。构造器接收 `{ settings }`，按转换后的 `settings.Tabs` ID 数组一次性裁剪品牌配置，并保留完整的苹果品牌 ID 顺序用于卡片定位；各方法按需接收 `{ pfm, region, settings }`，品牌选择在实例创建后固定；release 不选择 Lumen，dev 和 Lumen 修复入口沿用各自的频道注入范围。
 
 第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`；`isApSubscription`、`isFirstParty` 可在配置中独立指定 true/false，各自省略时由内部 Build 方法按 `Channel=true / App=false` 派生。Lumen 配置为 `Channel`，两项默认均为 true；所有注入入口和 Lumen 资源脚本共用该品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
 

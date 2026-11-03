@@ -13,11 +13,11 @@ const context = { pfm: "iphone", region: "tw", settings: { ...database.TV.Settin
 Console.logLevel = "OFF";
 
 test("Apple root tabs use supplied settings and preserve existing entries", () => {
-	const injector = new InjectBrand();
 	const options = { ...context, settings: structuredClone(context.settings) };
+	const injector = new InjectBrand(options);
 	const search = { type: "Search", custom: "preserved" };
 	const tabs = [search];
-	assert.equal(injector.InjectUTSConfigurationTabs(tabs, options), tabs);
+	assert.equal(injector.InjectUTSConfigurationTabs(tabs), tabs);
 	assert.deepEqual(options.settings, context.settings);
 	assert.equal(tabs[0], search);
 	assert.deepEqual(
@@ -25,7 +25,7 @@ test("Apple root tabs use supplied settings and preserve existing entries", () =
 		["Originals", "Grevy", "MLS"],
 	);
 	const once = structuredClone(tabs);
-	injector.InjectUTSConfigurationTabs(tabs, options);
+	injector.InjectUTSConfigurationTabs(tabs);
 	assert.deepEqual(tabs, once);
 });
 
@@ -74,7 +74,7 @@ test("official Browse preserves existing Apple objects and account state by refe
 	const brand = body.data.channels[appleIds[1]];
 	Object.assign(brand, { isSubscribed: false, isInstalled: false, isConsented: false });
 	const items = [...body.data.canvas.shelves[0].items];
-	new InjectBrand().InjectSearchLanding(body, context);
+	new InjectBrand(context).InjectSearchLanding(body, context);
 	assert.equal(body.data.channels[appleIds[1]], brand);
 	for (const item of items)
 		assert.equal(
@@ -84,7 +84,6 @@ test("official Browse preserves existing Apple objects and account state by refe
 });
 
 test("channel insertion preserves the supplied URL without adding or replacing page context", () => {
-	const injector = new InjectBrand();
 	for (const url of ["https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000", "https://tv.apple.com/us/channel/formula-1/tvs.sbd.241000?ctx_proot=official-root&ctx_other=keep"]) {
 		for (const rootId of ["tahoma_watchnow", "tahoma_searchlanding"]) {
 			const shelf = { displayType: "brandLockup", items: [] };
@@ -98,6 +97,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 			const body = { data: { canvas: { shelves: [shelf] }, channels: { [appleIds[1]]: brand } } };
 			const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"] };
 			const options = { ...context, settings };
+			const injector = new InjectBrand(options);
 			switch (rootId) {
 				case "tahoma_watchnow":
 					injector.InjectWatchNowLockup(body, options);
@@ -113,10 +113,12 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 });
 
 test("Apple-only landing does not create a grid; a third-party fallback grid stays third-party on replay", () => {
-	const injector = new InjectBrand();
+	const appleContext = { ...context, settings: { ...context.settings, Tabs: appleIds } };
+	const appleInjector = new InjectBrand(appleContext);
 	const empty = {};
-	assert.equal(injector.InjectSearchLanding(empty, { ...context, settings: { ...context.settings, Tabs: appleIds } }), empty);
+	assert.equal(appleInjector.InjectSearchLanding(empty, appleContext), empty);
 	assert.deepEqual(empty, {});
+	const injector = new InjectBrand(context);
 	const fallback = {};
 	injector.InjectSearchLanding(fallback, context);
 	assert.deepEqual(
@@ -128,7 +130,7 @@ test("Apple-only landing does not create a grid; a third-party fallback grid sta
 	assert.deepEqual(fallback, once);
 	const thirdPartyGrid = { data: { canvas: { shelves: [{ id: "edt.col.lumen-browse", displayType: "brick", isGrid: true, items: [] }] } } };
 	const before = structuredClone(thirdPartyGrid);
-	injector.InjectSearchLanding(thirdPartyGrid, { ...context, settings: { ...context.settings, Tabs: appleIds } });
+	appleInjector.InjectSearchLanding(thirdPartyGrid, appleContext);
 	assert.deepEqual(thirdPartyGrid, before);
 });
 
@@ -145,7 +147,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 		},
 	};
 	const promo = body.data.canvas.shelves[2];
-	const injector = new InjectBrand();
+	const injector = new InjectBrand(context);
 	injector.InjectWatchNowLockup(body, context);
 	injector.InjectBrick(body.data.canvas.shelves, body.data.channels, context);
 	assert.deepEqual(
@@ -163,7 +165,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 test("Apple selection and country settings only control supplementation", () => {
 	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
-	new InjectBrand().InjectSearchLanding(body, { ...context, settings });
+	new InjectBrand({ settings }).InjectSearchLanding(body, { ...context, settings });
 	assert.deepEqual(
 		body.data.canvas.shelves[0].items.filter(({ type }) => type === "Brand").map(({ id }) => id),
 		appleIds,
@@ -173,8 +175,8 @@ test("Apple selection and country settings only control supplementation", () => 
 	assert.equal(body.data.channels[appleIds[2]].isAppleTvPlus, false);
 });
 
-test("one injector keeps Apple image objects and request settings isolated", () => {
-	const injector = new InjectBrand();
+test("one injector fixes brand selection at construction while isolating images and request regions", () => {
+	const injector = new InjectBrand({ settings: { ...context.settings, Tabs: ["tvs.sbd.241000"] } });
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
 	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	injector.InjectWatchNowLockup(first, { ...context, settings });
@@ -184,9 +186,9 @@ test("one injector keeps Apple image objects and request settings isolated", () 
 	injector.InjectWatchNowLockup(second, { ...context, settings: { ...context.settings, Tabs: appleIds } });
 	assert.deepEqual(
 		second.data.canvas.shelves[0].items.map(({ id }) => id),
-		appleIds,
+		["tvs.sbd.241000"],
 	);
-	assert.equal(second.data.canvas.shelves[0].items[1].images.shelfItemImage.width, 2000);
+	assert.equal(second.data.canvas.shelves[0].items[0].images.shelfItemImage.width, 2000);
 	assert.equal(second.data.channels[appleIds[1]].images.logoGlyph.width, 960);
 	assert.match(second.data.channels[appleIds[1]].url, /^https:\/\/tv.apple.com\/us\//);
 });

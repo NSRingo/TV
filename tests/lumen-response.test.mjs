@@ -96,7 +96,7 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.equal(hero.header.url, actual.data.channels["tvs.sbd.lumen"].url);
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
 		const expected = structuredClone(fixtures.channel);
-		new InjectBrand().InjectChannels(expected.data.channels, { pfm: "iphone", region: "tw", settings });
+		new InjectBrand({ settings }).InjectChannels(expected.data.channels, { pfm: "iphone", region: "tw", settings });
 		assert.deepEqual(actual.data.channels, expected.data.channels);
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;
@@ -112,7 +112,7 @@ test("website injection mutates the supplied shelves, preserves rows and paginat
 	const shelves = body.data.canvas.shelves;
 	const originals = [...shelves];
 	body.data.canvas.nextToken = "page-two";
-	const inject = new InjectBrand();
+	const inject = new InjectBrand({ settings });
 	assert.equal(inject.InjectWebsiteLink(shelves, { region: "tw", settings }), shelves);
 	assert.equal(body.data.canvas.shelves, shelves);
 	assert.equal(body.data.canvas.nextToken, "page-two");
@@ -134,7 +134,7 @@ test("website injection mutates the supplied shelves, preserves rows and paginat
 
 test("website injection populates an empty shelves array", () => {
 	const shelves = [];
-	new InjectBrand().InjectWebsiteLink(shelves, { region: "us", settings });
+	new InjectBrand({ settings }).InjectWebsiteLink(shelves, { region: "us", settings });
 	assert.equal(shelves.length, 1);
 	assert.equal(shelves[0].items[0].url, "https://www.lumen.ax/");
 });

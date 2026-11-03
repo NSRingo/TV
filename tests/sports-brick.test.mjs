@@ -26,7 +26,7 @@ test("sports brick preserves existing row, cards, unknown entries and brand stat
 	const f1 = channels[ids[0]];
 	f1.isSubscribed = false;
 	const before = structuredClone(shelf);
-	assert.equal(new InjectBrand().InjectBrick(shelves, channels, options), shelves);
+	assert.equal(new InjectBrand(options).InjectBrick(shelves, channels, options), shelves);
 	assert.equal(shelves[0], shelf);
 	assert.deepEqual(shelf, before);
 	for (const [index, item] of items.entries()) assert.equal(shelf.items[index], item);
@@ -41,7 +41,7 @@ for (const missing of ids) {
 		shelf.items = shelf.items.filter(({ id }) => id !== missing);
 		const kept = [...shelf.items];
 		const channels = {};
-		new InjectBrand().InjectBrick([shelf], channels, options);
+		new InjectBrand(options).InjectBrick([shelf], channels, options);
 		assert.deepEqual(shelf.items, official.items);
 		for (const item of kept)
 			assert.equal(
@@ -60,11 +60,11 @@ test("sports switches control supplementation without removing original cards", 
 	const shelves = [structuredClone(official)];
 	const before = structuredClone(shelves);
 	const channels = {};
-	new InjectBrand().InjectBrick(shelves, channels, { ...options, settings: { ...database.TV.Settings, Tabs: [] } });
+	new InjectBrand({ settings: { Tabs: [] } }).InjectBrick(shelves, channels, { ...options, settings: { ...database.TV.Settings, Tabs: [] } });
 	assert.deepEqual(shelves, before);
 	assert.deepEqual(channels, {});
 	const missing = [{ id: anchorId, items: [] }];
-	new InjectBrand().InjectBrick(missing, channels, { ...options, settings: { ...options.settings, Tabs: [] } });
+	new InjectBrand({ settings: { Tabs: [] } }).InjectBrick(missing, channels, { ...options, settings: { ...options.settings, Tabs: [] } });
 	assert.equal(missing.length, 1);
 	assert.equal(missing[0].id, anchorId);
 });
@@ -73,7 +73,7 @@ test("pages without the sports row or popular-movies anchor stay unchanged", () 
 	for (const shelves of [[], [{ id: "unrelated", displayType: "brick", items: [] }]]) {
 		const before = structuredClone(shelves);
 		const channels = {};
-		new InjectBrand().InjectBrick(shelves, channels, options);
+		new InjectBrand(options).InjectBrick(shelves, channels, options);
 		assert.deepEqual(shelves, before);
 		assert.deepEqual(channels, {});
 	}
@@ -87,7 +87,7 @@ test("new sports links share Sports for F1 and MLB, preserve MLS settings and su
 		const shelves = [{ id: anchorId, items: [] }];
 		const channels = {};
 		const settings = { ...options.settings, CountryCode: { ...database.TV.Settings.CountryCode, Sports: sports, Originals: originals } };
-		new InjectBrand().InjectBrick(shelves, channels, { pfm: options.pfm, region: "tw", settings });
+		new InjectBrand(options).InjectBrick(shelves, channels, { pfm: options.pfm, region: "tw", settings });
 		for (const [index, item] of shelves[0].items.entries()) {
 			assert.equal(new URL(item.url).pathname.split("/")[1], regions[index]);
 			assert.equal(new URL(item.url).searchParams.get("ctx_proot"), "tahoma_watchnow");
@@ -98,7 +98,7 @@ test("new sports links share Sports for F1 and MLB, preserve MLS settings and su
 });
 
 test("one injector keeps the official template independent across responses", () => {
-	const injector = new InjectBrand();
+	const injector = new InjectBrand(options);
 	const first = [{ id: anchorId, items: [] }];
 	injector.InjectBrick(first, {}, options);
 	first[0].header.title = "changed";

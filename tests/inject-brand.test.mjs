@@ -27,7 +27,7 @@ test("third-party Config independently overrides both brand flags, including exp
 				const configured = source.replace('brandType: "Channel",', `...${JSON.stringify(config)},`);
 				const { default: ConfiguredInjectBrand } = await import(`data:text/javascript;base64,${Buffer.from(configured).toString("base64")}`);
 				const body = { data: { channels: { [brandId]: { isApSubscription: false, isFirstParty: false, isSubscribed: false, isConsented: false } } } };
-				new ConfiguredInjectBrand().InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
+				new ConfiguredInjectBrand({ settings }).InjectUTSConfigurationChannelsAndApps(body, { pfm: "atv", region: "tw", settings });
 				const brand = body.data.channels[brandId];
 				assert.equal(brand.isApSubscription, isApSubscription ?? (brandType === "Channel"), JSON.stringify(config));
 				assert.equal(brand.isFirstParty, isFirstParty ?? (brandType === "Channel"), JSON.stringify(config));
@@ -59,7 +59,7 @@ async function replay(t, path, body, query = "", response = ResponseDev, argumen
 
 test("one instance searches concurrently with method-local context and mutates the original response objects", async t => {
 	const requests = backend(t);
-	const injector = new InjectBrand();
+	const injector = new InjectBrand({ settings });
 	const tr = { id: "uts.col.search.TR", items: [{ id: "apple" }] };
 	const br = { id: "uts.col.search.BR", items: [{ id: "disney" }] };
 	const shelves = [tr, br];
@@ -109,7 +109,7 @@ for (const fixture of channelTypes.samples) {
 			["/uts/v3/shelves/uts.col.search.BR", "InjectSearch", {}, body => body.data.shelf.items[0]],
 		];
 		for (const [path, method, body, itemOf] of cases) {
-			const injector = new InjectBrand();
+			const injector = new InjectBrand({ settings });
 			await injector[method](body, method === "InjectSearch" ? { pfm: fixture.pfm, region: "us", settings, pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: fixture.pfm, region: "us", settings });
 			const brand = itemOf(body);
 			assert.equal(brand.id, brandId);
@@ -132,7 +132,7 @@ test("existing Lumen subscription, consent, installation and pin state is preser
 		["/uts/v3/search/landing", "InjectSearchLanding", []],
 		["/uts/v3/search", "InjectSearch", []],
 	]) {
-		const injector = new InjectBrand();
+		const injector = new InjectBrand({ settings });
 		const state = { isConsented: false, isInstalled: false, isSubscribed: false, isPinned: true };
 		const body = { data: { channels: { [brandId]: { id: brandId, ...state } }, canvas: { shelves } } };
 		await injector[method](body, method === "InjectSearch" ? { pfm: "desktop", region: "us", settings, pathname: path, searchTerm: "Lumen", topResultsOnly: false, lumenKey } : { pfm: "desktop", region: "us", settings });
@@ -144,7 +144,7 @@ test("existing Lumen subscription, consent, installation and pin state is preser
 });
 
 test("configuration uses the explicit region and preserves it on repeated injection", () => {
-	const injector = new InjectBrand();
+	const injector = new InjectBrand({ settings });
 	const body = {
 		data: {
 			applicationProps: {
@@ -181,7 +181,7 @@ test("new structures use the request storefront even when navigation filtering r
 });
 
 test("configuration prepends a shared complete Brand target and preserves unrelated navigation", () => {
-	const injector = new InjectBrand();
+	const injector = new InjectBrand({ settings });
 	const original = { type: "Channel", title: "Disney+", target: { id: "tvs.sbd.1000216" } };
 	const body = { data: { applicationProps: { tabs: [{ type: "WatchNow" }, { id: "ChannelsAndApps", type: "ChannelsAndApps", title: "Existing title", subTabs: [original, { target: { id: brandId }, title: "Old Lumen" }] }, { id: "Library", type: "Library" }], untouched: true }, channels: { other: { id: "other" } } } };
 	assert.equal(injector.InjectUTSConfigurationChannelsAndApps(body, { pfm: "desktop", region: "us", settings }), body);

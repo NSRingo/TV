@@ -60,9 +60,9 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
 					const brandContext = { pfm: Platform, region: Region, settings: Settings };
+					const injectBrand = new InjectBrand(brandContext);
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {
 						case "api/appletv/v1/uts/v3":

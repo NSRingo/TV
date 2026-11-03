@@ -70,9 +70,9 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
-					const injectBrand = new InjectBrand();
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
 					const brandContext = { pfm: Platform, region: Region, settings: Settings };
+					const injectBrand = new InjectBrand(brandContext);
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
@@ -81,7 +81,7 @@ export async function Response($request, $response) {
 								// caller=wta跳过原导航整理，仍注入配置频道
 								if (body.data?.applicationProps?.tabs) {
 									if (Platform === "iphone") Settings.Tabs = Settings.Tabs.filter(id => id !== "tvs.sbd.241000" && id !== "tvs.sbd.7000");
-									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs);
 									const tabs = body.data.applicationProps.tabs;
 									const newTabs = [];
 									for (const id of Settings.Tabs) {
@@ -154,7 +154,7 @@ export async function Response($request, $response) {
 							break;
 						case "/uts/v3/user/settings":
 							_.set(body, "data.brandSidebarSetting", body.data?.brandSidebarSetting ?? {});
-							injectBrand.InjectUTSUserSettings(body.data.brandSidebarSetting, brandContext);
+							injectBrand.InjectUTSUserSettings(body.data.brandSidebarSetting);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":

@@ -46,19 +46,28 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @version 1.2.6
  */
 export default class InjectBrand {
-	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
-	constructor() {
+	/**
+	 * 初始化名称、版本和本实例启用的品牌；地区等请求参数由各注入方法接收。
+	 * Initialize the name, version and enabled brands; injection methods receive the remaining request context.
+	 * @param {Pick<BrandContext, 'settings'>} options - 本实例的频道选择设置 / Channel selection for this instance.
+	 */
+	constructor(options) {
 		this.Name = "InjectBrand";
 		this.Version = "1.2.6";
+		this.#Config.appleOrder = this.#Config.brands.filter(({ tab }) => tab.target).map(({ id }) => id);
+		this.#Config.brands = this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id));
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
 	/**
 	 * 服务身份、原生 tab 和各场景素材；所有功能选择直接使用 ID。
 	 * 苹果品牌及搜索素材来自美服搜索落地页；F1/MLS 首页素材来自原站体育 brick。
-	 * @type {{ChannelsAndApps: Object, brands: BrandConfig[], bricks: Object[]}}
+	 * @type {{ChannelsAndApps: Object, appleOrder: string[], brands: BrandConfig[], bricks: Object[]}}
 	 */
 	#Config = {
+		// 保留未启用的苹果频道 ID，补卡片时仍以原站已有卡片定位。
+		// Keep disabled Apple brand IDs as ordering anchors for cards already present in the response.
+		appleOrder: [],
 		ChannelsAndApps: {
 			id: "ChannelsAndApps",
 			title: "频道和 App",
@@ -542,7 +551,7 @@ export default class InjectBrand {
 	 * @returns {Record<string, Object>} 原 `body.data.channels` 字典引用；已有品牌的订阅、安装、同意和固定状态保留。
 	 */
 	InjectChannels(channels, options) {
-		for (const config of this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id))) {
+		for (const config of this.#Config.brands) {
 			channels[config.id] = this.#BuildBrand(config, options, channels[config.id]);
 		}
 		return channels;
@@ -551,12 +560,11 @@ export default class InjectBrand {
 	/**
 	 * 原地补充配置频道的缺省侧栏偏好；不生成外部 App 的同意记录。
 	 * @param {Record<string, Object>} brandSidebarSetting - 原响应的 `body.data.brandSidebarSetting` 字典，由调用方确认存在或初始化。
-	 * @param {Pick<BrandContext, 'settings'>} options - 直接选取 settings.Tabs 中的频道 ID。
 	 * @returns {Record<string, Object>} 原 `body.data.brandSidebarSetting` 字典引用；已有侧栏条目整体保留，不向服务端写回设置。
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/lumen-user-settings-channel-model.md
 	 */
-	InjectUTSUserSettings(brandSidebarSetting, options) {
-		for (const { id } of this.#Config.brands.filter(({ id, tab }) => !tab.target && options.settings.Tabs.includes(id))) {
+	InjectUTSUserSettings(brandSidebarSetting) {
+		for (const { id } of this.#Config.brands.filter(({ tab }) => !tab.target)) {
 			brandSidebarSetting[id] ??= { isHidden: false, isPinned: false };
 		}
 		return brandSidebarSetting;
@@ -571,7 +579,7 @@ export default class InjectBrand {
 	 */
 	InjectWebsiteLink(shelves, options) {
 		const { region } = options;
-		for (const config of this.#Config.brands.filter(({ id, website }) => website && options.settings.Tabs.includes(id))) {
+		for (const config of this.#Config.brands.filter(({ website }) => website)) {
 			const shelf = this.#BuildWebsiteShelf(config, region);
 			const index = shelves.findIndex(({ id }) => id === shelf.id);
 			switch (index) {
@@ -595,7 +603,7 @@ export default class InjectBrand {
 	 */
 	InjectUTSConfigurationChannelsAndApps(body, options) {
 		let tab = body.data?.applicationProps?.tabs?.find(({ type }) => type === "ChannelsAndApps");
-		for (const config of this.#Config.brands.filter(({ id, tab }) => !tab.target && options.settings.Tabs.includes(id)).reverse()) {
+		for (const config of this.#Config.brands.filter(({ tab }) => !tab.target).reverse()) {
 			if (!tab) {
 				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
 				const index = body.data.applicationProps.tabs.findIndex(({ type }) => type === "Library");
@@ -610,15 +618,14 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 按传入的 settings.Tabs 原地补齐选中的苹果频道；平台限制和普通导航排序由 Response 处理。
+	 * 按构造时选定的品牌原地补齐苹果频道；平台限制和普通导航排序由 Response 处理。
+	 * Supplement Apple tabs selected at construction; Response handles platform restrictions and navigation order.
 	 * @param {Object[]} tabs - 原响应的 `body.data.applicationProps.tabs` 数组，由调用方确认存在。
-	 * @param {Pick<BrandContext, 'settings'>} options - 本次请求的频道选择设置。
 	 * @returns {Object[]} 原 `body.data.applicationProps.tabs` 数组引用；已有 tab 保留。
 	 */
-	InjectUTSConfigurationTabs(tabs, options) {
+	InjectUTSConfigurationTabs(tabs) {
 		for (const config of this.#Config.brands) {
-			if (config.tab.target && options.settings.Tabs.includes(config.id) && !tabs.some(({ target }) => target?.id === config.id))
-				tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
+			if (config.tab.target && !tabs.some(({ target }) => target?.id === config.id)) tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
 		}
 		return tabs;
 	}
@@ -631,7 +638,7 @@ export default class InjectBrand {
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectWatchNowLockup(body, options) {
-		const configs = this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id));
+		const configs = this.#Config.brands;
 		for (const shelf of body.data?.canvas?.shelves ?? []) {
 			switch (shelf.displayType) {
 				case "channelLockup":
@@ -675,7 +682,7 @@ export default class InjectBrand {
 			const shelf = this.#BuildBrick(config, options, state);
 			if (shelf.items.length) {
 				if (!state) shelves.splice(index, 0, shelf);
-				for (const brand of this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id) && config.items.some(item => item.id === id)))
+				for (const brand of this.#Config.brands.filter(({ id }) => config.items.some(item => item.id === id)))
 					channels[brand.id] = this.#BuildBrand(brand, options, channels[brand.id]);
 			}
 		}
@@ -690,7 +697,7 @@ export default class InjectBrand {
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectSearchLanding(body, options) {
-		let configs = this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id));
+		let configs = this.#Config.brands;
 		const thirdParty = configs.filter(({ id }) => id === "tvs.sbd.lumen");
 		let shelf = body.data?.canvas?.shelves?.find(({ displayType, isGrid }) => displayType === "brick" && isGrid);
 		switch (Boolean(shelf)) {
@@ -736,7 +743,7 @@ export default class InjectBrand {
 		const keyword = searchTerm.trim().toLowerCase();
 		// 脚本内部请求不经过 Surge Header Rewrite，鉴权必须随本次查询显式传入。
 		const headers = { "X-Lumen-Key": lumenKey?.trim() };
-		const configs = this.#Config.brands.filter(({ id, searchURL }) => options.settings.Tabs.includes(id) && searchURL && keyword && headers["X-Lumen-Key"]);
+		const configs = this.#Config.brands.filter(({ searchURL }) => searchURL && keyword && headers["X-Lumen-Key"]);
 		const channels = configs.map(config => this.#BuildBrand(config, options, body.data?.channels?.[config.id]));
 		// 只有频道名称匹配搜索词时，才向官方 TR/BR 加入频道入口。
 		const brands = channels.filter(({ name }) => name.toLowerCase() === keyword);
@@ -1008,7 +1015,7 @@ export default class InjectBrand {
 	 */
 	#InjectCards(channels, container, configs, options, rootId) {
 		const items = container.items ?? [];
-		const appleOrder = this.#Config.brands.filter(({ tab }) => tab.target).map(({ id }) => id);
+		const appleOrder = this.#Config.appleOrder;
 		const thirdPartyBrands = [];
 		for (const config of configs) {
 			const channel = this.#BuildBrand(config, options, channels[config.id]);
