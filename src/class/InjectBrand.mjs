@@ -62,14 +62,15 @@ export default class InjectBrand {
 			if (config.tab.title) config.tab.title = this.#Localize(config.tab.title, locale);
 		}
 		for (const brick of this.#Config.bricks) {
+			brick.header.title = this.#Localize(brick.header.title, locale);
 			for (const item of brick.items) item.title = this.#Localize(item.title, locale);
 		}
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
 	/**
-	 * 映射补入模板的品牌名称与频道分组名；没有译文时保留原文。
-	 * Map brand and channel-group names in supplementary templates, preserving text without a translation.
+	 * 映射补入模板的入口名称、频道分组名与体育行标题；没有译文时保留原文。
+	 * Map entry names, channel-group names and sports headers in supplementary templates, preserving text without a translation.
 	 * @private
 	 * @param {string} name - 模板中的英文原文 / Original English text in the template.
 	 * @param {string} locale - 本次实例选用的语言，兼容请求头的下划线分隔符 / Locale selected for this instance, allowing underscores from request headers.
@@ -79,6 +80,8 @@ export default class InjectBrand {
 		const names = {
 			"Formula 1": { "zh-Hans": "一级方程式锦标赛", "zh-Hant": "一級方程式賽車", yue: "一級方程式", ja: "フォーミュラ1", ko: "포뮬러 1" },
 			"Channels & Apps": { "zh-Hans": "频道和 App", "zh-Hant": "頻道和 App", yue: "頻道和 App", ja: "チャンネル＆アプリ", ko: "채널 및 앱" },
+			"Friday Night Baseball": { ja: "Apple TV フライデーナイト ベースボール" },
+			"Explore F1, MLS, and MLB": { "zh-Hans": "探索 F1、MLS 和 MLB", "zh-Hant": "探索 F1、MLS 和 MLB", yue: "探索 F1、MLS 和 MLB", ja: "F1、MLS、MLBをチェック", ko: "F1, MLS, MLB 둘러보기" },
 		};
 		const normalized = locale.trim().replaceAll("_", "-").toLowerCase();
 		const language = normalized.split("-")[0] === "zh" ? (/^zh-(?:hant|tw|hk|mo)(?:-|$)/.test(normalized) ? "zh-Hant" : "zh-Hans") : normalized.split("-")[0];
@@ -791,7 +794,8 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 按原生顺序补入启用的 Brand/Room 卡片，保留已有行、卡片和未知字段。
+	 * 按原生顺序补入启用的 Brand/Room 卡片，保留已有行、卡片和未知字段；已知英文行标题使用模板译文。
+	 * Supplement enabled Brand/Room cards in native order, preserving existing rows, cards and unknown fields; use the template translation for the known English header.
 	 * @private
 	 * @param {Object} config - #Config.bricks 中保存的官方 brick 模板。
 	 * @param {BrandContext} options - F1/MLB 使用 Sports 地区，MLS 沿用 Originals；AUTO 保留请求地区。
@@ -800,6 +804,7 @@ export default class InjectBrand {
 	 */
 	#BuildBrick(config, { region, settings }, state) {
 		const shelf = state ?? { ...config, header: { ...config.header }, cachingPolicy: { ...config.cachingPolicy }, url: config.url.replace("/us/", `/${region}/`), items: [] };
+		if (shelf.header?.title === "Explore F1, MLS, and MLB") shelf.header.title = config.header.title;
 		for (const [position, item] of config.items.entries()) {
 			if (!settings.Brands.includes(item.id) || shelf.items.some(({ id }) => id === item.id)) continue;
 			const country = item.id === "tvs.sbd.7000" ? settings.CountryCode.Originals : settings.CountryCode.Sports;

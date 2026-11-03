@@ -1,7 +1,7 @@
 {
 	"capturedAt": "2026-11-03T03:54:22.660Z",
 	"searchCapturedAt": "2026-11-03T03:58:48.837Z",
-	"note": "Public string projections from live Apple GET replays through the Surge script HTTP client, bypassing rewrite scripts. Configuration uses the US storefront; search uses the matching language storefront and fresh configuration utsk plus captured tvOS client capabilities. Search shelf wording supplies the ChannelsAndApps fallback label; no native UI validation. Tokens, cookies and client capability values are omitted.",
+	"note": "Public string projections from live Apple GET replays through the Surge script HTTP client, bypassing rewrite scripts. Configuration uses the US storefront; search uses the matching language storefront and fresh configuration utsk plus captured tvOS client capabilities. Search shelf wording supplies the ChannelsAndApps fallback label; no native UI validation. Tokens, cookies and client capability values are omitted. Independent sports shelf responses omit the header title. The captured Japanese MLB card name is retained; supplementary sports header translations are editorial, not captured Apple wording.",
 	"samples": [
 		{
 			"locale": "en-US",
@@ -67,6 +67,32 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.4.header.title",
 				"title": "Channels & Apps"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143441",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				},
+				"items": [
+					{
+						"id": "tvs.sbd.241000",
+						"title": "Formula 1"
+					},
+					{
+						"id": "tvs.sbd.7000",
+						"title": "MLS"
+					},
+					{
+						"id": "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+						"title": "Friday Night Baseball"
+					}
+				]
 			}
 		},
 		{
@@ -133,6 +159,18 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.3.header.title",
 				"title": "频道和 App"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143464",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				}
 			}
 		},
 		{
@@ -199,6 +237,24 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.4.header.title",
 				"title": "頻道和 App"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143470",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				},
+				"items": [
+					{
+						"id": "tvs.sbd.7000",
+						"title": "MLS"
+					}
+				]
 			}
 		},
 		{
@@ -265,6 +321,24 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.4.header.title",
 				"title": "頻道和 App"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143463",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				},
+				"items": [
+					{
+						"id": "tvs.sbd.7000",
+						"title": "MLS"
+					}
+				]
 			}
 		},
 		{
@@ -331,6 +405,28 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.4.header.title",
 				"title": "チャンネル＆アプリ"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143462",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				},
+				"items": [
+					{
+						"id": "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",
+						"title": "Apple TV フライデーナイト ベースボール"
+					},
+					{
+						"id": "tvs.sbd.7000",
+						"title": "MLS"
+					}
+				]
 			}
 		},
 		{
@@ -397,7 +493,26 @@
 				"status": 200,
 				"field": "body.data.canvas.shelves.4.header.title",
 				"title": "채널 및 앱"
+			},
+			"sportsShelf": {
+				"path": "/uts/v3/shelves/uts.col.tv-plus-sports-nav-brick",
+				"sf": "143466",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"status": 200,
+				"id": "uts.col.tv-plus-sports-nav-brick",
+				"header": {
+					"supportsSeeAllView": false
+				},
+				"items": [
+					{
+						"id": "tvs.sbd.7000",
+						"title": "MLS"
+					}
+				]
 			}
 		}
-	]
+	],
+	"sportsShelfCapturedAt": "2026-11-03T04:21:56.566Z"
 }

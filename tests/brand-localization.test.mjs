@@ -9,8 +9,16 @@ import { Response, ResponseDev } from "./host.mjs";
 const fixture = JSON.parse(readFileSync(new URL("fixtures/brand-localization.json", import.meta.url)));
 const sports = JSON.parse(readFileSync(new URL("fixtures/us-f1-home.json", import.meta.url)));
 const f1Id = "tvs.sbd.241000";
-const settings = { ...database.TV.Settings, Brands: [f1Id, "tvs.sbd.7000", "tvs.sbd.lumen"] };
+const settings = { ...database.TV.Settings, Brands: [f1Id, "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"] };
 const context = { pfm: "ipad", region: "us", settings };
+const sportsTitles = {
+	"en-US": "Explore F1, MLS, and MLB",
+	"zh-Hans": "探索 F1、MLS 和 MLB",
+	"zh-Hant": "探索 F1、MLS 和 MLB",
+	"yue-Hant": "探索 F1、MLS 和 MLB",
+	"ja-JP": "F1、MLS、MLBをチェック",
+	"ko-KR": "F1, MLS, MLB 둘러보기",
+};
 Console.logLevel = "OFF";
 
 test("constructor uses the resolved context locale without reapplying language settings", () => {
@@ -50,7 +58,7 @@ for (const sample of fixture.samples) {
 		});
 	}
 
-	test(`${sample.locale}: new F1 cards share the name while existing Apple content is preserved`, () => {
+	test(`${sample.locale}: F1 cards and the known English sports header localize while existing cards are preserved`, () => {
 		const injector = new InjectBrand({ settings, locale: sample.locale });
 		for (const [method, shelf] of [
 			["InjectWatchNowLockup", { displayType: "brandLockup", items: [] }],
@@ -64,6 +72,7 @@ for (const sample of fixture.samples) {
 		const shelf = structuredClone(sports.body.data.canvas.shelves[0]);
 		shelf.items = shelf.items.filter(({ id }) => id !== f1Id);
 		const before = structuredClone(shelf);
+		before.header.title = sportsTitles[sample.locale];
 		injector.InjectBrick([shelf], {}, context);
 		assert.equal(shelf.items.find(({ id }) => id === f1Id).title, f1.title);
 		assert.deepEqual({ ...shelf, items: shelf.items.filter(({ id }) => id !== f1Id) }, before);
@@ -72,6 +81,16 @@ for (const sample of fixture.samples) {
 		injector.InjectChannels(channels, context);
 		assert.equal(channels[f1Id], original);
 		assert.deepEqual(channels[f1Id], sports.body.data.channels[f1Id]);
+	});
+
+	test(`${sample.locale}: supplementary sports brick localizes its header and captured card names`, () => {
+		const options = { ...context, locale: sample.locale };
+		const shelves = [{ id: "uts.col.home-popular-movies", items: [] }];
+		new InjectBrand(options).InjectBrick(shelves, {}, options);
+		const shelf = shelves[0];
+		assert.equal(shelf.header.title, sportsTitles[sample.locale]);
+		assert.equal(shelf.items.find(({ id }) => id === f1Id).title, f1.title);
+		for (const item of sample.sportsShelf.items ?? []) assert.equal(shelf.items.find(({ id }) => id === item.id).title, item.title);
 	});
 
 	test(`${sample.locale}: search BR uses the shared label and preserves existing localized headers`, async t => {
