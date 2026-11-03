@@ -61,6 +61,7 @@
 				"noFallthroughSwitchClause": "info",
 				"noGlobalIsNan": "off",
 				"useDefaultSwitchClauseLast": "off",
+				"useIterableCallbackReturn": "off",
 				"noVar": "info"
 			}
 		}
