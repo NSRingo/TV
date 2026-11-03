@@ -8,42 +8,33 @@ import { Response } from "./host.mjs";
 import { ResponseDev } from "./host.mjs";
 
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url)));
-for (const tab of fixture.body.data.applicationProps.tabs) if (!tab.target) tab.id = tab.type;
 Console.logLevel = "OFF";
 
 for (const [variant, processResponse, processRequest] of [
 	["release", Response, Request],
 	["dev", ResponseDev, RequestDev],
 ]) {
-	test(`${variant}: a native Library without an ID receives its configured ID`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const body = structuredClone(fixture.body);
-		delete body.data.applicationProps.tabs.find(({ type }) => type === "Library").id;
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-		assert.equal(JSON.parse(response.body).data.applicationProps.tabs.find(({ type }) => type === "Library").id, "Library");
-	});
+	for (const brands of ["[]", "F1", "MLS,F1", "Originals,F1,MLS,MLB"]) {
+		test(`${variant}: Brands=${brands} retains all upstream navigation objects and order`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			const response = await processResponse({ url: fixture.url, headers: {}, $argument: `Brands=${brands}&LogLevel=OFF` }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
+			assert.deepEqual(JSON.parse(response.body), fixture.body);
+		});
+	}
 
-	test(`${variant}: F1 settings select and order the complete native Grevy tab`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Tabs=Library,F1&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
-		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
-		assert.deepEqual(tabs.filter(({ type }) => type !== "ChannelsAndApps").map(({ type }) => type), ["Library", "Grevy"]);
-		assert.deepEqual(tabs.find(({ type }) => type === "Grevy"), fixture.body.data.applicationProps.tabs.find(({ type }) => type === "Grevy"));
-		assert.equal(tabs.some(({ type }) => type === "F1"), false);
-	});
-
-	test(`${variant}: native US Formula 1 stays between Apple TV and MLS, with Search first`, async t => {
+	test(`${variant}: default brands preserve native tabs and insert Lumen before Library`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
-		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
+		const body = JSON.parse(response.body);
+		const tabs = body.data.applicationProps.tabs;
+		const index = tabs.findIndex(({ type }) => type === "ChannelsAndApps");
+		assert.equal(tabs[index + 1].type, "Library");
+		assert.equal(tabs[index].subTabs[0].target.id, "tvs.sbd.lumen");
 		assert.deepEqual(
-			tabs.map(({ type }) => type),
-			["Search", "WatchNow", "Originals", "Grevy", "MLS", "Sports", ...(variant === "dev" ? ["Store", "ChannelsAndApps"] : ["Store"]), "Library"],
+			tabs.filter(({ type }) => type !== "ChannelsAndApps"),
+			fixture.body.data.applicationProps.tabs,
 		);
-		assert.deepEqual(
-			tabs.find(({ type }) => type === "Grevy"),
-			fixture.body.data.applicationProps.tabs[3],
-		);
+		assert.deepEqual(JSON.parse((await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, response)).body), body);
 	});
 
 	for (const [platform, version] of [
@@ -51,78 +42,87 @@ for (const [variant, processResponse, processRequest] of [
 		["ipad", 100],
 		["atv", 100],
 		["appletv", 100],
-		["desktop", 91],
+		["desktop", 50],
 	]) {
-		test(`${variant}: ${platform} v${version} gets missing Formula 1 and MLS navigation`, async t => {
+		test(`${variant}: ${platform} v${version} inserts selected F1 and MLS between existing brands`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const body = structuredClone(fixture.body);
 			body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => !["Grevy", "MLS"].includes(type));
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
 			url.searchParams.set("v", version);
-			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-			const tabs = JSON.parse(response.body).data.applicationProps.tabs;
-			const index = tabs.findIndex(({ type }) => type === "Grevy");
-			assert.equal(index, 3);
-			assert.equal(tabs[index - 1].type, "Originals");
-			assert.deepEqual(tabs.slice(index, index + 2), fixture.body.data.applicationProps.tabs.filter(({ type }) => ["Grevy", "MLS"].includes(type)));
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=MLS,F1&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			assert.deepEqual(JSON.parse(response.body), fixture.body);
 		});
 	}
 
-	for (const [platform, version] of [["iphone", 100], ["iphone", 1]]) {
-		test(`${variant}: ${platform} v${version} only gets Apple TV root navigation`, async t => {
+	for (const [platform, version] of [
+		["iphone", 100],
+		["iphone", 1],
+		["ipad", 50],
+	]) {
+		test(`${variant}: ${platform} v${version} preserves ordinary navigation and applies brand placement`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const body = structuredClone(fixture.body);
 			body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => ["WatchNow", "Library"].includes(type));
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
 			url.searchParams.set("v", version);
-			for (const argument of ["LogLevel=OFF", "Tabs=WatchNow,Originals,F1,MLS,Library&LogLevel=OFF"]) {
-				const response = await processResponse({ url: url.toString(), headers: {}, $argument: argument }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-				const tabs = JSON.parse(response.body).data.applicationProps.tabs;
-				assert.deepEqual(tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type }) => type), ["Originals"]);
-				assert.deepEqual(tabs.find(({ type }) => type === "Originals"), fixture.body.data.applicationProps.tabs.find(({ type }) => type === "Originals"));
-				assert.equal(tabs[0].type, "WatchNow");
-				assert.ok(tabs.some(({ type }) => type === "Library"));
-			}
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=Originals,F1,MLS,MLB&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			const tabs = JSON.parse(response.body).data.applicationProps.tabs;
+			assert.deepEqual(
+				tabs.map(({ type }) => type),
+				platform === "iphone" ? ["WatchNow", "Originals", "Library"] : ["WatchNow", "Originals", "Grevy", "MLS", "Library"],
+			);
+			assert.deepEqual(
+				tabs.filter(({ target }) => target?.type === "Brand"),
+				fixture.body.data.applicationProps.tabs.filter(({ type }) => (platform === "iphone" ? ["Originals"] : ["Originals", "Grevy", "MLS"]).includes(type)),
+			);
+			assert.deepEqual(
+				tabs.filter(({ type }) => ["WatchNow", "Library"].includes(type)),
+				body.data.applicationProps.tabs,
+			);
 		});
 	}
 
 	for (const platform of ["desktop", "iphone"]) {
-		test(`${variant}: ${platform} retains selected Apple navigation as complete server objects`, async t => {
+		test(`${variant}: ${platform} preserves complete server brand tabs even when unselected`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const body = structuredClone(fixture.body);
-			const types = ["Originals", "Grevy", "MLS"];
-			const expected = body.data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-			for (const tab of expected) {
+			for (const tab of body.data.applicationProps.tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type))) {
 				tab.title = `服务器本地化标题 ${tab.type}`;
 				tab.images = { defaultImage: { url: `https://images.example.test/${tab.type}.png`, width: 100, height: 100 } };
 			}
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
-			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-			const actual = JSON.parse(response.body).data.applicationProps.tabs.filter(({ type }) => types.includes(type));
-			assert.deepEqual(actual, platform === "iphone" ? expected.filter(({ type }) => type === "Originals") : expected);
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=[]&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			assert.deepEqual(JSON.parse(response.body), body);
 		});
 	}
 
-	test(`${variant}: configuration without tabs does not invent an F1 tab`, async t => {
+	test(`${variant}: configuration without tabs does not invent Apple navigation`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
-		assert.equal(
-			(JSON.parse(response.body).data.applicationProps.tabs ?? []).some(({ type }) => type === "Grevy"),
-			false,
-		);
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Brands=Originals,F1,MLS&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
+		assert.deepEqual(JSON.parse(response.body), { data: { applicationProps: {} } });
 	});
 
-	test(`${variant}: explicit tab selection can omit Formula 1 and retain legacy Kids`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Tabs=WatchNow,Kids,Library&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
-		assert.deepEqual(
-			JSON.parse(response.body).data.applicationProps.tabs.map(({ type }) => type),
-			["WatchNow", "Kids", ...(variant === "dev" ? ["ChannelsAndApps"] : []), "Library"],
-		);
-	});
+	for (const caller of ["wta", "wlk"]) {
+		test(`${variant}: ${caller} injects selected F1 without rebuilding ordinary navigation`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			const body = structuredClone(fixture.body);
+			body.data.applicationProps.tabs = body.data.applicationProps.tabs.filter(({ type }) => !["Originals", "Grevy", "MLS"].includes(type));
+			const url = new URL(fixture.url);
+			url.searchParams.set("caller", caller);
+			url.searchParams.set("pfm", "ipad");
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=F1&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			const tabs = JSON.parse(response.body).data.applicationProps.tabs;
+			assert.equal(tabs[tabs.findIndex(({ type }) => type === "WatchNow") + 1].type, "Grevy");
+			assert.deepEqual(
+				tabs.filter(({ type }) => type !== "Grevy"),
+				body.data.applicationProps.tabs,
+			);
+		});
+	}
 
 	for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.241000", "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.241000", "/uts/v3/shelves/edt.col.f1?ctx_brand=tvs.sbd.241000"]) {
 		test(`${variant}: F1 preserves client language when selecting the US storefront for ${path}`, async t => {

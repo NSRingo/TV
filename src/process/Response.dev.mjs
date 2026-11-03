@@ -18,7 +18,6 @@ export async function Response($request, $response) {
 	 */
 	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
-	if (!Settings.Tabs.includes("tvs.sbd.lumen")) Settings.Tabs.push("tvs.sbd.lumen");
 	// 创建空数据
 	let body = {};
 	// 格式判断
@@ -59,13 +58,10 @@ export async function Response($request, $response) {
 			// 主机判断
 			switch (url.hostname) {
 				case "uts-api.itunes.apple.com": {
-					const Version = Number.parseInt(url.searchParams.get("v"), 10),
-						Platform = url.searchParams.get("pfm"),
-						Caller = url.searchParams.get("caller");
-					Console.info(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
+					const Platform = url.searchParams.get("pfm");
+					Console.info(`Platform = ${Platform}`);
 					const StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0];
-					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
-					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
+					Console.info(`StoreFront = ${StoreFront}`);
 					const Region =
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
@@ -76,67 +72,7 @@ export async function Response($request, $response) {
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
-							for (const tab of body.data?.applicationProps?.tabs ?? []) if (!tab.target) tab.id ??= Configs.Tab[tab.type];
-							if (Caller !== "wta") {
-								// caller=wta跳过原导航整理，仍注入配置频道
-								if (body.data?.applicationProps?.tabs) {
-									if (Platform === "iphone") Settings.Tabs = Settings.Tabs.filter(id => id !== "tvs.sbd.241000" && id !== "tvs.sbd.7000");
-									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs);
-									const tabs = body.data.applicationProps.tabs;
-									const newTabs = [];
-									for (const id of Settings.Tabs) {
-										const index = tabs.findIndex(tab => (tab.target?.id ?? tab.id) === id);
-										if (index !== -1) {
-											if (index === 0) newTabs.unshift(tabs[index]);
-											else newTabs.push(tabs[index]);
-											continue;
-										}
-										const tab = Configs.Tabs.find(tab => (tab.target?.id ?? tab.id) === id);
-										if (!tab) continue;
-										if (tab.subTabs) for (const subTab of tab.subTabs) subTab.title = Configs.i18n?.[subTab.type]?.get(Locale) ?? tab.title;
-										tab.title = Configs.i18n?.[tab.type]?.get(Locale) ?? tab.title;
-										switch (id) {
-											case "tahoma_store":
-												if (Version < 54) continue;
-												break;
-											case "tahoma_movies":
-											case "tahoma_tvshows":
-												if (Version >= 54) continue;
-												if (Platform === "iphone") tab.secondaryEnabled = true;
-												break;
-											case "tahoma_sports":
-											case "tahoma_kids":
-												if (Platform === "iphone") {
-													if (Version >= 54) continue;
-													tab.secondaryEnabled = true;
-												}
-												break;
-											case "ChannelsAndApps":
-												if (Version < 74 || !["atv", "ipad", "appletv"].includes(Platform)) continue;
-												break;
-										}
-										newTabs.push(tab);
-									}
-									body.data.applicationProps.tabs = newTabs;
-									//body.data.applicationProps.tabs = createTabsGroup("Tabs", caller, platform, locale, region);
-									//body.data.applicationProps.tvAppEnabledInStorefront = true;
-									//body.data.applicationProps.enabledClientFeatures = (Version > 53) ? [{ "domain": "tvapp", "name": "snwpcr" }, { "domain": "tvapp", "name": "store_tab" }]
-									//	: [{ "domain": "tvapp", "name": "expanse" }, { "domain": "tvapp", "name": "syndication" }, { "domain": "tvapp", "name": "snwpcr" }];
-									//body.data.applicationProps.storefront.localesSupported = ["zh_Hans", "zh_Hant", "yue-Hant", "en_US", "en_GB"];
-									//body.data.applicationProps.storefront.storefrontId = 143470;
-									//body.data.applicationProps.featureEnablers["topShelf"] = true;
-									//body.data.applicationProps.featureEnablers["sports"] = true;
-									//body.data.applicationProps.featureEnablers["sportsFavorites"] = true;
-									//body.data.applicationProps.featureEnablers["unw"] = true;
-									//body.data.applicationProps.featureEnablers["imageBasedSubtitles"] = false;
-									//body.data.applicationProps.featureEnablers["ageVerification"] = false;
-									//body.data.applicationProps.featureEnablers["seasonTitles"] = false;
-									//body.data.userProps.activeUser = true;
-									//body.data.userProps.utsc = "1:18943";
-									//body.data.userProps.country = country;
-									//body.data.userProps.gac = true;
-								}
-							}
+							if (body.data?.applicationProps?.tabs) injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
 							body = injectBrand.InjectUTSConfigurationChannelsAndApps(body, brandContext);
 							break;
 						case "/uts/v3/search/landing":

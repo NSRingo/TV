@@ -22,7 +22,8 @@ export async function Response($request, $response) {
 	Console.info(`FORMAT: ${FORMAT}`);
 	const { Settings, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
-	Settings.Tabs = ["tvs.sbd.lumen"];
+	Settings.Brands = Settings.Brands.filter(id => id === "tvs.sbd.lumen");
+	if (!Settings.Brands.length) return $response;
 	// 创建空数据
 	let body = {};
 	// 格式判断

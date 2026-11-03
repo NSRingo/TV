@@ -9,7 +9,7 @@ import { ResponseDev } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/apple-search-landing.json", import.meta.url)));
 const appleIds = ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"];
-const context = { pfm: "iphone", region: "tw", settings: { ...database.TV.Settings, Tabs: [...appleIds, "tvs.sbd.lumen"] } };
+const context = { pfm: "ipad", region: "tw", settings: { ...database.TV.Settings, Brands: [...appleIds, "tvs.sbd.lumen"] } };
 Console.logLevel = "OFF";
 
 test("Apple root tabs use supplied settings and preserve existing entries", () => {
@@ -17,7 +17,7 @@ test("Apple root tabs use supplied settings and preserve existing entries", () =
 	const injector = new InjectBrand(options);
 	const search = { type: "Search", custom: "preserved" };
 	const tabs = [search];
-	assert.equal(injector.InjectUTSConfigurationTabs(tabs), tabs);
+	assert.equal(injector.InjectUTSConfigurationTabs(tabs, options), tabs);
 	assert.deepEqual(options.settings, context.settings);
 	assert.equal(tabs[0], search);
 	assert.deepEqual(
@@ -25,7 +25,7 @@ test("Apple root tabs use supplied settings and preserve existing entries", () =
 		["Originals", "Grevy", "MLS"],
 	);
 	const once = structuredClone(tabs);
-	injector.InjectUTSConfigurationTabs(tabs);
+	injector.InjectUTSConfigurationTabs(tabs, options);
 	assert.deepEqual(tabs, once);
 });
 
@@ -46,7 +46,7 @@ for (const fixture of fixtures.samples) {
 					const items = actual.data.canvas.shelves[0].items;
 					assert.deepEqual(
 						items.filter(({ type }) => type === "Brand").map(({ id }) => id),
-						[...(variant === "dev" ? ["tvs.sbd.lumen"] : []), ...appleIds],
+						["tvs.sbd.lumen", ...appleIds],
 					);
 					for (const item of originalItems)
 						assert.deepEqual(
@@ -95,7 +95,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 			}
 			const brand = { ...fixtures.samples[0].body.data.channels[appleIds[1]], url };
 			const body = { data: { canvas: { shelves: [shelf] }, channels: { [appleIds[1]]: brand } } };
-			const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"] };
+			const settings = { ...database.TV.Settings, Brands: ["tvs.sbd.241000"] };
 			const options = { ...context, settings };
 			const injector = new InjectBrand(options);
 			switch (rootId) {
@@ -113,7 +113,7 @@ test("channel insertion preserves the supplied URL without adding or replacing p
 });
 
 test("Apple-only landing does not create a grid; a third-party fallback grid stays third-party on replay", () => {
-	const appleContext = { ...context, settings: { ...context.settings, Tabs: appleIds } };
+	const appleContext = { ...context, settings: { ...context.settings, Brands: appleIds } };
 	const appleInjector = new InjectBrand(appleContext);
 	const empty = {};
 	assert.equal(appleInjector.InjectSearchLanding(empty, appleContext), empty);
@@ -163,7 +163,7 @@ test("placement separates Apple sports cards, third-party moretv, and existing p
 });
 
 test("Apple selection and country settings only control supplementation", () => {
-	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	const settings = { ...database.TV.Settings, Brands: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	const body = structuredClone(fixtures.samples[1].body);
 	new InjectBrand({ settings }).InjectSearchLanding(body, { ...context, settings });
 	assert.deepEqual(
@@ -176,14 +176,14 @@ test("Apple selection and country settings only control supplementation", () => 
 });
 
 test("one injector fixes brand selection at construction while isolating images and request regions", () => {
-	const injector = new InjectBrand({ settings: { ...context.settings, Tabs: ["tvs.sbd.241000"] } });
+	const injector = new InjectBrand({ settings: { ...context.settings, Brands: ["tvs.sbd.241000"] } });
 	const first = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	const settings = { ...database.TV.Settings, Tabs: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
+	const settings = { ...database.TV.Settings, Brands: ["tvs.sbd.241000"], CountryCode: { ...database.TV.Settings.CountryCode, Sports: "JP" } };
 	injector.InjectWatchNowLockup(first, { ...context, settings });
 	first.data.canvas.shelves[0].items[0].images.shelfItemImage.width = 1;
 	first.data.channels[appleIds[1]].images.logoGlyph.width = 1;
 	const second = { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } };
-	injector.InjectWatchNowLockup(second, { ...context, settings: { ...context.settings, Tabs: appleIds } });
+	injector.InjectWatchNowLockup(second, { ...context, settings: { ...context.settings, Brands: appleIds } });
 	assert.deepEqual(
 		second.data.canvas.shelves[0].items.map(({ id }) => id),
 		["tvs.sbd.241000"],

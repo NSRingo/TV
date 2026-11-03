@@ -100,26 +100,28 @@ const locale: ArgumentItem = {
 	description: "选择 UTS 接口返回内容的语言。AUTO 保留 App 生成的语言参数和请求头，跟随 App 语言设置。",
 };
 
-const tabs: ArgumentItem = {
-	key: "Tabs",
-	name: "启用的标签与栏目",
+const brands: ArgumentItem = {
+	key: "Brands",
+	name: "启用的品牌",
 	type: "array",
 	boxJsType: "checkboxes",
-	defaultValue: database.TV.Settings.Tabs,
+	defaultValue: database.TV.Settings.Brands,
 	options: [
-		{ key: "WatchNow", label: "主页（立即观看）" },
 		{ key: "Originals", label: "Apple TV+（原创内容）" },
 		{ key: "F1", label: "F1（一级方程式赛车）" },
 		{ key: "MLS", label: "MLS" },
-		{ key: "Sports", label: "体育节目" },
-		{ key: "Store", label: "商店" },
-		{ key: "Movies", label: "电影" },
-		{ key: "TV", label: "电视节目" },
-		{ key: "ChannelsAndApps", label: "频道与 App" },
-		{ key: "Library", label: "资料库" },
-		{ key: "Search", label: "搜索" },
+		{ key: "MLB", label: "MLB（Friday Night Baseball）" },
+		{ key: "Lumen", label: "Lumen" },
 	],
-	description: "选择标签与栏目，多个值以逗号分隔；实际入口仍由平台、版本和地区决定。",
+	description: "选择要注入的品牌，多个值以逗号分隔；自动选择注入位置，保留原站已有导航与卡片。",
+};
+
+const lumenKey: ArgumentItem = {
+	key: "LumenKey",
+	name: "[Lumen] 搜索鉴权 X-Lumen-Key",
+	type: "string",
+	defaultValue: database.TV.Settings.LumenKey,
+	description: "可选，填写 Lumen 官方模块中 X-Lumen-Key 的值；留空时跳过搜索中的 Lumen 频道入口与影视结果。",
 };
 
 const countryOptions = [
@@ -162,7 +164,7 @@ const countries: ArgumentItem[] = Object.entries(database.TV.Settings.CountryCod
 	...(key === "View" ? { boxJsType: "text" as const, description: "按优先顺序填写地区代码，以逗号分隔，默认 SG,TW。" } : { options: countryOptions, description: "选择此分类请求使用的国家或地区；AUTO 保留原值。" }),
 }));
 
-export const args: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, storage, publicArgs[2]];
-export const argsFull: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, tabs, ...countries, storage, publicArgs[2]];
+export const args: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, lumenKey, storage, publicArgs[2]];
+export const argsFull: ArgumentItem[] = [...publicArgs.slice(0, 2), locale, brands, lumenKey, ...countries, storage, publicArgs[2]];
 
 export default defineConfig({ output, args: argsFull });

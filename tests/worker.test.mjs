@@ -69,19 +69,19 @@ test("Hono pipeline isolates interleaved request settings across upstream fetch"
 		);
 	});
 	globalThis.fetch.cookieJar = {};
-	const [first, second] = await Promise.all([app.request("https://uts-api-itunes.pages.dev/uts/v3/configurations?pfm=ipad&v=80&Tabs=Library&LogLevel=OFF"), app.request("https://dev.uts-api-itunes.pages.dev/uts/v3/configurations?pfm=iphone&v=80&Tabs=WatchNow&LogLevel=OFF")]);
+	const [first, second] = await Promise.all([app.request("https://uts-api-itunes.pages.dev/uts/v3/configurations?pfm=ipad&v=80&Brands=F1&LogLevel=OFF"), app.request("https://dev.uts-api-itunes.pages.dev/uts/v3/configurations?pfm=iphone&v=80&Brands=Originals&LogLevel=OFF")]);
 	assert.deepEqual(
 		(await first.json()).data.applicationProps.tabs.map(tab => tab.type),
-		["Library"],
+		["WatchNow", "Grevy", "Library"],
 	);
 	assert.deepEqual(
 		(await second.json()).data.applicationProps.tabs.map(tab => tab.type),
-		["WatchNow"],
+		["WatchNow", "Originals", "Library"],
 	);
 	assert.equal(calls.length, 2);
 	for (const { url, options } of calls) {
 		assert.equal(new URL(url).hostname, "uts-api.itunes.apple.com");
-		assert.equal(new URL(url).searchParams.has("Tabs"), false);
+		assert.equal(new URL(url).searchParams.has("Brands"), false);
 		assert.equal(options.$argument, undefined);
 	}
 });

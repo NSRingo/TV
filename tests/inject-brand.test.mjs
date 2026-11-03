@@ -14,7 +14,7 @@ const movies = [
 	{ id: "umc.cmc.lumen1", type: "Movie", title: "Lumen movie" },
 	{ id: "umc.cmc.lumen2", type: "Show", title: "Lumen show" },
 ];
-const settings = { Tabs: ["tvs.sbd.lumen"] };
+const settings = { Brands: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
 test("third-party Config independently overrides both brand flags, including explicit false", async () => {
@@ -164,13 +164,13 @@ test("configuration uses the explicit region and preserves it on repeated inject
 	assert.deepEqual(body, once);
 });
 
-test("new structures use the request storefront even when navigation filtering removes the original channel group", async t => {
+test("new structures use the request storefront and preserve the existing channel group", async t => {
 	backend(t, { items: [] });
 	for (const path of ["/uts/v3/configurations", "/uts/v3/search/landing", "/uts/v3/search", "/uts/v3/shelves/uts.col.search.TR", "/uts/v3/shelves/uts.col.search.BR"]) {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const body = { data: { applicationProps: { tabs: [{ id: "ChannelsAndApps", type: "ChannelsAndApps", subTabs: [{ target: { url: "https://tv.apple.com/tw/channel/disney/tvs.sbd.1000216" } }] }, { id: "Library", type: "Library" }] } } };
 		const response = await ResponseDev(
-			{ url: `https://uts-api.itunes.apple.com${path}?sf=143470&pfm=ipad&caller=wlk&v=100&searchTerm=Lumen`, headers: {}, $argument: `Tabs=Library&LumenKey=${lumenKey}&LogLevel=OFF` },
+			{ url: `https://uts-api.itunes.apple.com${path}?sf=143470&pfm=ipad&caller=wlk&v=100&searchTerm=Lumen`, headers: {}, $argument: `Brands=Lumen&LumenKey=${lumenKey}&LogLevel=OFF` },
 			{ headers: { "Content-Type": "application/json" }, body: JSON.stringify(path === "/uts/v3/configurations" ? body : {}) },
 		);
 		const actual = JSON.parse(response.body);
@@ -235,11 +235,11 @@ for (const body of [{}, { data: { applicationProps: {} } }]) {
 	});
 }
 
-test("configuration injection survives caller=wta and Tabs excluding ChannelsAndApps", async t => {
+test("selected Lumen injection survives caller=wta without a channel group", async t => {
 	for (const caller of ["wta", "wlk"]) {
 		t.mock.method(Storage, "getItem", () => ({}));
 		const response = await ResponseDev(
-			{ url: `https://uts-api.itunes.apple.com/uts/v3/configurations?caller=${caller}&pfm=iphone&v=1`, headers: {}, $argument: "Tabs=Library&ThirdParty=false&LogLevel=OFF" },
+			{ url: `https://uts-api.itunes.apple.com/uts/v3/configurations?caller=${caller}&pfm=iphone&v=1`, headers: {}, $argument: "Brands=Lumen&ThirdParty=false&LogLevel=OFF" },
 			{ headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: { tabs: [{ type: "Library", title: "Library" }] } } }) },
 		);
 		const tabs = JSON.parse(response.body).data.applicationProps.tabs;
@@ -257,13 +257,13 @@ for (const fixture of fixtures.home) {
 		original.data.canvas.nextToken = "canvas-pagination";
 		original.data.canvas.shelves[0].nextToken = "shelf-pagination";
 		original.data.canvas.shelves[0].sections[0].nextToken = "section-pagination";
-		const actual = await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", original, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
+		const actual = await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", original, `sf=${fixture.sf}`, ResponseDev, "Brands=Lumen&LogLevel=OFF");
 		const item = actual.data.canvas.shelves[0].sections[0].items[0];
 		assert.equal(item.id, brandId);
 		assert.equal(item.type, "Brand");
 		assert.match(item.url, new RegExp(`/${fixture.sf === "143470" ? "tw" : "us"}/channel/lumen/`));
 		assert.deepEqual([item.images.shelfItemImage.width, item.images.shelfItemImage.height], [1000, 1500]);
-		assert.deepEqual(await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", actual, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF"), actual);
+		assert.deepEqual(await replay(t, "/uts/v3/canvases/Roots/tahoma_watchnow", actual, `sf=${fixture.sf}`, ResponseDev, "Brands=Lumen&LogLevel=OFF"), actual);
 		actual.data.canvas.shelves[0].sections[0].items.shift();
 		delete actual.data.channels[brandId];
 		assert.deepEqual(actual, original);
@@ -278,7 +278,7 @@ test("all legacy home lockups and matching door sections are injected together",
 		{ displayType: "channelUpsell", items: [{ id: "upsell" }] },
 	];
 	for (const path of ["/uts/v3/canvases/Roots/watchNow", "/uts/v3/canvases/roots/tahoma_watchnow"]) {
-		const actual = await replay(t, path, { data: { canvas: { shelves } } }, "", ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
+		const actual = await replay(t, path, { data: { canvas: { shelves } } }, "", ResponseDev, "Brands=Lumen&LogLevel=OFF");
 		const result = actual.data.canvas.shelves;
 		for (const target of [result[0], result[1], result[2].sections[1]]) {
 			assert.equal(target.items[0].id, brandId);
@@ -318,7 +318,7 @@ test("home injection retains the existing playable URL workaround", async t => {
 for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")) {
 	for (const path of ["/uts/v3/search/landing", "/uts/v3/canvases/Roots/tahoma_searchlanding"]) {
 		test(`${fixture.case}: ${path} prepends a Brand to the official Browse grid`, async t => {
-			const actual = await replay(t, path, fixture.body, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
+			const actual = await replay(t, path, fixture.body, `sf=${fixture.sf}`, ResponseDev, "Brands=Lumen&LogLevel=OFF");
 			const item = actual.data.canvas.shelves[0].items[0];
 			assert.equal(item.id, brandId);
 			assert.equal(item.type, "Brand");
@@ -327,7 +327,7 @@ for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")
 				actual.data.canvas.shelves.some(({ id }) => id === "uts.col.search.BR"),
 				false,
 			);
-			assert.deepEqual(await replay(t, path, actual, `sf=${fixture.sf}`, ResponseDev, "Tabs=WatchNow&LogLevel=OFF"), actual);
+			assert.deepEqual(await replay(t, path, actual, `sf=${fixture.sf}`, ResponseDev, "Brands=Lumen&LogLevel=OFF"), actual);
 			actual.data.canvas.shelves[0].items.shift();
 			delete actual.data.channels[brandId];
 			assert.deepEqual(actual, fixture.body);
@@ -338,7 +338,7 @@ for (const fixture of fixtures.search.filter(({ stage }) => stage === "landing")
 test("landing handles Brand-only grids and creates a grid without modifying unrelated rows", async t => {
 	const unrelated = { id: "other", displayType: "cardLockup", items: [{ id: "movie", type: "Movie" }] };
 	for (const shelves of [[], [unrelated], [{ id: "browse", displayType: "brick", isGrid: true, items: [{ id: "disney", type: "Brand" }], nextToken: "keep" }]]) {
-		const actual = await replay(t, "/uts/v3/search/landing", { data: { canvas: { shelves } } }, "", ResponseDev, "Tabs=WatchNow&LogLevel=OFF");
+		const actual = await replay(t, "/uts/v3/search/landing", { data: { canvas: { shelves } } }, "", ResponseDev, "Brands=Lumen&LogLevel=OFF");
 		const grid = actual.data.canvas.shelves[0];
 		assert.equal(grid.displayType, "brick");
 		assert.equal(grid.isGrid, true);
@@ -616,10 +616,44 @@ for (const id of ["uts.col.search.TR", "uts.col.search.BR"]) {
 	});
 }
 
-test("release and uninvestigated v2 routes retain their existing behavior", async t => {
+for (const [variant, response] of [
+	["release", ResponseRelease],
+	["dev", ResponseDev],
+]) {
+	for (const path of ["/uts/v3/search", "/uts/v3/shelves/uts.col.search.TR", "/uts/v3/shelves/uts.col.search.BR"]) {
+		test(`${variant}: selected Lumen supplies authenticated results through ${path}`, async t => {
+			const requests = backend(t);
+			const actual = await replay(t, path, {}, "searchTerm=Lumen&topResultsOnly=true", response, `Brands=Lumen&LumenKey=${lumenKey}&LogLevel=OFF`);
+			const shelf = actual.data.shelf ?? actual.data.canvas.shelves[0];
+			assert.deepEqual(
+				shelf.items.map(({ id }) => id),
+				path.endsWith(".BR") ? [brandId] : [brandId, ...movies.map(({ id }) => id)],
+			);
+			assert.equal(actual.data.channels[brandId].type, "Brand");
+			assert.equal(requests.length, path.endsWith(".BR") ? 0 : 1);
+		});
+	}
+
+	test(`${variant}: deselected Lumen adds no navigation, cards, preferences or search results`, async t => {
+		const requests = backend(t);
+		for (const [path, body] of [
+			["/uts/v3/configurations", { data: { applicationProps: { tabs: [{ type: "Library" }] } } }],
+			["/uts/v3/channels", { data: { channels: {} } }],
+			["/uts/v3/user/settings", { data: { brandSidebarSetting: {} } }],
+			["/uts/v3/canvases/Roots/tahoma_watchnow", { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } }],
+			["/uts/v3/search/landing", {}],
+			["/uts/v3/search", {}],
+			["/uts/v3/shelves/uts.col.search.TR", {}],
+			["/uts/v3/shelves/uts.col.search.BR", {}],
+		])
+			assert.deepEqual(await replay(t, path, body, "searchTerm=Lumen", response, `Brands=[]&LumenKey=${lumenKey}&LogLevel=OFF`), body);
+		assert.equal(requests.length, 0);
+	});
+}
+
+test("uninvestigated v2 routes retain their existing behavior", async t => {
 	const requests = backend(t);
 	const body = { data: { canvas: { shelves: [] } } };
-	assert.deepEqual(await replay(t, "/uts/v3/search", body, "searchTerm=Dune", ResponseRelease), body);
 	assert.deepEqual(await replay(t, "/uts/v2/search/incremental", body, "searchTerm=Dune"), body);
 	assert.deepEqual(await replay(t, "/uts/v2/search/landing", body), body);
 	assert.equal(requests.length, 0);

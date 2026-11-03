@@ -8,7 +8,7 @@ import { Response as ResponseRelease } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-settings.json", import.meta.url)));
 const brandId = "tvs.sbd.lumen";
-const settings = { Tabs: ["tvs.sbd.lumen"] };
+const settings = { Brands: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
 for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
@@ -79,33 +79,37 @@ test("settings preserves an existing hidden/pinned Lumen record and extensions b
 	assert.deepEqual(state, { isHidden: true, isPinned: true, custom: "preserved" });
 });
 
-for (const [path, source] of [
-	["/uts/v3/channels", fixtures.channels],
-	["/uts/v3/user/settings", fixtures.settings],
+for (const [variant, processResponse] of [
+	["release", ResponseRelease],
+	["dev", ResponseDev],
 ]) {
-	test(`dev routes ${path} to the dedicated injector, with release behavior preserved`, async t => {
-		t.mock.method(Storage, "getItem", () => ({}));
-		const request = { url: `https://uts-api.itunes.apple.com${path}?caller=wlk&pfm=atv&sf=143441&v=101`, headers: {}, $argument: "LogLevel=OFF" };
-		const input = { headers: { "Content-Type": "application/json" }, body: JSON.stringify(source) };
-		const actual = JSON.parse((await ResponseDev(request, { ...input })).body);
-		switch (path) {
-			case "/uts/v3/channels":
-				assert.equal(actual.data.channels[brandId].type, "Brand");
-				assert.equal(new URL(actual.data.channels[brandId].url).pathname.split("/")[1], "us");
-				delete actual.data.channels[brandId];
-				for (const id of ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"]) {
-					assert.equal(actual.data.channels[id].isFirstParty, true);
-					assert.equal(actual.data.channels[id].isApSubscription, true);
-					assert.equal(actual.data.channels[id].isSubscribed, undefined);
-					delete actual.data.channels[id];
-				}
-				break;
-			case "/uts/v3/user/settings":
-				assert.deepEqual(actual.data.brandSidebarSetting[brandId], { isHidden: false, isPinned: false });
-				delete actual.data.brandSidebarSetting[brandId];
-				break;
-		}
-		assert.deepEqual(actual, source);
-		assert.deepEqual(JSON.parse((await ResponseRelease(request, { ...input })).body), source);
-	});
+	for (const [path, source] of [
+		["/uts/v3/channels", fixtures.channels],
+		["/uts/v3/user/settings", fixtures.settings],
+	]) {
+		test(`${variant} routes ${path} to the selected brand injector`, async t => {
+			t.mock.method(Storage, "getItem", () => ({}));
+			const request = { url: `https://uts-api.itunes.apple.com${path}?caller=wlk&pfm=atv&sf=143441&v=101`, headers: {}, $argument: "LogLevel=OFF" };
+			const input = { headers: { "Content-Type": "application/json" }, body: JSON.stringify(source) };
+			const actual = JSON.parse((await processResponse(request, { ...input })).body);
+			switch (path) {
+				case "/uts/v3/channels":
+					assert.equal(actual.data.channels[brandId].type, "Brand");
+					assert.equal(new URL(actual.data.channels[brandId].url).pathname.split("/")[1], "us");
+					delete actual.data.channels[brandId];
+					for (const id of ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"]) {
+						assert.equal(actual.data.channels[id].isFirstParty, true);
+						assert.equal(actual.data.channels[id].isApSubscription, true);
+						assert.equal(actual.data.channels[id].isSubscribed, undefined);
+						delete actual.data.channels[id];
+					}
+					break;
+				case "/uts/v3/user/settings":
+					assert.deepEqual(actual.data.brandSidebarSetting[brandId], { isHidden: false, isPinned: false });
+					delete actual.data.brandSidebarSetting[brandId];
+					break;
+			}
+			assert.deepEqual(actual, source);
+		});
+	}
 }

@@ -11,7 +11,7 @@ const fixture = JSON.parse(readFileSync(new URL("fixtures/us-f1-home.json", impo
 const official = fixture.body.data.canvas.shelves[0];
 const ids = official.items.map(({ id }) => id);
 const anchorId = "uts.col.home-popular-movies";
-const options = { pfm: "iphone", region: "us", settings: { ...database.TV.Settings, Tabs: ids } };
+const options = { pfm: "iphone", region: "us", settings: { ...database.TV.Settings, Brands: ids } };
 Console.logLevel = "OFF";
 
 test("sports brick preserves existing row, cards, unknown entries and brand state by reference", () => {
@@ -60,11 +60,11 @@ test("sports switches control supplementation without removing original cards", 
 	const shelves = [structuredClone(official)];
 	const before = structuredClone(shelves);
 	const channels = {};
-	new InjectBrand({ settings: { Tabs: [] } }).InjectBrick(shelves, channels, { ...options, settings: { ...database.TV.Settings, Tabs: [] } });
+	new InjectBrand({ settings: { Brands: [] } }).InjectBrick(shelves, channels, { ...options, settings: { ...database.TV.Settings, Brands: [] } });
 	assert.deepEqual(shelves, before);
 	assert.deepEqual(channels, {});
 	const missing = [{ id: anchorId, items: [] }];
-	new InjectBrand({ settings: { Tabs: [] } }).InjectBrick(missing, channels, { ...options, settings: { ...options.settings, Tabs: [] } });
+	new InjectBrand({ settings: { Brands: [] } }).InjectBrick(missing, channels, { ...options, settings: { ...options.settings, Brands: [] } });
 	assert.equal(missing.length, 1);
 	assert.equal(missing[0].id, anchorId);
 });
@@ -118,9 +118,9 @@ for (const [variant, processResponse] of [
 	["release", Response],
 	["dev", ResponseDev],
 ]) {
-	test(`${variant}: Sports selects the MLB Room without adding F1 or MLS brands`, async t => {
+	test(`${variant}: MLB selects the MLB Room without adding F1 or MLS brands`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const request = { url: "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/tahoma_watchnow?sf=143470&pfm=atv&v=101", headers: {}, $argument: "Tabs=Sports&CountryCode.Sports=JP&LogLevel=OFF" };
+		const request = { url: "https://uts-api.itunes.apple.com/uts/v3/canvases/Roots/tahoma_watchnow?sf=143470&pfm=atv&v=101", headers: {}, $argument: "Brands=MLB&CountryCode.Sports=JP&LogLevel=OFF" };
 		const body = { data: { canvas: { shelves: [{ id: anchorId, items: [] }] } } };
 		const response = await processResponse(request, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 		const actual = JSON.parse(response.body);

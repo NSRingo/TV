@@ -6,8 +6,23 @@ import InjectBrand from "../src/class/InjectBrand.mjs";
 import { ResponseLumen as Response } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
-const settings = { Tabs: ["tvs.sbd.lumen"] };
+const settings = { Brands: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
+
+test("deselected Lumen leaves backend resources unchanged", async t => {
+	t.mock.method(Storage, "getItem", () => ({}));
+	for (const brands of ["[]", "Originals,F1,MLS,MLB"]) {
+		for (const [path, body] of [
+			["canvases/Channels/tvs.sbd.lumen", fixtures.channel],
+			["shelves/edt.col.lumen-lib-284", { data: { shelf: fixtures.channel.data.canvas.shelves[0] } }],
+			["movies/umc.cmc.lumen1580066", fixtures.movie],
+		]) {
+			const response = { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+			await Response({ url: `https://www.lumen.ax/api/appletv/v1/uts/v3/${path}`, $argument: `Brands=${brands}&LogLevel=OFF` }, response);
+			assert.deepEqual(JSON.parse(response.body), body);
+		}
+	}
+});
 
 async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone") {
 	t.mock.method(Storage, "getItem", () => ({}));

@@ -38,28 +38,30 @@ export interface Settings {
      */
     Locale?: 'AUTO' | 'zh-Hans' | 'zh-Hant' | 'yue-Hant' | 'en-US' | 'en-GB' | 'en-AU' | 'en-CA' | 'ja-JP' | 'ko-KR';
     /**
-     * 启用的标签与栏目
+     * 启用的品牌
      *
-     * 选择标签与栏目，多个值以逗号分隔；实际入口仍由平台、版本和地区决定。
+     * 选择要注入的品牌，多个值以逗号分隔；自动选择注入位置，保留原站已有导航与卡片。
      *
      * @remarks
      *
      * Possible values:
-     * - `'WatchNow'` - 主页（立即观看）
      * - `'Originals'` - Apple TV+（原创内容）
      * - `'F1'` - F1（一级方程式赛车）
      * - `'MLS'` - MLS
-     * - `'Sports'` - 体育节目
-     * - `'Store'` - 商店
-     * - `'Movies'` - 电影
-     * - `'TV'` - 电视节目
-     * - `'ChannelsAndApps'` - 频道与 App
-     * - `'Library'` - 资料库
-     * - `'Search'` - 搜索
+     * - `'MLB'` - MLB（Friday Night Baseball）
+     * - `'Lumen'` - Lumen
      *
-     * @defaultValue ["WatchNow","Originals","F1","MLS","Sports","Store","Movies","TV","ChannelsAndApps","Library","Search"]
+     * @defaultValue ["Originals","F1","MLS","MLB","Lumen"]
      */
-    Tabs?: ('WatchNow' | 'Originals' | 'F1' | 'MLS' | 'Sports' | 'Store' | 'Movies' | 'TV' | 'ChannelsAndApps' | 'Library' | 'Search')[];
+    Brands?: ('Originals' | 'F1' | 'MLS' | 'MLB' | 'Lumen')[];
+    /**
+     * [Lumen] 搜索鉴权 X-Lumen-Key
+     *
+     * 可选，填写 Lumen 官方模块中 X-Lumen-Key 的值；留空时跳过搜索中的 Lumen 频道入口与影视结果。
+     *
+     * @defaultValue ""
+     */
+    LumenKey?: string;
     CountryCode?: {
     /**
          * [配置文件] 国家或地区代码
@@ -415,12 +417,4 @@ export interface Settings {
      * @defaultValue "WARN"
      */
     LogLevel?: 'OFF' | 'ERROR' | 'WARN' | 'INFO' | 'DEBUG' | 'ALL';
-    /**
-     * [Lumen] 搜索鉴权 X-Lumen-Key
-     *
-     * 可选，填写 Lumen 官方模块中 X-Lumen-Key 的值；留空时跳过搜索中的 Lumen 频道入口与影视结果。
-     *
-     * @defaultValue ""
-     */
-    LumenKey?: string;
 }

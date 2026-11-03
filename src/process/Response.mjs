@@ -46,13 +46,10 @@ export async function Response($request, $response) {
 			// 主机判断
 			switch (url.hostname) {
 				case "uts-api.itunes.apple.com": {
-					const Version = Number.parseInt(url.searchParams.get("v"), 10),
-						Platform = url.searchParams.get("pfm"),
-						Caller = url.searchParams.get("caller");
-					Console.info(`Version = ${Version}`, `Platform = ${Platform}`, `Caller = ${Caller}`);
+					const Platform = url.searchParams.get("pfm");
+					Console.info(`Platform = ${Platform}`);
 					const StoreFront = url.searchParams.get("sf") ?? url.searchParams.get("sfh")?.split("-")[0];
-					const Locale = ($request.headers?.["X-Apple-I-Locale"] ?? $request.headers?.["x-apple-i-locale"])?.split("_")?.[0] ?? "zh";
-					Console.info(`StoreFront = ${StoreFront}`, `Locale = ${Locale}`);
+					Console.info(`StoreFront = ${StoreFront}`);
 					const Region =
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
@@ -63,56 +60,25 @@ export async function Response($request, $response) {
 					// 路径判断
 					switch (url.pathname) {
 						case "/uts/v3/configurations":
-							for (const tab of body.data?.applicationProps?.tabs ?? []) if (!tab.target) tab.id ??= Configs.Tab[tab.type];
-							if (Caller !== "wta") {
-								// 不修改caller=wta的configurations数据
-								if (body.data?.applicationProps?.tabs) {
-									if (Platform === "iphone") Settings.Tabs = Settings.Tabs.filter(id => id !== "tvs.sbd.241000" && id !== "tvs.sbd.7000");
-									injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs);
-									const tabs = body.data.applicationProps.tabs;
-									const newTabs = [];
-									for (const id of Settings.Tabs) {
-										const index = tabs.findIndex(tab => (tab.target?.id ?? tab.id) === id);
-										if (index !== -1) {
-											if (index === 0) newTabs.unshift(tabs[index]);
-											else newTabs.push(tabs[index]);
-											continue;
-										}
-										const tab = Configs.Tabs.find(tab => (tab.target?.id ?? tab.id) === id);
-										if (!tab) continue;
-										if (tab.subTabs) for (const subTab of tab.subTabs) subTab.title = Configs.i18n?.[subTab.type]?.get(Locale) ?? tab.title;
-										tab.title = Configs.i18n?.[tab.type]?.get(Locale) ?? tab.title;
-										switch (id) {
-											case "tahoma_store":
-												if (Version < 54) continue;
-												break;
-											case "tahoma_movies":
-											case "tahoma_tvshows":
-												if (Version >= 54) continue;
-												if (Platform === "iphone") tab.secondaryEnabled = true;
-												break;
-											case "tahoma_sports":
-											case "tahoma_kids":
-												if (Platform === "iphone") {
-													if (Version >= 54) continue;
-													tab.secondaryEnabled = true;
-												}
-												break;
-											case "ChannelsAndApps":
-												if (Version < 74 || !["atv", "ipad", "appletv"].includes(Platform)) continue;
-												break;
-										}
-										newTabs.push(tab);
-									}
-									body.data.applicationProps.tabs = newTabs;
-								}
-							}
+							if (body.data?.applicationProps?.tabs) injectBrand.InjectUTSConfigurationTabs(body.data.applicationProps.tabs, brandContext);
+							body = injectBrand.InjectUTSConfigurationChannelsAndApps(body, brandContext);
 							break;
 						case "/uts/v3/search/landing":
 						case "/uts/v3/canvases/Roots/tahoma_searchlanding":
 							body = injectBrand.InjectSearchLanding(body, brandContext);
 							break;
+						case "/uts/v3/search":
+						case "/uts/v3/shelves/uts.col.search.TR":
+						case "/uts/v3/shelves/uts.col.search.BR":
+							body = await injectBrand.InjectSearch(body, { ...brandContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: Settings.LumenKey });
+							break;
+						case "/uts/v3/channels":
+							_.set(body, "data.channels", body.data?.channels ?? {});
+							injectBrand.InjectChannels(body.data.channels, brandContext);
+							break;
 						case "/uts/v3/user/settings":
+							_.set(body, "data.brandSidebarSetting", body.data?.brandSidebarSetting ?? {});
+							injectBrand.InjectUTSUserSettings(body.data.brandSidebarSetting);
 							break;
 						case "/uts/v3/canvases/Roots/watchNow": // 立即观看
 						case "/uts/v3/canvases/Roots/tahoma_watchnow":

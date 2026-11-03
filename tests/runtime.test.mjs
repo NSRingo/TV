@@ -11,7 +11,6 @@ import { ResponseDev } from "./host.mjs";
 import { ResponseLumen } from "./host.mjs";
 
 const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json", import.meta.url)));
-const officialAppleTabs = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url))).body.data.applicationProps.tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type, title, target }) => ({ type, title, target }));
 Console.logLevel = "OFF";
 
 for (const [variant, processRequest] of [["release", Request], ["dev", RequestDev]]) {
@@ -38,16 +37,14 @@ for (const [variant, processRequest] of [["release", Request], ["dev", RequestDe
 }
 
 for (const fixture of baseline.cases) {
-	const injectsChannels = fixture.variant === "dev" && fixture.phase === "response" && new URL(fixture.request.url).pathname === "/uts/v3/configurations";
-	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "retains platform navigation from" : injectsChannels ? "adds configured channels to" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
+	test(`${fixture.variant}: ${fixture.name} ${fixture.phase === "request" ? "preserves client language with routing from" : fixture.name.startsWith("tabs-") ? "preserves upstream navigation with no selected brands from" : "matches"} TV ${baseline.commit.slice(0, 7)}`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		// 固定历史 tab 配置，继续验证旧基线；当前默认值由 tabs.test.mjs 覆盖。
-		const tabsArgument = fixture.name.startsWith("tabs-") ? "&Tabs=WatchNow,Originals,MLS,Sports,Kids,Store,Movies,TV,ChannelsAndApps,Library,Search" : "";
-		const request = { ...structuredClone(fixture.request), $argument: `${fixture.argument}${tabsArgument}&LogLevel=OFF` };
+		const request = { ...structuredClone(fixture.request), $argument: `${fixture.argument}&Brands=[]&LogLevel=OFF` };
 		let actual;
 		let expected = structuredClone(fixture.expected);
 		if (fixture.phase === "request") {
 			// 旧基线的 locale 覆盖已移除；其余路由、请求头和正文继续与基线对照。
+			// Locale overrides from the historical baseline are retired; compare the remaining routing, headers and body.
 			const locale = new URL(fixture.request.url).searchParams.get("locale");
 			if (locale === null) delete expected.query.locale;
 			else expected.query.locale = locale;
@@ -58,27 +55,7 @@ for (const fixture of baseline.cases) {
 		} else {
 			const response = await (fixture.variant === "dev" ? ResponseDev : Response)(request, structuredClone(fixture.response));
 			actual = JSON.parse(response.body);
-			if (injectsChannels) {
-				const tab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps");
-				assert.equal(tab.subTabs[0].target.id, "tvs.sbd.lumen");
-				assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
-				if (fixture.name.startsWith("tabs-")) {
-					if (!expected.some(({ type }) => type === "ChannelsAndApps")) {
-						const index = expected.findIndex(({ type }) => type === "Library");
-						expected.splice(index < 0 ? expected.length : index, 0, { type: "ChannelsAndApps", title: "频道和 App" });
-					}
-				} else {
-					actual.data.applicationProps.tabs = actual.data.applicationProps.tabs.filter(({ type }) => type !== "ChannelsAndApps");
-					delete actual.data.channels;
-				}
-			}
-			if (fixture.name.startsWith("tabs-")) {
-				actual = actual.data.applicationProps.tabs.map(({ type, title, secondaryEnabled, target }) => ({ type, title, ...(secondaryEnabled !== undefined ? { secondaryEnabled } : {}), ...(target ? { target } : {}) }));
-				// iPhone 不补入 MLS；其余平台沿用当前的频道注入。
-				if (new URL(fixture.request.url).searchParams.get("pfm") !== "iphone" && !expected.some(({ type }) => type === "MLS")) expected.splice(expected.findIndex(({ type }) => type === "Originals") + 1, 0, officialAppleTabs.find(({ type }) => type === "MLS"));
-				// 注入模板使用完整官方配置，替换旧基线中的预定义苹果导航。
-				expected = expected.map(tab => officialAppleTabs.find(({ type }) => type === tab.type) ?? tab);
-			}
+			if (fixture.name.startsWith("tabs-")) expected = JSON.parse(fixture.response.body);
 		}
 		assert.deepEqual(actual, expected);
 	});
@@ -123,40 +100,60 @@ test("Storage precedence merges nested settings and preserves database defaults"
 	assert.equal(JSON.stringify(database), original);
 });
 
-test("setENV resolves functional tab names into IDs once without changing database defaults", t => {
+test("setENV resolves brand names into IDs without selecting ordinary navigation", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const original = JSON.stringify(database);
-	globalThis.$argument = qs.parse("Tabs=F1,MLS,Library,ChannelsAndApps,Sports&LogLevel=OFF");
-	const { Settings, Configs } = setENV("iRingo", "TV", database);
-	assert.equal(Configs.Tab.F1, "tvs.sbd.241000");
-	assert.deepEqual(Settings.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000", "Library", "ChannelsAndApps", "tahoma_sports", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"]);
-	assert.equal(Configs.Tabs.find(({ id }) => id === "Library").destinationType, "Client");
-	assert.equal(Configs.Tabs.find(({ id }) => id === "ChannelsAndApps").destinationType, "SubTabs");
+	globalThis.$argument = qs.parse("Brands=Originals,F1,MLS,MLB,Lumen,WatchNow,Sports,Store,Movies,TV,ChannelsAndApps,Library,Search&LogLevel=OFF");
+	const { Settings } = setENV("iRingo", "TV", database);
+	assert.deepEqual(Settings.Brands, ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
 	assert.equal(JSON.stringify(database), original);
 });
 
-test("stored functional tab names become request-local IDs while argument precedence remains intact", t => {
-	const stored = { TV: { Settings: { Tabs: ["F1", "MLS"] } } };
+test("stored brand names become request-local IDs while argument precedence remains intact", t => {
+	const stored = { TV: { Settings: { Brands: ["F1", "MLS"] } } };
 	t.mock.method(Storage, "getItem", () => stored);
-	globalThis.$argument = qs.parse("Tabs=Store&LogLevel=OFF");
+	globalThis.$argument = qs.parse("Brands=MLB&LogLevel=OFF");
 	const persistent = setENV("iRingo", "TV", database).Settings;
-	assert.deepEqual(persistent.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000"]);
-	globalThis.$argument = qs.parse("Storage=Argument&Tabs=Store&LogLevel=OFF");
+	assert.deepEqual(persistent.Brands, ["tvs.sbd.241000", "tvs.sbd.7000"]);
+	globalThis.$argument = qs.parse("Storage=Argument&Brands=MLB&LogLevel=OFF");
 	const argument = setENV("iRingo", "TV", database).Settings;
-	assert.deepEqual(argument.Tabs, ["tahoma_store"]);
-	assert.deepEqual(stored.TV.Settings.Tabs, ["F1", "MLS"]);
+	assert.deepEqual(argument.Brands, ["edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"]);
+	assert.deepEqual(stored.TV.Settings.Brands, ["F1", "MLS"]);
+});
+
+test("retired Tabs settings do not select brands", t => {
+	t.mock.method(Storage, "getItem", () => ({ TV: { Settings: { Tabs: ["Originals", "MLS"], Brands: [] } } }));
+	globalThis.$argument = qs.parse("Tabs=F1,Sports&LogLevel=OFF");
+	assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, []);
+});
+
+test("empty BoxJs and argument arrays disable brand injection with normal Storage precedence", t => {
+	for (const stored of [{ Brands: [] }, JSON.stringify({ Brands: [] })]) {
+		t.mock.method(Storage, "getItem", () => ({ TV: { Settings: stored } }));
+		globalThis.$argument = qs.parse("Brands=F1&LogLevel=OFF");
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, []);
+		globalThis.$argument = qs.parse("Storage=Argument&Brands=F1&LogLevel=OFF");
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.241000"]);
+		globalThis.$argument = { Storage: "Argument", Brands: [], LogLevel: "OFF" };
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, []);
+		globalThis.$argument = { Storage: "database", Brands: [], LogLevel: "OFF" };
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
+	}
 });
 
 test("successive settings do not leak to subsequent calls", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
-	globalThis.$argument = qs.parse("Tabs=Sports&CountryCode.View=JP,SG&LogLevel=OFF");
+	globalThis.$argument = qs.parse("Brands=MLB&CountryCode.View=JP,SG&LogLevel=OFF");
 	const first = setENV("iRingo", "TV", database).Settings;
-	assert.deepEqual(first.Tabs, database.TV.Configs.Tab.Sports);
+	assert.deepEqual(first.Brands, ["edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"]);
 	assert.deepEqual(first.CountryCode.View, ["JP", "SG"]);
 	first.CountryCode.Sports = "JP";
 	globalThis.$argument = qs.parse({ LogLevel: "OFF" });
 	const second = setENV("iRingo", "TV", database).Settings;
-	assert.deepEqual(second.Tabs, database.TV.Settings.Tabs.flatMap(tab => database.TV.Configs.Tab[tab]));
+	assert.deepEqual(
+		second.Brands,
+		database.TV.Settings.Brands.flatMap(brand => database.TV.Configs.Brand[brand]),
+	);
 	assert.deepEqual(second.CountryCode.View, ["SG", "TW"]);
 	assert.equal(second.CountryCode.Sports, "US");
 });

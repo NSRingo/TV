@@ -4,7 +4,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @typedef {Object} BrandContext
  * @property {string|null} [pfm] - 请求的官方 pfm 参数，用于品牌宿主字段；省略时使用桌面宿主。
  * @property {string} region - 本次响应的小写地区码。
- * @property {Omit<import('../types').Settings, 'Tabs'> & {Tabs: string[]}} settings - setENV 已将 Tabs 转换为 ID 数组的请求设置。
+ * @property {Omit<import('../types').Settings, 'Brands'> & {Brands: string[]}} settings - setENV 已将 Brands 转换为 ID 数组的请求设置 / Request settings with Brands resolved to IDs by setENV.
  */
 
 /**
@@ -55,7 +55,7 @@ export default class InjectBrand {
 		this.Name = "InjectBrand";
 		this.Version = "1.2.6";
 		this.#Config.appleOrder = this.#Config.brands.filter(({ tab }) => tab.target).map(({ id }) => id);
-		this.#Config.brands = this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id));
+		this.#Config.brands = this.#Config.brands.filter(({ id }) => options.settings.Brands.includes(id));
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -65,8 +65,8 @@ export default class InjectBrand {
 	 * @type {{ChannelsAndApps: Object, appleOrder: string[], brands: BrandConfig[], bricks: Object[]}}
 	 */
 	#Config = {
-		// 保留未启用的苹果频道 ID，补卡片时仍以原站已有卡片定位。
-		// Keep disabled Apple brand IDs as ordering anchors for cards already present in the response.
+		// 保留未启用的苹果频道 ID，补导航或卡片时仍以原站已有条目定位。
+		// Keep disabled Apple brand IDs as ordering anchors for existing navigation and cards.
 		appleOrder: [],
 		ChannelsAndApps: {
 			id: "ChannelsAndApps",
@@ -547,7 +547,7 @@ export default class InjectBrand {
 	/**
 	 * 将配置派生的完整 Brand 原地写入品牌接口或资源响应共用的 data.channels 字典。
 	 * @param {Record<string, Object>} channels - 原响应的 `body.data.channels` 字典，由调用方确认存在或初始化。
-	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 为已转换的 ID 数组。
+	 * @param {BrandContext} options - 本次请求上下文；settings.Brands 为已转换的 ID 数组 / Request context with resolved brand IDs.
 	 * @returns {Record<string, Object>} 原 `body.data.channels` 字典引用；已有品牌的订阅、安装、同意和固定状态保留。
 	 */
 	InjectChannels(channels, options) {
@@ -618,14 +618,37 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 按构造时选定的品牌原地补齐苹果频道；平台限制和普通导航排序由 Response 处理。
-	 * Supplement Apple tabs selected at construction; Response handles platform restrictions and navigation order.
-	 * @param {Object[]} tabs - 原响应的 `body.data.applicationProps.tabs` 数组，由调用方确认存在。
-	 * @returns {Object[]} 原 `body.data.applicationProps.tabs` 数组引用；已有 tab 保留。
+	 * 按构造时选定的品牌补齐苹果导航；以已有品牌和主页、资料库定位，保留原导航对象与相对顺序。
+	 * Supplement selected Apple navigation using existing brands, Home and Library as anchors, preserving upstream objects and their relative order.
+	 * @param {Object[]} tabs - 原响应的导航数组，由调用方确认存在 / Existing body.data.applicationProps.tabs array.
+	 * @param {BrandContext} options - 本次请求的平台与品牌上下文 / Platform and brand context for this request.
+	 * @returns {Object[]} 原导航数组引用，已有 tab 保留 / The same navigation array, preserving existing tabs.
 	 */
-	InjectUTSConfigurationTabs(tabs) {
+	InjectUTSConfigurationTabs(tabs, options) {
 		for (const config of this.#Config.brands) {
-			if (config.tab.target && !tabs.some(({ target }) => target?.id === config.id)) tabs.push({ ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
+			if (!config.tab.target || tabs.some(({ target }) => target?.id === config.id)) continue;
+			if (options.pfm === "iphone" && ["tvs.sbd.241000", "tvs.sbd.7000"].includes(config.id)) continue;
+			const position = this.#Config.appleOrder.indexOf(config.id);
+			let index =
+				this.#Config.appleOrder
+					.slice(position + 1)
+					.map(id => tabs.findIndex(({ target }) => target?.id === id))
+					.find(index => index >= 0) ?? -1;
+			if (index === -1) {
+				const previous =
+					this.#Config.appleOrder
+						.slice(0, position)
+						.reverse()
+						.map(id => tabs.findIndex(({ target }) => target?.id === id))
+						.find(index => index >= 0) ?? -1;
+				if (previous !== -1) index = previous + 1;
+				else {
+					const home = tabs.findIndex(({ type }) => type === "WatchNow");
+					index = home === -1 ? tabs.findIndex(({ type }) => type === "Library") : home + 1;
+					if (index === -1) index = tabs.length;
+				}
+			}
+			tabs.splice(index, 0, { ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
 		}
 		return tabs;
 	}
@@ -634,7 +657,7 @@ export default class InjectBrand {
 	 * 按配置补入已有频道行和 moretv；苹果与第三方使用各自位置。
 	 * 没有目标行时保持正文原样，不创建首页行。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
-	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 使用 ID，不按平台限制。
+	 * @param {BrandContext} options - 本次请求上下文；settings.Brands 使用 ID，不按平台限制 / Request context with resolved brand IDs, without platform restrictions.
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectWatchNowLockup(body, options) {
@@ -670,7 +693,7 @@ export default class InjectBrand {
 	 * 原位补齐配置 brick；缺行时在热门电影前创建，不在其他分页重复插入。
 	 * @param {Object[]} shelves - 原响应的 `body.data.canvas.shelves` 数组，由调用方确认存在。
 	 * @param {Record<string, Object>} channels - 原响应的 `body.data.channels` 字典，由调用方确认存在或初始化。
-	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 仅控制补入，已有卡片保留。
+	 * @param {BrandContext} options - 本次请求上下文；settings.Brands 仅控制补入，已有卡片保留 / Request context; brand selection only supplements missing cards.
 	 * @returns {Object[]} 原 shelves 引用；Brand 元数据同时补入 channels，Room 不创建品牌记录。
 	 */
 	InjectBrick(shelves, channels, options) {
@@ -693,7 +716,7 @@ export default class InjectBrand {
 	 * 在原站 Browse 网格补齐苹果频道并首插第三方；缺少网格时仅为第三方创建。
 	 * 两条 landing 路径共用此结构，不生成 Room 或搜索结果 BR 行。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.canvas.shelves` 和 `body.data.channels`。
-	 * @param {BrandContext} options - 本次请求上下文；苹果频道使用 settings.Tabs 与对应地区设置。
+	 * @param {BrandContext} options - 本次请求上下文；苹果频道使用 settings.Brands 与对应地区设置 / Request context with selected brand IDs and region settings.
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectSearchLanding(body, options) {
@@ -867,7 +890,7 @@ export default class InjectBrand {
 	#BuildBrick(config, { region, settings }, state) {
 		const shelf = state ?? { ...config, header: { ...config.header }, cachingPolicy: { ...config.cachingPolicy }, url: config.url.replace("/us/", `/${region}/`), items: [] };
 		for (const [position, item] of config.items.entries()) {
-			if (!settings.Tabs.includes(item.id) || shelf.items.some(({ id }) => id === item.id)) continue;
+			if (!settings.Brands.includes(item.id) || shelf.items.some(({ id }) => id === item.id)) continue;
 			const country = item.id === "tvs.sbd.7000" ? settings.CountryCode.Originals : settings.CountryCode.Sports;
 			const itemRegion = country === "AUTO" ? region : country.toLowerCase();
 			const card = { ...item, url: item.url.replace("/us/", `/${itemRegion}/`), images: { shelfItemImage: { ...item.images.shelfItemImage } } };

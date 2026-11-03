@@ -11,15 +11,12 @@ import database from "../src/function/database.mjs";
 test("release stays compact while full/dev expose database settings", () => {
 	assert.deepEqual(
 		args.map(arg => arg.key),
-		["ThirdParty", "isWorkaroundSSLPinning", "Locale", "Storage", "LogLevel"],
+		["ThirdParty", "isWorkaroundSSLPinning", "Locale", "LumenKey", "Storage", "LogLevel"],
 	);
 	assert.deepEqual(release.args, args);
-	assert.deepEqual(
-		dev.args.filter(({ key }) => key !== "LumenKey"),
-		argsFull,
-	);
+	assert.deepEqual(dev.args, argsFull);
 	assert.deepEqual(full.args, argsFull);
-	assert.deepEqual(argsFull.find(arg => arg.key === "Tabs").defaultValue, database.TV.Settings.Tabs);
+	assert.deepEqual(argsFull.find(arg => arg.key === "Brands").defaultValue, database.TV.Settings.Brands);
 	for (const [key, value] of Object.entries(database.TV.Settings.CountryCode)) assert.deepEqual(argsFull.find(arg => arg.key === `CountryCode.${key}`).defaultValue, value);
 	assert.equal(argsFull.find(arg => arg.key === "Storage").defaultValue, "PersistentStore");
 });
@@ -35,19 +32,13 @@ test("language defaults to AUTO across release, full, dev and BoxJs settings", (
 	assert.equal(settings.find(({ id }) => id === "@iRingo.TV.Settings.Locale").val, "AUTO");
 });
 
-test("Lumen search authentication is optional and exposed in dev settings", () => {
-	const argument = dev.args.find(({ key }) => key === "LumenKey");
-	assert.equal(argument.type, "string");
-	assert.equal(argument.defaultValue, "");
-	assert.equal(new ArgumentsBuilder({ args: dev.args }).buildBoxJsSettings("@iRingo.TV.Settings").find(({ id }) => id.endsWith(".LumenKey")).val, "");
-	assert.equal(
-		full.args.some(({ key }) => key === "LumenKey"),
-		false,
-	);
-	assert.equal(
-		release.args.some(({ key }) => key === "LumenKey"),
-		false,
-	);
+test("Lumen search authentication is optional and exposed across all settings", () => {
+	for (const config of [release, full, dev]) {
+		const argument = config.args.find(({ key }) => key === "LumenKey");
+		assert.equal(argument.type, "string");
+		assert.equal(argument.defaultValue, "");
+		assert.equal(new ArgumentsBuilder({ args: config.args }).buildBoxJsSettings("@iRingo.TV.Settings").find(({ id }) => id.endsWith(".LumenKey")).val, "");
+	}
 });
 
 test("BoxJs keys and defaults are generated from the full parameter set", () => {
@@ -60,8 +51,25 @@ test("BoxJs keys and defaults are generated from the full parameter set", () => 
 		settings.every(item => item.id.startsWith("@iRingo.TV.Settings.")),
 		true,
 	);
-	assert.deepEqual(settings.find(item => item.id.endsWith(".Tabs")).val, database.TV.Settings.Tabs);
+	assert.deepEqual(settings.find(item => item.id.endsWith(".Brands")).val, database.TV.Settings.Brands);
 	assert.deepEqual(settings.find(item => item.id.endsWith(".CountryCode.View")).val, ["SG", "TW"]);
+});
+
+test("brand selection exposes only supported brands and retires Tabs", () => {
+	assert.deepEqual(
+		argsFull.find(({ key }) => key === "Brands").options.map(({ key }) => key),
+		["Originals", "F1", "MLS", "MLB", "Lumen"],
+	);
+	for (const config of [release, full, dev])
+		assert.equal(
+			config.args.some(({ key }) => key === "Tabs"),
+			false,
+		);
+	const settings = new ArgumentsBuilder({ args: argsFull }).buildBoxJsSettings("@iRingo.TV.Settings");
+	assert.equal(
+		settings.some(({ id }) => id.endsWith(".Tabs")),
+		false,
+	);
 });
 
 test("Rewrite endpoints follow the UTS hostname and preserve TV paths and query strings", () => {
