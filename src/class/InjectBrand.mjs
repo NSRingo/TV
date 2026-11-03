@@ -43,13 +43,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.5
+ * @version 1.2.6
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.5";
+		this.Version = "1.2.6";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -604,16 +604,7 @@ export default class InjectBrand {
 			body.data.channels ??= {};
 			const channel = (body.data.channels[config.id] = this.#BuildBrand(config, options, body.data.channels[config.id]));
 			const index = tab.subTabs.findIndex(({ target }) => target.id === config.id);
-			tab.subTabs.unshift({
-				...config.tab,
-				// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
-				brandType: config.brandType,
-				title: channel.title,
-				isPinned: (index === -1 ? undefined : tab.subTabs.splice(index, 1)[0].isPinned) ?? channel.isPinned,
-				images: { defaultImage: { ...channel.images.appIcon } },
-				target: channel,
-				universalLinks: [channel.url],
-			});
+			tab.subTabs.unshift(this.#BuildBrandSubTab(config, channel, index === -1 ? undefined : tab.subTabs.splice(index, 1)[0]));
 		}
 		return body;
 	}
@@ -929,6 +920,27 @@ export default class InjectBrand {
 					images: { shelfItemImage: { ...config.images.appIcon } },
 				},
 			],
+		};
+	}
+
+	/**
+	 * 组装 ChannelsAndApps 分组的频道子导航，target 复用已构建的完整 Brand。
+	 * @private
+	 * @param {BrandConfig} config - #Config.brands[] 中的频道配置，tab 为子导航模板。
+	 * @param {Object} channel - 原响应的 `body.data.channels[config.id]` 完整 Brand。
+	 * @param {Object} [state] - 原响应 `body.data.applicationProps.tabs[]` 中 ChannelsAndApps 分组的已有 `subTabs[]` 子导航。
+	 * @returns {Object} 写入该分组 `subTabs[]` 的子导航，保留已有固定状态。
+	 */
+	#BuildBrandSubTab(config, channel, state) {
+		return {
+			...config.tab,
+			// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
+			brandType: config.brandType,
+			title: channel.title,
+			isPinned: state?.isPinned ?? channel.isPinned,
+			images: { defaultImage: { ...channel.images.appIcon } },
+			target: channel,
+			universalLinks: [channel.url],
 		};
 	}
 
