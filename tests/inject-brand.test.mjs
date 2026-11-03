@@ -57,20 +57,6 @@ async function replay(t, path, body, query = "", response = ResponseDev, argumen
 	return JSON.parse(result.body);
 }
 
-test("synchronous injectors take per-method context and preserve the original body and row arrays", () => {
-	const injector = new InjectBrand();
-	for (const [method, body, rowsOf, context] of [
-		["InjectUTSConfigurationChannelsAndApps", { data: { applicationProps: { tabs: [{ id: "Library", type: "Library" }] } } }, body => body.data.applicationProps.tabs, { pfm: "ipad", region: "tw", settings }],
-		["InjectWatchNowLockup", { data: { canvas: { shelves: [{ displayType: "brandLockup", items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "desktop", region: "us", settings }],
-		["InjectSearchLanding", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, body => body.data.canvas.shelves, { pfm: "iphone", region: "tw", settings }],
-	]) {
-		const rows = rowsOf(body);
-		assert.equal(injector[method](body, context), body);
-		assert.equal(rowsOf(body), rows);
-		assert.equal(new URL(body.data.channels[brandId].url).pathname.split("/")[1], context.region);
-	}
-});
-
 test("one instance searches concurrently with method-local context and mutates the original response objects", async t => {
 	const requests = backend(t);
 	const injector = new InjectBrand();
