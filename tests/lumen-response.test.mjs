@@ -11,7 +11,7 @@ Console.logLevel = "OFF";
 
 test("deselected Lumen leaves backend resources unchanged", async t => {
 	t.mock.method(Storage, "getItem", () => ({}));
-	for (const brands of ["[]", "Originals,F1,MLS,MLB"]) {
+	for (const brands of ["[]", "F1,MLS,MLB"]) {
 		for (const [path, body] of [
 			["canvases/Channels/tvs.sbd.lumen", fixtures.channel],
 			["shelves/edt.col.lumen-lib-284", { data: { shelf: fixtures.channel.data.canvas.shelves[0] } }],

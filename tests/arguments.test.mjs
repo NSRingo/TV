@@ -58,7 +58,7 @@ test("BoxJs keys and defaults are generated from the full parameter set", () => 
 test("brand selection exposes only supported brands and retires Tabs", () => {
 	assert.deepEqual(
 		argsFull.find(({ key }) => key === "Brands").options.map(({ key }) => key),
-		["Originals", "F1", "MLS", "MLB", "Lumen"],
+		["F1", "MLS", "MLB", "Lumen"],
 	);
 	for (const config of [release, full, dev])
 		assert.equal(

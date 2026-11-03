@@ -14,7 +14,7 @@ for (const [variant, processResponse, processRequest] of [
 	["release", Response, Request],
 	["dev", ResponseDev, RequestDev],
 ]) {
-	for (const brands of ["[]", "F1", "MLS,F1", "Originals,F1,MLS,MLB"]) {
+	for (const brands of ["[]", "F1", "MLS,F1", "F1,MLS,MLB"]) {
 		test(`${variant}: Brands=${brands} retains all upstream navigation objects and order`, async t => {
 			t.mock.method(Storage, "getItem", () => ({}));
 			const response = await processResponse({ url: fixture.url, headers: {}, $argument: `Brands=${brands}&LogLevel=OFF` }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(fixture.body) });
@@ -68,15 +68,15 @@ for (const [variant, processResponse, processRequest] of [
 			const url = new URL(fixture.url);
 			url.searchParams.set("pfm", platform);
 			url.searchParams.set("v", version);
-			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=Originals,F1,MLS,MLB&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+			const response = await processResponse({ url: url.toString(), headers: {}, $argument: "Brands=F1,MLS,MLB&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 			const tabs = JSON.parse(response.body).data.applicationProps.tabs;
 			assert.deepEqual(
 				tabs.map(({ type }) => type),
-				platform === "iphone" ? ["WatchNow", "Originals", "Library"] : ["WatchNow", "Originals", "Grevy", "MLS", "Library"],
+				platform === "iphone" ? ["WatchNow", "Library"] : ["WatchNow", "Grevy", "MLS", "Library"],
 			);
 			assert.deepEqual(
 				tabs.filter(({ target }) => target?.type === "Brand"),
-				fixture.body.data.applicationProps.tabs.filter(({ type }) => (platform === "iphone" ? ["Originals"] : ["Originals", "Grevy", "MLS"]).includes(type)),
+				fixture.body.data.applicationProps.tabs.filter(({ type }) => (platform === "iphone" ? [] : ["Grevy", "MLS"]).includes(type)),
 			);
 			assert.deepEqual(
 				tabs.filter(({ type }) => ["WatchNow", "Library"].includes(type)),
@@ -102,7 +102,7 @@ for (const [variant, processResponse, processRequest] of [
 
 	test(`${variant}: configuration without tabs does not invent Apple navigation`, async t => {
 		t.mock.method(Storage, "getItem", () => ({}));
-		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Brands=Originals,F1,MLS&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
+		const response = await processResponse({ url: fixture.url, headers: {}, $argument: "Brands=F1,MLS&LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { applicationProps: {} } }) });
 		assert.deepEqual(JSON.parse(response.body), { data: { applicationProps: {} } });
 	});
 

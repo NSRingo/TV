@@ -5,12 +5,11 @@ export default {
 			isWorkaroundSSLPinning: true,
 			Locale: "AUTO",
 			LumenKey: "",
-			Brands: ["Originals", "F1", "MLS", "MLB", "Lumen"],
+			Brands: ["F1", "MLS", "MLB", "Lumen"],
 			CountryCode: { Configs: "AUTO", Settings: "AUTO", View: ["SG", "TW"], WatchNow: "AUTO", Channels: "AUTO", Originals: "AUTO", Sports: "US", Kids: "US", Store: "AUTO", Movies: "AUTO", TV: "AUTO", Persons: "SG", Search: "AUTO", Others: "AUTO" },
 		},
 		Configs: {
 			Brand: {
-				Originals: "tvs.sbd.4000",
 				F1: "tvs.sbd.241000",
 				MLS: "tvs.sbd.7000",
 				MLB: "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2",

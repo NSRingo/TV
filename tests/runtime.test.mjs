@@ -62,7 +62,7 @@ for (const fixture of baseline.cases) {
 }
 
 for (const [variant, processResponse, origin, path, body, brandId] of [
-	["release", Response, "https://uts-api.itunes.apple.com", "/uts/v3/search/landing", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, "tvs.sbd.4000"],
+	["release", Response, "https://uts-api.itunes.apple.com", "/uts/v3/search/landing", { data: { canvas: { shelves: [{ displayType: "brick", isGrid: true, items: [] }] } } }, "tvs.sbd.lumen"],
 	["dev", ResponseDev, "https://uts-api.itunes.apple.com", "/uts/v3/configurations", { data: { applicationProps: { tabs: [] } } }, "tvs.sbd.lumen"],
 	["lumen", ResponseLumen, "https://www.lumen.ax/api/appletv/v1", "/uts/v3/canvases/Channels/tvs.sbd.lumen", { data: { canvas: { shelves: [] } } }, "tvs.sbd.lumen"],
 ]) {
@@ -105,7 +105,7 @@ test("setENV resolves brand names into IDs without selecting ordinary navigation
 	const original = JSON.stringify(database);
 	globalThis.$argument = qs.parse("Brands=Originals,F1,MLS,MLB,Lumen,WatchNow,Sports,Store,Movies,TV,ChannelsAndApps,Library,Search&LogLevel=OFF");
 	const { Settings } = setENV("iRingo", "TV", database);
-	assert.deepEqual(Settings.Brands, ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
+	assert.deepEqual(Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
 	assert.equal(JSON.stringify(database), original);
 });
 
@@ -137,7 +137,7 @@ test("empty BoxJs and argument arrays disable brand injection with normal Storag
 		globalThis.$argument = { Storage: "Argument", Brands: [], LogLevel: "OFF" };
 		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, []);
 		globalThis.$argument = { Storage: "database", Brands: [], LogLevel: "OFF" };
-		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
+		assert.deepEqual(setENV("iRingo", "TV", database).Settings.Brands, ["tvs.sbd.241000", "tvs.sbd.7000", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2", "tvs.sbd.lumen"]);
 	}
 });
 

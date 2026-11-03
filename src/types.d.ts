@@ -45,15 +45,14 @@ export interface Settings {
      * @remarks
      *
      * Possible values:
-     * - `'Originals'` - Apple TV+（原创内容）
      * - `'F1'` - F1（一级方程式赛车）
      * - `'MLS'` - MLS
      * - `'MLB'` - MLB（Friday Night Baseball）
      * - `'Lumen'` - Lumen
      *
-     * @defaultValue ["Originals","F1","MLS","MLB","Lumen"]
+     * @defaultValue ["F1","MLS","MLB","Lumen"]
      */
-    Brands?: ('Originals' | 'F1' | 'MLS' | 'MLB' | 'Lumen')[];
+    Brands?: ('F1' | 'MLS' | 'MLB' | 'Lumen')[];
     /**
      * [Lumen] 搜索鉴权 X-Lumen-Key
      *

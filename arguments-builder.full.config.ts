@@ -107,7 +107,6 @@ const brands: ArgumentItem = {
 	boxJsType: "checkboxes",
 	defaultValue: database.TV.Settings.Brands,
 	options: [
-		{ key: "Originals", label: "Apple TV+（原创内容）" },
 		{ key: "F1", label: "F1（一级方程式赛车）" },
 		{ key: "MLS", label: "MLS" },
 		{ key: "MLB", label: "MLB（Friday Night Baseball）" },

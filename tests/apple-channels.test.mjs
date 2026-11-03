@@ -22,11 +22,34 @@ test("Apple root tabs use supplied settings and preserve existing entries", () =
 	assert.equal(tabs[0], search);
 	assert.deepEqual(
 		tabs.slice(1).map(({ type }) => type),
-		["Originals", "Grevy", "MLS"],
+		["Grevy", "MLS"],
 	);
 	const once = structuredClone(tabs);
 	injector.InjectUTSConfigurationTabs(tabs, options);
 	assert.deepEqual(tabs, once);
+});
+
+test("Apple TV is preserved when present and never supplemented in Home or Browse", () => {
+	for (const method of ["InjectWatchNowLockup", "InjectSearchLanding"]) {
+		const body = structuredClone(fixtures.samples[0].body);
+		const shelf = body.data.canvas.shelves[0];
+		if (method === "InjectWatchNowLockup") shelf.displayType = "brandLockup";
+		const original = shelf.items.find(({ id }) => id === "tvs.sbd.4000");
+		const injector = new InjectBrand(context);
+		injector[method](body, context);
+		assert.equal(
+			shelf.items.find(({ id }) => id === "tvs.sbd.4000"),
+			original,
+		);
+		shelf.items = shelf.items.filter(({ id }) => id !== "tvs.sbd.4000");
+		delete body.data.channels["tvs.sbd.4000"];
+		injector[method](body, context);
+		assert.equal(
+			shelf.items.some(({ id }) => id === "tvs.sbd.4000"),
+			false,
+		);
+		assert.equal(body.data.channels["tvs.sbd.4000"], undefined);
+	}
 });
 
 for (const fixture of fixtures.samples) {
