@@ -86,10 +86,10 @@ export default class InjectBrand {
 	 * Map entry names, channel-group names and sports headers in supplementary templates, preserving text without a translation.
 	 * @private
 	 * @param {string} name - 模板中的英文原文 / Original English text in the template.
-	 * @param {string} locale - 本次实例选用的语言，兼容请求头的下划线分隔符 / Locale selected for this instance, allowing underscores from request headers.
+	 * @param {string} [locale="en"] - 本次 Build 的语言，兼容请求头的下划线分隔符 / Locale for this build, allowing underscores from request headers.
 	 * @returns {string} 本地化文字或原文 / Localized text or the original text.
 	 */
-	#Localize(name, locale) {
+	#Localize(name, locale = "en") {
 		const names = {
 			"Formula 1": { "zh-Hans": "一级方程式锦标赛", "zh-Hant": "一級方程式賽車", yue: "一級方程式", ja: "フォーミュラ1", ko: "포뮬러 1" },
 			"Channels & Apps": { "zh-Hans": "频道和 App", "zh-Hant": "頻道和 App", yue: "頻道和 App", ja: "チャンネル＆アプリ", ko: "채널 및 앱" },
@@ -576,7 +576,7 @@ export default class InjectBrand {
 			if (!tab) {
 				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
 				const index = body.data.applicationProps.tabs.findIndex(({ type }) => type === "Library");
-				body.data.applicationProps.tabs.splice(index === -1 ? body.data.applicationProps.tabs.length : index, 0, (tab = this.#Config.ChannelsAndApps));
+				body.data.applicationProps.tabs.splice(index === -1 ? body.data.applicationProps.tabs.length : index, 0, (tab = this.#BuildTab(this.#Config.ChannelsAndApps, options)));
 			}
 			body.data.channels ??= {};
 			const channel = (body.data.channels[config.id] = this.#BuildBrand(config, options, body.data.channels[config.id]));
@@ -617,7 +617,7 @@ export default class InjectBrand {
 					if (index === -1) index = tabs.length;
 				}
 			}
-			tabs.splice(index, 0, { ...config.tab, universalLinks: [...config.tab.universalLinks], target: { ...config.tab.target } });
+			tabs.splice(index, 0, this.#BuildTab(config.tab, options));
 		}
 		return tabs;
 	}
@@ -913,6 +913,18 @@ export default class InjectBrand {
 				},
 			],
 		};
+	}
+
+	/**
+	 * 按本次语言构建原生导航或频道分组，复制目标、通用链接或子项数组。
+	 * Build native navigation or a channel group for this locale, copying its target, universal links or subtab array.
+	 * @private
+	 * @param {Object} template - destinationType 为 Target 或 SubTabs 的导航原文模板 / Unlocalized navigation template with destinationType Target or SubTabs.
+	 * @param {BrandContext} context - 使用其中已确定的 locale / Context containing the resolved locale.
+	 * @returns {Object} 本次响应的独立导航对象 / Independent navigation object for this response.
+	 */
+	#BuildTab(template, { locale }) {
+		return { ...template, title: this.#Localize(template.title, locale), ...(template.target ? { target: { ...template.target }, universalLinks: [...template.universalLinks] } : { subTabs: [...template.subTabs] }) };
 	}
 
 	/**

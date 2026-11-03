@@ -109,6 +109,19 @@ for (const sample of fixture.samples) {
 	});
 }
 
+test("editing one response's channel group does not affect another response", () => {
+	const injector = new InjectBrand({ settings });
+	const first = {};
+	const second = {};
+	injector.InjectUTSConfigurationChannelsAndApps(first, { ...context, locale: "zh-Hans" });
+	injector.InjectUTSConfigurationChannelsAndApps(second, { ...context, locale: "ja-JP" });
+	const expected = structuredClone(second);
+	first.data.applicationProps.tabs[0].subTabs[0].isPinned = true;
+	first.data.applicationProps.tabs[0].subTabs.length = 0;
+	assert.deepEqual(second, expected);
+	assert.equal(second.data.applicationProps.tabs[0].title, fixture.samples.find(({ locale }) => locale === "ja-JP").channelsAndApps.title);
+});
+
 for (const [locale, headers, configuredLocale, expectedLocale] of [
 	["zh-Hans", { "X-Apple-I-Locale": "en_US" }, "AUTO", "zh-Hans"],
 	["en-US", { "X-Apple-I-Locale": "zh_Hans" }, "zh-Hant", "zh-Hant"],
