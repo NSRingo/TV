@@ -17,7 +17,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		const channels = body.data.channels;
 		channels[brandId] = { id: brandId, isSubscribed: false, isInstalled: false, isConsented: false };
 		const injector = new InjectBrand();
-		assert.equal(injector.InjectBrand(channels, { pfm: platform, region: "tw", settings }), channels);
+		assert.equal(injector.InjectChannels(channels, { pfm: platform, region: "tw", settings }), channels);
 		assert.equal(body.data.channels, channels);
 		assert.equal(channels.tvs, undefined);
 		for (const [id, brand] of Object.entries(fixtures.channels.data.channels)) assert.deepEqual(channels[id], brand);
@@ -31,7 +31,7 @@ for (const platform of ["iphone", "ipad", "atv", "desktop"]) {
 		assert.equal(brand.isConsented, false);
 		assert.deepEqual(brand.appBundleIds, [["iphone", "ipad"].includes(platform) ? "com.apple.tv" : "com.apple.TVWatchList"]);
 		const once = structuredClone(body);
-		injector.InjectBrand(channels, { pfm: platform, region: "tw", settings });
+		injector.InjectChannels(channels, { pfm: platform, region: "tw", settings });
 		assert.deepEqual(body, once);
 	});
 }

@@ -74,7 +74,7 @@ export async function Response($request, $response) {
 											switch (Boolean(body.data?.canvas)) {
 												case true:
 													body.data.channels ??= {};
-													injectBrand.InjectBrand(body.data.channels, brandContext);
+													injectBrand.InjectChannels(body.data.channels, brandContext);
 													for (const shelf of body.data.canvas.shelves ?? []) {
 														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"]);
 														removeEmptyGenres(shelf);
@@ -90,7 +90,7 @@ export async function Response($request, $response) {
 									switch (Boolean(body.data?.shelf)) {
 										case true:
 											body.data.channels ??= {};
-											injectBrand.InjectBrand(body.data.channels, brandContext);
+											injectBrand.InjectChannels(body.data.channels, brandContext);
 											setShelfHeader(body.data.shelf, body.data.channels["tvs.sbd.lumen"]);
 											removeEmptyGenres(body.data.shelf);
 											break;

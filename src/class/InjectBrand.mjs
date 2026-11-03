@@ -45,13 +45,13 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.2
+ * @version 1.2.3
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.2";
+		this.Version = "1.2.3";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
@@ -537,7 +537,7 @@ export default class InjectBrand {
 	 * @param {BrandContext} options - 本次请求上下文；settings.Tabs 为已转换的 ID 数组。
 	 * @returns {Record<string, Object>} 原 `body.data.channels` 字典引用；已有品牌的订阅、安装、同意和固定状态保留。
 	 */
-	InjectBrand(channels, options) {
+	InjectChannels(channels, options) {
 		for (const config of this.#Config.brands.filter(({ id }) => options.settings.Tabs.includes(id))) {
 			channels[config.id] = this.#BuildBrand(config, options, channels[config.id]);
 		}

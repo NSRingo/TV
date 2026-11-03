@@ -96,7 +96,7 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.equal(hero.header.url, actual.data.channels["tvs.sbd.lumen"].url);
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
 		const expected = structuredClone(fixtures.channel);
-		new InjectBrand().InjectBrand(expected.data.channels, { pfm: "iphone", region: "tw", settings });
+		new InjectBrand().InjectChannels(expected.data.channels, { pfm: "iphone", region: "tw", settings });
 		assert.deepEqual(actual.data.channels, expected.data.channels);
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;

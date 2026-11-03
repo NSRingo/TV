@@ -150,7 +150,7 @@ export async function Response($request, $response) {
 							break;
 						case "/uts/v3/channels":
 							_.set(body, "data.channels", body.data?.channels ?? {});
-							injectBrand.InjectBrand(body.data.channels, brandContext);
+							injectBrand.InjectChannels(body.data.channels, brandContext);
 							break;
 						case "/uts/v3/user/settings":
 							_.set(body, "data.brandSidebarSetting", body.data?.brandSidebarSetting ?? {});
