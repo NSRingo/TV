@@ -15,17 +15,15 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string} id - Brand 完整 ID。
  * @property {string} name - 品牌名称。
  * @property {string} url - 频道 URL；第三方模板中的 {id} 由 Brand ID 替换。
- * @property {Object} tab - 官方导航模板；Target 为苹果根 tab，SubTabs 为第三方所属分组。
- * @property {string} [tab.id] - 无 target 的分组或客户端导航标识。
- * @property {string} tab.title - 导航标题。
+ * @property {Object} tab - 苹果根导航或第三方频道子导航模板；共用分组保存在 #Config.ChannelsAndApps。
+ * @property {string} [tab.title] - 苹果根导航标题；第三方子导航使用 Brand 标题。
  * @property {string} tab.type - 官方导航类型，只用于协议输出。
- * @property {'Target'|'SubTabs'} tab.destinationType - 官方导航目标类型。
+ * @property {'Target'} tab.destinationType - 官方导航目标类型。
  * @property {string[]} [tab.universalLinks] - 苹果根 tab 的通用链接。
  * @property {Object} [tab.target] - 苹果根 tab 的 Brand 目标。
  * @property {string} [tab.hexColor] - 官方导航背景色。
  * @property {Record<string, Object>} [tab.images] - 官方侧栏图像。
- * @property {string} [tab.subTabsPlacementType] - 第三方分组的子项展示方式。
- * @property {Object[]} [tab.subTabs] - 第三方分组的初始子项模板。
+ * @property {boolean} [tab.canBeHiddenFromNavigation] - 第三方子导航是否允许隐藏。
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
  * @property {Record<'tahoma_watchnow'|'tahoma_searchlanding', Object>} [cards] - 苹果频道按官方页面根 ID 区分的卡片图片。
  * @property {Record<string, boolean>} [metadata] - 苹果品牌的公开能力标志，不含账户状态。
@@ -45,22 +43,30 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.2.3
+ * @version 1.2.4
  */
 export default class InjectBrand {
 	/** 初始化名称、版本及构造日志；请求参数由各注入方法接收。 */
 	constructor() {
 		this.Name = "InjectBrand";
-		this.Version = "1.2.3";
+		this.Version = "1.2.4";
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
 
 	/**
 	 * 服务身份、原生 tab 和各场景素材；所有功能选择直接使用 ID。
 	 * 苹果品牌及搜索素材来自美服搜索落地页；F1/MLS 首页素材来自原站体育 brick。
-	 * @type {{brands: BrandConfig[], bricks: Object[]}}
+	 * @type {{ChannelsAndApps: Object, brands: BrandConfig[], bricks: Object[]}}
 	 */
 	#Config = {
+		ChannelsAndApps: {
+			id: "ChannelsAndApps",
+			title: "频道和 App",
+			type: "ChannelsAndApps",
+			destinationType: "SubTabs",
+			subTabsPlacementType: "ExpandedList",
+			subTabs: [],
+		},
 		brands: [
 			{
 
@@ -448,12 +454,10 @@ export default class InjectBrand {
 					},
 				},
 				tab: {
-					id: "ChannelsAndApps",
-					title: "频道和 App",
-					type: "ChannelsAndApps",
-					destinationType: "SubTabs",
-					subTabsPlacementType: "ExpandedList",
-					subTabs: [],
+					// 官方子导航以 Brand 标识品牌入口；Channel 是页面分类，不属于导航 type 枚举。
+					type: "Brand",
+					destinationType: "Target",
+					canBeHiddenFromNavigation: true,
 				},
 			},
 		],
@@ -583,43 +587,29 @@ export default class InjectBrand {
 	}
 
 	/**
-	 * 原地首插配置中的频道导航，缺少 ChannelsAndApps 分组或 subTabs 时创建。
+	 * 先查找 ChannelsAndApps 分组，缺少时补齐外层结构，再原地首插频道导航。
 	 * 导航 target 与 data.channels[id] 共用同一完整 Brand。
 	 * @param {Object} body - 原响应正文，同时读写 `body.data.applicationProps.tabs` 和 `body.data.channels`。
 	 * @param {BrandContext} options - 本次请求上下文；所选 ID 对应的频道生成子导航。
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectUTSConfigurationChannelsAndApps(body, options) {
-		const configs = this.#Config.brands.filter(({ id, tab }) => !tab.target && options.settings.Tabs.includes(id));
-		const channels = [];
-		for (const config of configs) {
-			const channel = this.#BuildBrand(config, options, body.data?.channels?.[config.id]);
-			channels.push(channel);
-		}
-		switch (channels.length) {
-			case 0:
-				break;
-			default: {
-				_.set(body, "data.applicationProps.tabs", body.data?.applicationProps?.tabs ?? []);
-				const tabs = body.data.applicationProps.tabs;
-				const tab = tabs.find(({ id }) => id === configs[0].tab.id) ?? { ...configs[0].tab, subTabs: [] };
-				const subTabs = channels.map((channel, index) => this.#BuildBrandSubTab(configs[index], channel, tab.subTabs?.find(({ target }) => target?.id === channel.id)));
-				_.set(tab, "subTabs", [...subTabs, ...(tab.subTabs ?? []).filter(({ target }) => !channels.some(({ id }) => id === target?.id))]);
-				switch (tabs.indexOf(tab)) {
-					case -1: {
-						let index = tabs.findIndex(({ id }) => id === "Library");
-						switch (index) {
-							case -1:
-								index = tabs.length;
-								break;
-						}
-						tabs.splice(index, 0, tab);
-						break;
-					}
-				}
-				for (const channel of channels) _.set(body, ["data", "channels", channel.id], channel);
-				break;
-			}
+		let tab = body.data?.applicationProps?.tabs?.find(({ type }) => type === "ChannelsAndApps");
+		for (const config of this.#Config.brands.filter(({ id, tab }) => !tab.target && options.settings.Tabs.includes(id)).reverse()) {
+			if (!tab) _.set(body, "data.applicationProps.tabs", [...(body.data?.applicationProps?.tabs ?? []), (tab = this.#Config.ChannelsAndApps)]);
+			body.data.channels ??= {};
+			const channel = (body.data.channels[config.id] = this.#BuildBrand(config, options, body.data.channels[config.id]));
+			const index = tab.subTabs.findIndex(({ target }) => target.id === config.id);
+			tab.subTabs.unshift({
+				...config.tab,
+				// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
+				brandType: config.brandType,
+				title: channel.title,
+				isPinned: (index === -1 ? undefined : tab.subTabs.splice(index, 1)[0].isPinned) ?? channel.isPinned,
+				images: { defaultImage: { ...channel.images.appIcon } },
+				target: channel,
+				universalLinks: [channel.url],
+			});
 		}
 		return body;
 	}
@@ -935,31 +925,6 @@ export default class InjectBrand {
 					images: { shelfItemImage: { ...config.images.appIcon } },
 				},
 			],
-		};
-	}
-
-	/**
-	 * 组装 ChannelsAndApps.subTabs[] 的频道导航包装。
-	 * @private
-	 * @param {BrandConfig} config - #Config.brands 中的品牌接入定义。
-	 * @param {Object} brand - 完整 Brand，直接复用为 target。
-	 * @param {Object} [state] - 已有子导航，保留其固定状态。
-	 * @returns {Object} 含频道菜单、侧栏图片及 Brand target 的子导航。
-	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/brand-type-client-behavior.md
-	 */
-	#BuildBrandSubTab(config, brand, state) {
-		return {
-			// 官方子导航以 Brand 标识品牌入口；Channel 是页面分类，不属于导航 type 枚举。
-			type: "Brand",
-			// 菜单与完整 Brand 共用配置的接入类型；客户端据此设置 Hide 的 isChannel 参数。
-			brandType: config.brandType,
-			destinationType: "Target",
-			title: brand.title,
-			isPinned: state?.isPinned ?? brand.isPinned,
-			canBeHiddenFromNavigation: true,
-			images: { defaultImage: { ...brand.images.appIcon } },
-			target: brand,
-			universalLinks: [brand.url],
 		};
 	}
 
