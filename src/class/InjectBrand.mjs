@@ -697,36 +697,22 @@ export default class InjectBrand {
 	 * @returns {Object} 原 body 引用。
 	 */
 	InjectSearchLanding(body, options) {
-		let configs = this.#Config.brands;
-		const thirdParty = configs.filter(({ id }) => id === "tvs.sbd.lumen");
 		let shelf = body.data?.canvas?.shelves?.find(({ displayType, isGrid }) => displayType === "brick" && isGrid);
-		switch (Boolean(shelf)) {
-			case false:
-				switch (thirdParty.length) {
-					case 0:
-						break;
-					default:
-						shelf = this.#BuildSearchLandingShelf(thirdParty[0]);
+		for (const config of this.#Config.brands) {
+			switch (config.id) {
+				case "tvs.sbd.lumen":
+					if (!shelf) {
+						shelf = this.#BuildSearchLandingShelf(config);
 						_.set(body, "data.canvas.shelves", body.data?.canvas?.shelves ?? []);
 						body.data.canvas.shelves.unshift(shelf);
-						break;
-				}
-				break;
-		}
-		switch (Boolean(shelf)) {
-			case true: {
-				const fallback = shelf.id === "edt.col.lumen-browse";
-				switch (fallback) {
-					case true:
-						configs = thirdParty;
-						break;
-				}
-				if (configs.length) {
-					body.data.channels ??= {};
-					this.#InjectCards(body.data.channels, shelf, configs, options, "tahoma_searchlanding");
-				}
-				break;
+					}
+					break;
+				default:
+					if (!shelf || shelf.id === "edt.col.lumen-browse") continue;
+					break;
 			}
+			body.data.channels ??= {};
+			this.#InjectCards(body.data.channels, shelf, [config], options, "tahoma_searchlanding");
 		}
 		return body;
 	}
