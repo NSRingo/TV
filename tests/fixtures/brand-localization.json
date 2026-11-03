@@ -1,0 +1,403 @@
+{
+	"capturedAt": "2026-11-03T03:54:22.660Z",
+	"searchCapturedAt": "2026-11-03T03:58:48.837Z",
+	"note": "Public string projections from live Apple GET replays through the Surge script HTTP client, bypassing rewrite scripts. Configuration uses the US storefront; search uses the matching language storefront and fresh configuration utsk plus captured tvOS client capabilities. Search shelf wording supplies the ChannelsAndApps fallback label; no native UI validation. Tokens, cookies and client capability values are omitted.",
+	"samples": [
+		{
+			"locale": "en-US",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=en-US",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "Search",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "Home",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "Formula 1",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "Store",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "Library"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143441",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.4.header.title",
+				"title": "Channels & Apps"
+			}
+		},
+		{
+			"locale": "zh-Hans",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=zh-Hans",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "搜索",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "主页",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "一级方程式锦标赛",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "商店",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "资料库"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143464",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.3.header.title",
+				"title": "频道和 App"
+			}
+		},
+		{
+			"locale": "zh-Hant",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=zh-Hant",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "搜尋",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "首頁",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "一級方程式賽車",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "商店",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "資料庫"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143470",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.4.header.title",
+				"title": "頻道和 App"
+			}
+		},
+		{
+			"locale": "yue-Hant",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=yue-Hant",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "搜尋",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "首頁",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "一級方程式",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "商店",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "資料庫"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143463",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.4.header.title",
+				"title": "頻道和 App"
+			}
+		},
+		{
+			"locale": "ja-JP",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=ja-JP",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "検索",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "ホーム",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "フォーミュラ1",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "ストア",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "ライブラリ"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143462",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.4.header.title",
+				"title": "チャンネル＆アプリ"
+			}
+		},
+		{
+			"locale": "ko-KR",
+			"configuration": {
+				"url": "https://uts-api.itunes.apple.com/uts/v3/configurations?caller=js&sf=143441&pfm=desktop&v=100&locale=ko-KR",
+				"status": 200,
+				"tabs": [
+					{
+						"type": "Search",
+						"title": "검색",
+						"target": {
+							"id": "tahoma_searchlanding"
+						}
+					},
+					{
+						"type": "WatchNow",
+						"title": "홈",
+						"target": {
+							"id": "tahoma_watchnow"
+						}
+					},
+					{
+						"type": "Originals",
+						"title": "Apple TV",
+						"target": {
+							"id": "tvs.sbd.4000"
+						}
+					},
+					{
+						"type": "Grevy",
+						"title": "포뮬러 1",
+						"target": {
+							"id": "tvs.sbd.241000"
+						}
+					},
+					{
+						"type": "MLS",
+						"title": "MLS",
+						"target": {
+							"id": "tvs.sbd.7000"
+						}
+					},
+					{
+						"type": "Store",
+						"title": "스토어",
+						"target": {
+							"id": "tahoma_store"
+						}
+					},
+					{
+						"type": "Library",
+						"title": "보관함"
+					}
+				]
+			},
+			"channelsAndApps": {
+				"sf": "143466",
+				"path": "/uts/v3/search",
+				"caller": "js",
+				"pfm": "atv",
+				"v": 101,
+				"searchTerm": "Apple",
+				"status": 200,
+				"field": "body.data.canvas.shelves.4.header.title",
+				"title": "채널 및 앱"
+			}
+		}
+	]
+}

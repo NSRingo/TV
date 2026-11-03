@@ -51,7 +51,9 @@ F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象�
 
 地区设置只切换内容地区。`Locale` 默认 `AUTO`，原样保留 App 提供的语言参数和请求头，不添加、截断或按地区覆盖语言代码；手动选择语言时，仅覆盖 UTS 接口的 `locale` 参数。
 
-F1、MLS、MLB、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器接收 `{ settings }`，按转换后的 `settings.Brands` 裁剪品牌配置，并以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需接收 `{ pfm, region, settings }`。正式与 dev 入口共用品牌选择与 Lumen 注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
+补入内容的品牌名与“频道和 App”分组名由 `InjectBrand.#Localize` 集中映射。响应入口依次取显式 `Locale`、URL `locale`、`X-Apple-I-Locale`、`Accept-Language` 的首选语言，将确定后的 `locale` 放入 `brandContext` 直接传给构造器；class 只使用该结果，不解析请求头或重新判断设置。缺少语言或没有对应译文时使用英文原文。F1 的简体名称为“一级方程式锦标赛”，繁体为“一級方程式賽車”，粤语繁体为“一級方程式”；同时提供官方日文、韩文名称，MLS、Lumen 保留原名。新增导航、品牌、卡片及搜索 BR 的分组名共用该表；服务器已有的导航、品牌、卡片和行标题仍整体保留，其他说明文字不参与映射。官方配置及搜索响应的文字投影见 `tests/fixtures/brand-localization.json`，不代表真机显示验证。
+
+F1、MLS、MLB、Lumen 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, locale? }`，按转换后的 `settings.Brands` 裁剪品牌配置并本地化补入文字，以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与 Lumen 注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
 
 第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`；`isApSubscription`、`isFirstParty` 可在配置中独立指定 true/false，各自省略时由内部 Build 方法按 `Channel=true / App=false` 派生。Lumen 配置为 `Channel`，两项默认均为 true；所有注入入口和 Lumen 资源脚本共用该品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
 

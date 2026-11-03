@@ -61,8 +61,10 @@ export async function Response($request, $response) {
 						Object.entries(Configs.Storefront)
 							.find(([, sf]) => sf === StoreFront)?.[0]
 							.toLowerCase() ?? "us";
+					const headers = Object.fromEntries(Object.entries($request.headers ?? {}).map(([key, value]) => [key.toLowerCase(), value]));
+					const Locale = Settings.Locale !== "AUTO" ? Settings.Locale : url.searchParams.get("locale") || headers["x-apple-i-locale"] || headers["accept-language"]?.split(",")[0].split(";")[0] || "en";
 					/** @type {import('../class/InjectBrand.mjs').BrandContext} */
-					const brandContext = { pfm: Platform, region: Region, settings: Settings };
+					const brandContext = { pfm: Platform, region: Region, locale: Locale, settings: Settings };
 					const injectBrand = new InjectBrand(brandContext);
 					// 路径判断
 					switch (PATHs.slice(0, 5).join("/")) {

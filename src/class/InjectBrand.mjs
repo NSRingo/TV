@@ -4,6 +4,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @typedef {Object} BrandContext
  * @property {string|null} [pfm] - 请求的官方 pfm 参数，用于品牌宿主字段；省略时使用桌面宿主。
  * @property {string} region - 本次响应的小写地区码。
+ * @property {string} [locale] - 响应入口已确定的语言；省略时使用英文 / Locale resolved by the response entrypoint; defaults to English when omitted.
  * @property {Omit<import('../types').Settings, 'Brands'> & {Brands: string[]}} settings - setENV 已将 Brands 转换为 ID 数组的请求设置 / Request settings with Brands resolved to IDs by setENV.
  */
 
@@ -47,15 +48,41 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  */
 export default class InjectBrand {
 	/**
-	 * 初始化名称、版本和本实例启用的品牌；地区等请求参数由各注入方法接收。
-	 * Initialize the name, version and enabled brands; injection methods receive the remaining request context.
-	 * @param {Pick<BrandContext, 'settings'>} options - 本实例的频道选择设置 / Channel selection for this instance.
+	 * 初始化本实例启用的品牌及补入模板的名称；地区等请求参数由各注入方法接收。
+	 * Initialize enabled brands and names in supplementary templates; injection methods receive the remaining request context.
+	 * @param {Pick<BrandContext, 'settings'|'locale'>} options - 品牌设置与入口已确定的语言 / Brand settings and the locale resolved by the entrypoint.
 	 */
-	constructor(options) {
+	constructor({ settings, locale = "en" }) {
 		this.Name = "InjectBrand";
 		this.Version = "1.2.6";
-		this.#Config.brands = this.#Config.brands.filter(({ id }) => options.settings.Brands.includes(id));
+		this.#Config.brands = this.#Config.brands.filter(({ id }) => settings.Brands.includes(id));
+		this.#Config.ChannelsAndApps.title = this.#Localize(this.#Config.ChannelsAndApps.title, locale);
+		for (const config of this.#Config.brands) {
+			config.name = this.#Localize(config.name, locale);
+			if (config.tab.title) config.tab.title = this.#Localize(config.tab.title, locale);
+		}
+		for (const brick of this.#Config.bricks) {
+			for (const item of brick.items) item.title = this.#Localize(item.title, locale);
+		}
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
+	}
+
+	/**
+	 * 映射补入模板的品牌名称与频道分组名；没有译文时保留原文。
+	 * Map brand and channel-group names in supplementary templates, preserving text without a translation.
+	 * @private
+	 * @param {string} name - 模板中的英文原文 / Original English text in the template.
+	 * @param {string} locale - 本次实例选用的语言，兼容请求头的下划线分隔符 / Locale selected for this instance, allowing underscores from request headers.
+	 * @returns {string} 本地化文字或原文 / Localized text or the original text.
+	 */
+	#Localize(name, locale) {
+		const names = {
+			"Formula 1": { "zh-Hans": "一级方程式锦标赛", "zh-Hant": "一級方程式賽車", yue: "一級方程式", ja: "フォーミュラ1", ko: "포뮬러 1" },
+			"Channels & Apps": { "zh-Hans": "频道和 App", "zh-Hant": "頻道和 App", yue: "頻道和 App", ja: "チャンネル＆アプリ", ko: "채널 및 앱" },
+		};
+		const normalized = locale.trim().replaceAll("_", "-").toLowerCase();
+		const language = normalized.split("-")[0] === "zh" ? (/^zh-(?:hant|tw|hk|mo)(?:-|$)/.test(normalized) ? "zh-Hant" : "zh-Hans") : normalized.split("-")[0];
+		return names[name]?.[language] ?? name;
 	}
 
 	/**
@@ -69,7 +96,7 @@ export default class InjectBrand {
 		appleOrder: ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"],
 		ChannelsAndApps: {
 			id: "ChannelsAndApps",
-			title: "频道和 App",
+			title: "Channels & Apps",
 			type: "ChannelsAndApps",
 			destinationType: "SubTabs",
 			subTabsPlacementType: "ExpandedList",
@@ -870,7 +897,7 @@ export default class InjectBrand {
 	#BuildSearchCategoryShelves(region, term) {
 		return [
 			{ id: "uts.col.search.TR", title: "Top Results", displayType: "cardLockup", slug: "top-results" },
-			{ id: "uts.col.search.BR", title: "Channels & Apps", displayType: "lockup", slug: "channels--apps" },
+			{ id: "uts.col.search.BR", title: this.#Config.ChannelsAndApps.title, displayType: "lockup", slug: "channels--apps" },
 		].map(({ slug, ...category }) => ({
 			...category,
 			header: { title: category.title, supportsSeeAllView: true, url: `https://tv.apple.com/${region}/shelf/${slug}/${category.id}?searchTerm=${encodeURIComponent(term)}` },
