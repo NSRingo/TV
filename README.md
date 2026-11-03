@@ -61,7 +61,7 @@ Apple TV、F1、MLS、Lumen 的身份和素材保存在 `InjectBrand.#Config` �
 
 配置响应已有 `tabs` 时，先按 `pfm` 过滤本次 `Settings.Tabs`：iPhone 移除 F1 和 MLS，其他平台保持用户设置。导航注入和排序共用过滤后的设置，选中的服务器 tab 完整保留。首页和搜索卡片仍不按平台或版本限制，不创建缺少的导航容器或首页行，也不补入 moretv。搜索同时覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，使用搜索专用卡片素材；dev 默认顺序为 Lumen → Apple TV → F1 → MLS，保留其他卡片和分页。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。Lumen 的搜索后端、鉴权及侧栏行为保持原有范围，官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
 
-dev 在 `arguments-builder.dev.config.ts` 中另提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。有值时由 `InjectSearch` 查询 Lumen 并合并到 Apple 搜索结果；留空或只填空白时跳过 Lumen 搜索，包括频道入口和影视结果。此鉴权值只从本次 argument 读取，不参与下表的 BoxJs / Storage 合并，也不写入品牌或响应正文。
+dev 在 `arguments-builder.dev.config.ts` 中另提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。有值时由 `InjectSearch` 查询 Lumen 并合并到 Apple 搜索结果；留空或只填空白时跳过 Lumen 搜索，包括频道入口和影视结果。该设置遵循下表的 BoxJs / Storage 合并顺序，不写入品牌或响应正文。
 
 Storage 控制设置来源，优先级从高到低：
 

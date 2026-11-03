@@ -34,8 +34,7 @@ export default defineConfig({
 			name: "[Lumen] 搜索鉴权 X-Lumen-Key",
 			type: "string",
 			defaultValue: "",
-			exclude: ["boxjs"],
-			description: "可选，填写 Lumen 官方模块中 X-Lumen-Key 的值；留空时跳过搜索中的 Lumen 频道入口与影视结果。仅通过 argument 提供。",
+			description: "可选，填写 Lumen 官方模块中 X-Lumen-Key 的值；留空时跳过搜索中的 Lumen 频道入口与影视结果。",
 		},
 	],
 });

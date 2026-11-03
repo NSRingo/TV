@@ -35,11 +35,11 @@ test("language defaults to AUTO across release, full, dev and BoxJs settings", (
 	assert.equal(settings.find(({ id }) => id === "@iRingo.TV.Settings.Locale").val, "AUTO");
 });
 
-test("Lumen search authentication is optional and exposed only in dev arguments", () => {
+test("Lumen search authentication is optional and exposed in dev settings", () => {
 	const argument = dev.args.find(({ key }) => key === "LumenKey");
 	assert.equal(argument.type, "string");
 	assert.equal(argument.defaultValue, "");
-	assert.deepEqual(argument.exclude, ["boxjs"]);
+	assert.equal(new ArgumentsBuilder({ args: dev.args }).buildBoxJsSettings("@iRingo.TV.Settings").find(({ id }) => id.endsWith(".LumenKey")).val, "");
 	assert.equal(
 		full.args.some(({ key }) => key === "LumenKey"),
 		false,

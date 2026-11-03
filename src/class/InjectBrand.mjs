@@ -39,7 +39,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string} pathname - 主搜索或官方 TR/BR 路径；其他路径保持原样。
  * @property {string} searchTerm - 原始搜索词；频道名匹配忽略大小写及首尾空白。
  * @property {boolean} topResultsOnly - 主搜索是否仅合并到 TR；TR 导航始终合并到 TR。
- * @property {string} [lumenKey] - 本次 argument 的 X-Lumen-Key；缺省或空白时跳过 Lumen 搜索。
+ * @property {string} [lumenKey] - 本次设置的 X-Lumen-Key；缺省或空白时跳过 Lumen 搜索。
  */
 
 /**

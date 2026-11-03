@@ -4,8 +4,8 @@ import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
 import InjectBrand from "../src/class/InjectBrand.mjs";
 import database from "../src/function/database.mjs";
-import { Response } from "../src/process/Response.mjs";
-import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
+import { Response } from "./host.mjs";
+import { ResponseDev } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/apple-search-landing.json", import.meta.url)));
 const appleIds = ["tvs.sbd.4000", "tvs.sbd.241000", "tvs.sbd.7000"];

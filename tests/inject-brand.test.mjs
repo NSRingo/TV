@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
 import InjectBrand from "../src/class/InjectBrand.mjs";
-import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
-import { Response as ResponseRelease } from "../src/process/Response.mjs";
+import { ResponseDev } from "./host.mjs";
+import { Response as ResponseRelease } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-responses.json", import.meta.url)));
 const channelTypes = JSON.parse(readFileSync(new URL("fixtures/channel-types.json", import.meta.url)));
@@ -395,6 +395,13 @@ test("argument credentials are trimmed, encoded values survive parsing, and rema
 	assert.equal(requests[0].url.searchParams.get("q"), "名侦探柯南");
 	assert.deepEqual(actual.data.canvas.shelves[0].items, movies);
 	assert.equal(JSON.stringify(actual).includes(key), false);
+});
+
+test("Lumen search uses the key from persistent settings", async t => {
+	const requests = backend(t);
+	t.mock.method(Storage, "getItem", () => ({ TV: { Settings: { LumenKey: "stored-key" } } }));
+	await ResponseDev({ url: "https://uts-api.itunes.apple.com/uts/v3/search?searchTerm=Lumen", headers: {}, $argument: "LogLevel=OFF" }, { headers: { "Content-Type": "application/json" }, body: "{}" });
+	assert.equal(requests[0].options.headers["X-Lumen-Key"], "stored-key");
 });
 
 test("unrelated searches leave official channel results unchanged when the backend is empty", async t => {

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
 import InjectBrand from "../src/class/InjectBrand.mjs";
-import { Response } from "../src/process/Response.lumen.dev.mjs";
+import { ResponseLumen as Response } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
 const settings = { Tabs: ["tvs.sbd.lumen"] };

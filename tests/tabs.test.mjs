@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import { Request } from "../src/process/Request.mjs";
-import { Request as RequestDev } from "../src/process/Request.dev.mjs";
-import { Response } from "../src/process/Response.mjs";
-import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
+import { Request } from "./host.mjs";
+import { RequestDev } from "./host.mjs";
+import { Response } from "./host.mjs";
+import { ResponseDev } from "./host.mjs";
 
 const fixture = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url)));
 for (const tab of fixture.body.data.applicationProps.tabs) if (!tab.target) tab.id = tab.type;

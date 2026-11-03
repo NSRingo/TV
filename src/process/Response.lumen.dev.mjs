@@ -20,7 +20,7 @@ export async function Response($request, $response) {
 	// 解析格式
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
-	const { Settings, Configs } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
 	Settings.Tabs = ["tvs.sbd.lumen"];
 	// 创建空数据

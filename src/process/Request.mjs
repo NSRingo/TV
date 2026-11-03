@@ -16,7 +16,7 @@ export async function Request($request) {
 	/**
 	 * @type {{Settings: import('../types').Settings}}
 	 */
-	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
 	// 解析参数
 	const StoreFront = url.searchParams.get("sf");

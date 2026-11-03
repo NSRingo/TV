@@ -1,5 +1,5 @@
 import getStorage from "@nsnanocat/util/getStorage.mjs";
-import { Console, Lodash as _, qs } from "@nsnanocat/util";
+import { Console, Lodash as _ } from "@nsnanocat/util";
 
 /**
  * Set Environment Variables
@@ -7,21 +7,11 @@ import { Console, Lodash as _, qs } from "@nsnanocat/util";
  * @param {String} name - Persistent Store Key
  * @param {Array} platforms - Platform Names
  * @param {Object} database - Default DataBase
- * @return {Object} { Settings, Caches, Configs, LumenKey }
+ * @return {Object} { Settings, Caches, Configs }
  */
-export default function setENV(name, platforms, database, argument = globalThis.$argument) {
+export default function setENV(name, platforms, database) {
 	Console.log("☑️ Set Environment Variables");
-	// 鉴权值仅从本次 argument 读取，不交给会记录配置内容的 getStorage。
-	const { LumenKey, ...settingsArgument } = qs.parse(argument);
-	const previousArgument = globalThis.$argument;
-	let profile;
-	try {
-		globalThis.$argument = settingsArgument;
-		profile = getStorage(name, platforms, JSON.parse(JSON.stringify(database)));
-	} finally {
-		globalThis.$argument = previousArgument;
-	}
-	const { Settings, Caches, Configs } = profile;
+	const { Settings, Caches, Configs } = getStorage(name, platforms, JSON.parse(JSON.stringify(database)));
 	/***************** Settings *****************/
 	if (!Array.isArray(Settings?.Tabs)) _.set(Settings, "Tabs", Settings?.Tabs ? [Settings.Tabs.toString()] : []);
 	Settings.Tabs = Settings.Tabs.flatMap(tab => Configs.Tab[tab] ?? []);
@@ -32,5 +22,5 @@ export default function setENV(name, platforms, database, argument = globalThis.
 	//Configs.Storefront = new Map(Configs.Storefront);
 	if (Configs.i18n) for (const type in Configs.i18n) Configs.i18n[type] = new Map(Configs.i18n[type]);
 	Console.log("✅ Set Environment Variables");
-	return { Settings, Caches, Configs, LumenKey };
+	return { Settings, Caches, Configs };
 }

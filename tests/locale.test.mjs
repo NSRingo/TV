@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
-import { Request } from "../src/process/Request.mjs";
-import { Request as RequestDev } from "../src/process/Request.dev.mjs";
+import { Request } from "./host.mjs";
+import { RequestDev } from "./host.mjs";
 
 Console.logLevel = "OFF";
 

@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Console, Storage } from "@nsnanocat/util";
 import InjectBrand from "../src/class/InjectBrand.mjs";
-import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
-import { Response as ResponseRelease } from "../src/process/Response.mjs";
+import { ResponseDev } from "./host.mjs";
+import { Response as ResponseRelease } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-settings.json", import.meta.url)));
 const brandId = "tvs.sbd.lumen";

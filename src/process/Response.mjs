@@ -13,7 +13,7 @@ export async function Response($request, $response) {
 	// 解析格式
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
-	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
 	// 创建空数据
 	let body = {};

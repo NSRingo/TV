@@ -14,9 +14,9 @@ export async function Response($request, $response) {
 	const FORMAT = ($response.headers?.["Content-Type"] ?? $response.headers?.["content-type"])?.split(";")?.[0];
 	Console.info(`FORMAT: ${FORMAT}`);
 	/**
-	 * @type {{Settings: import('../types').Settings, LumenKey?: string}}
+	 * @type {{Settings: import('../types').Settings}}
 	 */
-	const { Settings, Caches, Configs, LumenKey } = setENV("iRingo", "TV", database, $request.$argument);
+	const { Settings, Caches, Configs } = setENV("iRingo", "TV", database);
 	Console.logLevel = Settings.LogLevel;
 	if (!Settings.Tabs.includes("tvs.sbd.lumen")) Settings.Tabs.push("tvs.sbd.lumen");
 	// 创建空数据
@@ -146,7 +146,7 @@ export async function Response($request, $response) {
 						case "/uts/v3/search":
 						case "/uts/v3/shelves/uts.col.search.TR":
 						case "/uts/v3/shelves/uts.col.search.BR":
-							body = await injectBrand.InjectSearch(body, { ...brandContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: LumenKey });
+							body = await injectBrand.InjectSearch(body, { ...brandContext, pathname: url.pathname, searchTerm: url.searchParams.get("searchTerm") ?? "", topResultsOnly: url.searchParams.get("topResultsOnly") === "true", lumenKey: Settings.LumenKey });
 							break;
 						case "/uts/v3/channels":
 							_.set(body, "data.channels", body.data?.channels ?? {});

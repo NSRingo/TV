@@ -9,6 +9,7 @@ export default new Hono()
 	.all("/:rest{.*}", async c => {
 		let $request = await HonoWorkerAdapter.buildRequest(c.req);
 		let $response;
+		globalThis.$argument = $request.$argument;
 		({ $request, $response } = await Request($request));
 		if ($response === undefined) {
 			// Only forward the HTTP payload; $argument is local to this request.
@@ -19,6 +20,7 @@ export default new Hono()
 				// The util Node adapter can reject with a string; Hono handles Error objects.
 				throw error instanceof Error ? error : new Error(String(error));
 			}
+			globalThis.$argument = $request.$argument;
 			$response = await Response($request, $response);
 		}
 		return HonoWorkerAdapter.writeResponse(c, $response);

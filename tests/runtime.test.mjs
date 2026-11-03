@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { Console, Storage } from "@nsnanocat/util";
+import { Console, Storage, qs } from "@nsnanocat/util";
 import database from "../src/function/database.mjs";
 import setENV from "../src/function/setENV.mjs";
-import { Request } from "../src/process/Request.mjs";
-import { Request as RequestDev } from "../src/process/Request.dev.mjs";
-import { Response } from "../src/process/Response.mjs";
-import { Response as ResponseDev } from "../src/process/Response.dev.mjs";
-import { Response as ResponseLumen } from "../src/process/Response.lumen.dev.mjs";
+import { Request } from "./host.mjs";
+import { RequestDev } from "./host.mjs";
+import { Response } from "./host.mjs";
+import { ResponseDev } from "./host.mjs";
+import { ResponseLumen } from "./host.mjs";
 
 const baseline = JSON.parse(readFileSync(new URL("fixtures/runtime-baseline.json", import.meta.url)));
 const officialAppleTabs = JSON.parse(readFileSync(new URL("fixtures/us-tabs.json", import.meta.url))).body.data.applicationProps.tabs.filter(({ type }) => ["Originals", "Grevy", "MLS"].includes(type)).map(({ type, title, target }) => ({ type, title, target }));
@@ -107,14 +107,17 @@ for (const [variant, processResponse, origin, path, body, brandId] of [
 test("Storage precedence merges nested settings and preserves database defaults", t => {
 	t.mock.method(Storage, "getItem", () => ({ TV: { Settings: { ThirdParty: false, CountryCode: { Sports: "TW" } } } }));
 	const original = JSON.stringify(database);
-	const persistent = setENV("iRingo", "TV", database, "ThirdParty=true&CountryCode.Sports=JP&LogLevel=OFF").Settings;
+	globalThis.$argument = qs.parse("ThirdParty=true&CountryCode.Sports=JP&LogLevel=OFF");
+	const persistent = setENV("iRingo", "TV", database).Settings;
 	assert.equal(persistent.ThirdParty, false);
 	assert.equal(persistent.CountryCode.Sports, "TW");
 	assert.equal(persistent.CountryCode.Kids, "US");
-	const argument = setENV("iRingo", "TV", database, "Storage=Argument&ThirdParty=true&CountryCode.Sports=JP&LogLevel=OFF").Settings;
+	globalThis.$argument = qs.parse("Storage=Argument&ThirdParty=true&CountryCode.Sports=JP&LogLevel=OFF");
+	const argument = setENV("iRingo", "TV", database).Settings;
 	assert.equal(argument.ThirdParty, true);
 	assert.equal(argument.CountryCode.Sports, "JP");
-	const defaults = setENV("iRingo", "TV", database, "Storage=database&ThirdParty=true&CountryCode.Sports=JP").Settings;
+	globalThis.$argument = qs.parse("Storage=database&ThirdParty=true&CountryCode.Sports=JP");
+	const defaults = setENV("iRingo", "TV", database).Settings;
 	assert.equal(defaults.ThirdParty, false);
 	assert.equal(defaults.CountryCode.Sports, "US");
 	assert.equal(JSON.stringify(database), original);
@@ -123,7 +126,8 @@ test("Storage precedence merges nested settings and preserves database defaults"
 test("setENV resolves functional tab names into IDs once without changing database defaults", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
 	const original = JSON.stringify(database);
-	const { Settings, Configs } = setENV("iRingo", "TV", database, "Tabs=F1,MLS,Library,ChannelsAndApps,Sports&LogLevel=OFF");
+	globalThis.$argument = qs.parse("Tabs=F1,MLS,Library,ChannelsAndApps,Sports&LogLevel=OFF");
+	const { Settings, Configs } = setENV("iRingo", "TV", database);
 	assert.equal(Configs.Tab.F1, "tvs.sbd.241000");
 	assert.deepEqual(Settings.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000", "Library", "ChannelsAndApps", "tahoma_sports", "edt.item.62327df1-6874-470e-98b2-a5bbeac509a2"]);
 	assert.equal(Configs.Tabs.find(({ id }) => id === "Library").destinationType, "Client");
@@ -134,40 +138,38 @@ test("setENV resolves functional tab names into IDs once without changing databa
 test("stored functional tab names become request-local IDs while argument precedence remains intact", t => {
 	const stored = { TV: { Settings: { Tabs: ["F1", "MLS"] } } };
 	t.mock.method(Storage, "getItem", () => stored);
-	const persistent = setENV("iRingo", "TV", database, "Tabs=Store&LogLevel=OFF").Settings;
+	globalThis.$argument = qs.parse("Tabs=Store&LogLevel=OFF");
+	const persistent = setENV("iRingo", "TV", database).Settings;
 	assert.deepEqual(persistent.Tabs, ["tvs.sbd.241000", "tvs.sbd.7000"]);
-	const argument = setENV("iRingo", "TV", database, "Storage=Argument&Tabs=Store&LogLevel=OFF").Settings;
+	globalThis.$argument = qs.parse("Storage=Argument&Tabs=Store&LogLevel=OFF");
+	const argument = setENV("iRingo", "TV", database).Settings;
 	assert.deepEqual(argument.Tabs, ["tahoma_store"]);
 	assert.deepEqual(stored.TV.Settings.Tabs, ["F1", "MLS"]);
 });
 
-test("request-specific arguments restore globals and do not leak to subsequent calls", t => {
+test("successive settings do not leak to subsequent calls", t => {
 	t.mock.method(Storage, "getItem", () => ({}));
-	const globalArgument = globalThis.$argument;
-	const first = setENV("iRingo", "TV", database, "Tabs=Sports&CountryCode.View=JP,SG&LogLevel=OFF").Settings;
+	globalThis.$argument = qs.parse("Tabs=Sports&CountryCode.View=JP,SG&LogLevel=OFF");
+	const first = setENV("iRingo", "TV", database).Settings;
 	assert.deepEqual(first.Tabs, database.TV.Configs.Tab.Sports);
 	assert.deepEqual(first.CountryCode.View, ["JP", "SG"]);
 	first.CountryCode.Sports = "JP";
-	const second = setENV("iRingo", "TV", database, { LogLevel: "OFF" }).Settings;
+	globalThis.$argument = qs.parse({ LogLevel: "OFF" });
+	const second = setENV("iRingo", "TV", database).Settings;
 	assert.deepEqual(second.Tabs, database.TV.Settings.Tabs.flatMap(tab => database.TV.Configs.Tab[tab]));
 	assert.deepEqual(second.CountryCode.View, ["SG", "TW"]);
 	assert.equal(second.CountryCode.Sports, "US");
-	assert.equal(globalThis.$argument, globalArgument);
 });
 
-test("argument credentials stay outside logged settings and do not leak to subsequent calls", t => {
-	t.mock.method(Storage, "getItem", () => ({}));
-	const logs = [];
-	t.mock.method(Console, "debug", (...values) => logs.push(values));
-	t.mock.method(Console, "info", (...values) => logs.push(values));
-	const previousLevel = Console.logLevel;
-	t.after(() => {
-		Console.logLevel = previousLevel;
-	});
-	const key = "private-test-key+with=padding";
-	const profile = setENV("iRingo", "TV", database, new URLSearchParams({ LumenKey: key, LogLevel: "DEBUG" }).toString());
-	assert.equal(profile.LumenKey, key);
-	assert.equal(Object.hasOwn(profile.Settings, "LumenKey"), false);
-	assert.equal(JSON.stringify(logs).includes(key), false);
-	assert.equal(setENV("iRingo", "TV", database, "LogLevel=OFF").LumenKey, undefined);
+test("LumenKey follows normal settings precedence", t => {
+	t.mock.method(Storage, "getItem", () => ({ TV: { Settings: { LumenKey: "stored-key" } } }));
+	const argument = new URLSearchParams({ LumenKey: "argument+key=", LogLevel: "OFF" });
+	globalThis.$argument = qs.parse(argument.toString());
+	assert.equal(setENV("iRingo", "TV", database).Settings.LumenKey, "stored-key");
+	argument.set("Storage", "Argument");
+	globalThis.$argument = qs.parse(argument.toString());
+	assert.equal(setENV("iRingo", "TV", database).Settings.LumenKey, "argument+key=");
+	argument.set("Storage", "database");
+	globalThis.$argument = qs.parse(argument.toString());
+	assert.equal(setENV("iRingo", "TV", database).Settings.LumenKey, "");
 });
