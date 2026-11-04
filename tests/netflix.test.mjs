@@ -6,6 +6,7 @@ import InjectBrand from "../src/class/InjectBrand.mjs";
 import { Request, RequestDev, Response, ResponseDev } from "./host.mjs";
 
 const samples = JSON.parse(readFileSync(new URL("fixtures/netflix-brand.json", import.meta.url)));
+const artwork = JSON.parse(readFileSync(new URL("fixtures/netflix-brand-artwork.json", import.meta.url)));
 const id = "tvs.sbd.9000";
 const lumen = "tvs.sbd.lumen";
 const paths = ["/uts/v3/channels/tvs.sbd.9000", "/uts/v3/canvases/Channels/tvs.sbd.9000", "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.9000", "/uts/v3/shelves/edt.col.netflix?ctx_brand=tvs.sbd.9000", "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m?ctx_brand=tvs.sbd.9000"];
@@ -24,6 +25,42 @@ for (const [variant, processResponse, processRequest] of [
 	["release", Response, Request],
 	["dev", ResponseDev, RequestDev],
 ]) {
+	for (const pfm of ["iphone", "ipad", "atv", "appletv"]) {
+		test(`${variant}: ${pfm} Netflix cards have usable artwork in Home, moretv and search landing`, async t => {
+			for (const brands of ["Netflix", "Lumen,Netflix"]) {
+				const home = await replay(
+					t,
+					processResponse,
+					"/uts/v3/canvases/Roots/tahoma_watchnow",
+					{
+						data: {
+							canvas: {
+								shelves: [
+									{ displayType: "channelLockup", items: [] },
+									{ displayType: "brandLockup", items: [] },
+									{ displayType: "doorLockupWithSections", sections: [{ id: "uts.shlfsect.moretv", items: [] }] },
+								],
+							},
+						},
+					},
+					pfm,
+					brands,
+				);
+				const containers = [home.data.canvas.shelves[0], home.data.canvas.shelves[1], home.data.canvas.shelves[2].sections[0]];
+				for (const path of ["/uts/v3/search/landing", "/uts/v3/canvases/Roots/tahoma_searchlanding"]) containers.push((await replay(t, processResponse, path, {}, pfm, brands)).data.canvas.shelves[0]);
+				for (const container of containers) {
+					const card = container.items.find(item => item.id === id);
+					assert.deepEqual(card.images.shelfItemImage, artwork.heroImage);
+					assert.deepEqual(card.images.appIcon, samples[["iphone", "ipad"].includes(pfm) ? "iphone" : "atv"].images.appIcon);
+					assert.deepEqual(
+						container.items.map(item => item.id),
+						brands === "Netflix" ? [id] : [lumen, id],
+					);
+				}
+			}
+		});
+	}
+
 	for (const pfm of ["atv", "appletv", "iphone", "ipad", "desktop", undefined]) {
 		test(`${variant}: Netflix navigation, dictionary and sidebar preferences follow platform ${pfm}`, async t => {
 			const enabled = pfm !== "desktop" && pfm !== undefined;
@@ -41,7 +78,7 @@ for (const [variant, processResponse, processRequest] of [
 			if (enabled) {
 				const brand = actual.data.channels[id];
 				const sample = samples[["iphone", "ipad"].includes(pfm) ? "iphone" : "atv"];
-				assert.deepEqual(Object.fromEntries(Object.keys(sample).map(key => [key, brand[key]])), sample);
+				assert.deepEqual(Object.fromEntries(Object.keys(sample).map(key => [key, brand[key]])), { ...sample, images: { ...sample.images, shelfItemImage: artwork.heroImage } });
 				assert.equal(tabs[1].subTabs[1].type, "Brand");
 				assert.equal(tabs[1].subTabs[1].brandType, "App");
 				assert.equal(tabs[1].subTabs[1].destinationType, "Target");
@@ -80,7 +117,7 @@ for (const [variant, processResponse, processRequest] of [
 			const tab = { type: "Brand", target: brand, isPinned: flag, isHidden: flag, extension: "sidebar" };
 			const body = { data: { applicationProps: { tabs: [{ type: "ChannelsAndApps", title: "Original group", subTabs: [{ target: { id: "other" } }, tab] }] }, channels: { [id]: brand, other: { id: "other" } } } };
 			const actual = await replay(t, processResponse, "/uts/v3/configurations", body, "ipad");
-			assert.deepEqual(actual.data.channels[id], { ...brand, url: samples.iphone.url, flavor: "FullBleed", intents: ["NAVIGATE"], isAppleMusicImmersiveBrand: false, isMountainBrand: false, isStaging: false, isWatchlistEnabled: false });
+			assert.deepEqual(actual.data.channels[id], { ...brand, images: { ...brand.images, shelfItemImage: artwork.heroImage }, url: samples.iphone.url, flavor: "FullBleed", intents: ["NAVIGATE"], isAppleMusicImmersiveBrand: false, isMountainBrand: false, isStaging: false, isWatchlistEnabled: false });
 			const group = actual.data.applicationProps.tabs[0];
 			assert.equal(group.title, "Original group");
 			assert.deepEqual(

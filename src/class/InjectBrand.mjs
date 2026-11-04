@@ -57,7 +57,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.3.0
+ * @version 1.3.1
  */
 export default class InjectBrand {
 	/**
@@ -67,7 +67,7 @@ export default class InjectBrand {
 	 */
 	constructor({ settings, pfm }) {
 		this.Name = "InjectBrand";
-		this.Version = "1.3.0";
+		this.Version = "1.3.1";
 		this.#Config.brands = this.#Config.brands.filter(({ id, brandType }) => settings.Brands.includes(id) && (brandType !== "App" || (pfm && pfm !== "desktop")));
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
@@ -409,6 +409,13 @@ export default class InjectBrand {
 				isWatchlistEnabled: false,
 				shouldTrackPlayActivity: false,
 				images: {
+					shelfItemImage: {
+						width: 4320,
+						height: 1080,
+						url: "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/{w}x{h}sr.{f}",
+						supportsLayeredImage: true,
+						joeColor: "b:rgb(16,13,7) p:rgb(216,182,144) s:rgb(202,177,146) t:rgb(176,148,116) q:rgb(165,144,118)",
+					},
 					appIcon: {
 						height: 768,
 						supportsLayeredImage: true,

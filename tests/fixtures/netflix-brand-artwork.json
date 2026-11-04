@@ -1,0 +1,20 @@
+{
+	"note": "Original Netflix Brand heroImage from apple.TVKit verification/netflix/legacy-observations.json (2026-11-03), reused as shelfItemImage to fill missing card artwork. The source is 4320x1080; portrait card views crop it to 2:3. This is not a recovered 2025 portrait-card response.",
+	"source": "https://uts-api.itunes.apple.com/uts/v2/brands/tvs.sbd.9000?caller=js&sf=143441&pfm=iphone&v=54&locale=en-US",
+	"heroImage": {
+		"width": 4320,
+		"height": 1080,
+		"url": "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/{w}x{h}sr.{f}",
+		"supportsLayeredImage": true,
+		"joeColor": "b:rgb(16,13,7) p:rgb(216,182,144) s:rgb(202,177,146) t:rgb(176,148,116) q:rgb(165,144,118)"
+	},
+	"portraitProbe": {
+		"observed_date": "2026-11-04",
+		"url": "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/600x900sr.jpg",
+		"status": 200,
+		"width": 600,
+		"height": 900,
+		"bytes": 158632,
+		"sha256": "36e3d7df2854338ed3d0e41a06306556eb347c2a71f99843ced1c1bb93e5db36"
+	}
+}

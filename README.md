@@ -63,6 +63,8 @@ Lumen 资源 response 按请求 `v` 区分行头部协议：`v<84` 保留后端�
 
 Netflix 使用真实 `tvs.sbd.9000`、App Store ID `363590051` 和 bundle ID `com.netflix.Netflix`，沿用品牌的正常导航、首页和 Browse 卡片注入路径。安装、订阅、同意状态缺失时保持缺失；侧栏偏好仅补缺失的 `{isHidden:false,isPinned:false}`，不生成或改写 App 同意记录。ATV/appletv 使用官方 1280×768 分层 appIcon，iPhone/iPad 使用 1024×1024 PNG；公开字段投影保存在 `tests/fixtures/netflix-brand.json`，来源与限制见 [Netflix 集成调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/netflix-integration-investigation.md)。
 
+Netflix 首页和 Browse 卡片另提供必需的 `shelfItemImage`，回填已取证的旧版 Brand `heroImage` 原始地址、尺寸和颜色字段；图片服务已验证可返回 600×900 JPEG，moretv 和 Browse 的竖版卡片按 2:3 裁切显示。素材来源与下载验证保存在 `tests/fixtures/netflix-brand-artwork.json`。源素材为 4320×1080 横幅，此处复用原图补齐卡片，并非恢复出的 2025 年专用竖版封面；App 图标继续用于 App 身份和侧栏。
+
 Netflix 入口导航到 `https://tv.apple.com/us/channel/netflix/tvs.sbd.9000`，接受当前原站空 fallback 页面。单品牌查询、频道画布、对应 Up Next shelf，以及默认路由中带 `ctx_brand=tvs.sbd.9000` 的内容或 shelf 请求归入 Netflix 分类，使用 `CountryCode.Netflix`，默认 `US`；手动选择地区时采用对应 storefront，AUTO 保留原请求地区。地区设置独立于 Brands、平台和请求方法；App 入口仍仅在非 desktop 补入。各分类共用地区处理，调整 sf、已有 sfh、region/country 和 storefront 请求头并保留后缀，语言沿用 Locale；公共 configurations、channels 全集、user/settings 和搜索等已分类接口继续使用各自设置。此阶段不新增节目编排、影视搜索后端、App 直开动作或观看同步。tvOS、iPhone/iPad 的入口、图标、点击和固定/隐藏后重开的真机验收仍待完成。
 
 | 频道 | 导航 | 首页已有结构 | 搜索落地页 |
