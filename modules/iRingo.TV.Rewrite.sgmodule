@@ -4,10 +4,10 @@
 #!homepage = https://NSRingo.github.io/guide/apple-tv
 #!icon = https://developer.apple.com/assets/elements/icons/apple-tv/apple-tv-128x128.png
 #!category =  iRingo
-#!date = 2026-10-30 23:49:47
+#!date = 2026-11-04 22:38:41
 
-#!arguments = endpoint:"uts-api-itunes.pages.dev"
-#!arguments-desc = endpoint: [重写] 服务端点\n    ├ uts-api-itunes.pages.dev: 首选；直连；无需代理\n    ├ dev.uts-api-itunes.pages.dev: 开发版\n    └ uts-api-itunes.nanocat.cloud: Worker 版；需要代理\n
+#!arguments = endpoint:"tvkit.pages.dev"
+#!arguments-desc = endpoint: [重写] 服务端点\n    ├ tvkit.pages.dev: 首选；直连；无需代理\n    ├ dev.tvkit.pages.dev: 开发版\n    └ tvkit.nanocat.cloud: Worker 版；需要代理\n
 
 [Rule]
 DOMAIN,known-issues.apple.com,REJECT-DROP

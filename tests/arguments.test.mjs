@@ -82,11 +82,11 @@ test("brand selection exposes only supported brands and retires Tabs", () => {
 	);
 });
 
-test("Rewrite endpoints follow the UTS hostname and preserve TV paths and query strings", () => {
-	assert.equal(rewrite.args[0].defaultValue, "uts-api-itunes.pages.dev");
+test("Rewrite endpoints use the TV deployment target and preserve paths and query strings", () => {
+	assert.equal(rewrite.args[0].defaultValue, "tvkit.pages.dev");
 	assert.deepEqual(
 		rewrite.args[0].options.map(option => option.key),
-		["uts-api-itunes.pages.dev", "dev.uts-api-itunes.pages.dev", "uts-api-itunes.nanocat.cloud"],
+		["tvkit.pages.dev", "dev.tvkit.pages.dev", "tvkit.nanocat.cloud"],
 	);
 	for (const platform of ["surge", "loon", "shadowrocket", "stash"]) {
 		const template = readFileSync(new URL(`../template/${platform}.rewrite.handlebars`, import.meta.url), "utf8");
@@ -96,10 +96,10 @@ test("Rewrite endpoints follow the UTS hostname and preserve TV paths and query 
 			const pattern = tokens[0];
 			if (platform === "loon") assert.equal(tokens[1], "header");
 			const target = tokens[platform === "loon" ? 2 : 1];
-			const output = input.replace(new RegExp(pattern), target.replace("\\{{{endpoint}}}", "uts-api-itunes.pages.dev"));
+			const output = input.replace(new RegExp(pattern), target.replace("\\{{{endpoint}}}", "tvkit.pages.dev"));
 			assert.equal(new URL(output).pathname, new URL(input).pathname);
 			assert.equal(new URL(output).search, new URL(input).search);
-			assert.equal(new URL(output).hostname, "uts-api-itunes.pages.dev");
+			assert.equal(new URL(output).hostname, "tvkit.pages.dev");
 		}
 	}
 });

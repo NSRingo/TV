@@ -3,12 +3,12 @@ import { defineConfig } from "@iringo/arguments-builder";
 const endpoint = {
 	key: "endpoint",
 	name: "[重写] 服务端点",
-	defaultValue: "uts-api-itunes.pages.dev",
+	defaultValue: "tvkit.pages.dev",
 	type: "string" as const,
 	options: [
-		{ key: "uts-api-itunes.pages.dev", label: "首选；直连；无需代理" },
-		{ key: "dev.uts-api-itunes.pages.dev", label: "开发版" },
-		{ key: "uts-api-itunes.nanocat.cloud", label: "Worker 版；需要代理" },
+		{ key: "tvkit.pages.dev", label: "首选；直连；无需代理" },
+		{ key: "dev.tvkit.pages.dev", label: "开发版" },
+		{ key: "tvkit.nanocat.cloud", label: "Worker 版；需要代理" },
 	],
 };
 

@@ -1,9 +1,9 @@
 {
-	"name": "uts-api-itunes",
+	"name": "tvkit",
 	"main": "src/Hono.js",
 	"compatibility_date": "2025-11-21",
 	"compatibility_flags": ["nodejs_compat"],
-	"routes": [{ "pattern": "uts-api-itunes.nanocat.cloud", "custom_domain": true }],
+	"routes": [{ "pattern": "tvkit.nanocat.cloud", "custom_domain": true }],
 	"observability": {
 		"enabled": false,
 		"head_sampling_rate": 1,

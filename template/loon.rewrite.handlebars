@@ -18,8 +18,8 @@ DOMAIN,known-issues.apple.com,REJECT-DROP
 ^https?:\/\/play-cdn\.itunes\.apple\.com header https://play.itunes.apple.com
 ^https?:\/\/play-edge-cdn\.itunes\.apple\.com header https://play-edge.itunes.apple.com
 
-^https?:\/\/uts-api\.itunes\.apple\.com\/(uts\/(?:v1|v2|v3)\/.*) header https://uts-api-itunes.pages.dev/$1
-^https?:\/\/umc-tempo-api\.apple\.com\/((?:v1|v2|v3)\/.*) header https://uts-api-itunes.pages.dev/$1
+^https?:\/\/uts-api\.itunes\.apple\.com\/(uts\/(?:v1|v2|v3)\/.*) header https://tvkit.pages.dev/$1
+^https?:\/\/umc-tempo-api\.apple\.com\/((?:v1|v2|v3)\/.*) header https://tvkit.pages.dev/$1
 
 [MITM]
 hostname = uts-api.itunes.apple.com, umc-tempo-api.apple.com, play-cdn.itunes.apple.com, play-edge-cdn.itunes.apple.com

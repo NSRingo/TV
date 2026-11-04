@@ -11,7 +11,7 @@ else files.push("dist/iRingo.TV.srmodule", "dist/iRingo.TV.yaml", "template/boxj
 for (const file of files) {
 	assert.ok(statSync(file).size > 0, `Empty artifact: ${file}`);
 	const source = readFileSync(file, "utf8");
-	assert.doesNotMatch(source, /\{\{[@#]|NSRingo\/(MapKit|WeatherKit)|tvkit\.(pages\.dev|nanocat\.cloud)/, file);
+	assert.doesNotMatch(source, /\{\{[@#]|NSRingo\/(MapKit|WeatherKit)|uts-api-itunes/, file);
 	if (file.endsWith(".bundle.js")) assert.doesNotMatch(source, /^import\s/m, `Unbundled dependency in ${file}`);
 	else if (!file.endsWith(".json") && !file.includes(".Rewrite.")) {
 		const prefix = mode === "dev" ? "https://gist.githubusercontent.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31/raw/" : "https://github.com/NSRingo/TV/releases/download/v";

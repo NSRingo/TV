@@ -8,13 +8,13 @@ import Adapter from "../src/class/HonoWorkerAdapter.mjs";
 Console.logLevel = "OFF";
 
 test("TV routes map Pages, preview, Worker and host-prefixed paths to Apple", () => {
-	for (const host of ["uts-api-itunes.pages.dev", "dev.uts-api-itunes.pages.dev", "uts-api-itunes.nanocat.cloud", "example.account.workers.dev"]) {
+	for (const host of ["tvkit.pages.dev", "dev.tvkit.pages.dev", "tvkit.nanocat.cloud", "example.account.workers.dev"]) {
 		assert.equal(Adapter.routeRewrite(new URL(`https://${host}/uts/v3/configurations?sf=143441`)).href, "https://uts-api.itunes.apple.com/uts/v3/configurations?sf=143441");
 		assert.equal(Adapter.routeRewrite(new URL(`https://${host}/v3/channels/scoreboard`)).hostname, "umc-tempo-api.apple.com");
 		assert.equal(Adapter.routeRewrite(new URL(`https://${host}/uts-api.itunes.apple.com/uts/v3/configurations`)).pathname, "/uts/v3/configurations");
 		assert.equal(Adapter.routeRewrite(new URL(`https://${host}/umc-tempo-api.apple.com/v3/register`)).hostname, "umc-tempo-api.apple.com");
 	}
-	assert.throws(() => Adapter.routeRewrite(new URL("https://uts-api-itunes.pages.dev/example.com/test")), /Unsupported TV route/);
+	assert.throws(() => Adapter.routeRewrite(new URL("https://tvkit.pages.dev/example.com/test")), /Unsupported TV route/);
 });
 
 test("request conversion preserves text and binary bodies and removes forwarding headers", async () => {
@@ -69,7 +69,7 @@ test("Hono pipeline isolates interleaved request settings across upstream fetch"
 		);
 	});
 	globalThis.fetch.cookieJar = {};
-	const [first, second] = await Promise.all([app.request("https://uts-api-itunes.pages.dev/uts/v3/configurations?pfm=ipad&v=80&Brands=F1&LogLevel=OFF"), app.request("https://dev.uts-api-itunes.pages.dev/uts/v3/configurations?pfm=iphone&v=80&Brands=MLS&LogLevel=OFF")]);
+	const [first, second] = await Promise.all([app.request("https://tvkit.pages.dev/uts/v3/configurations?pfm=ipad&v=80&Brands=F1&LogLevel=OFF"), app.request("https://dev.tvkit.pages.dev/uts/v3/configurations?pfm=iphone&v=80&Brands=MLS&LogLevel=OFF")]);
 	assert.deepEqual(
 		(await first.json()).data.applicationProps.tabs.map(tab => tab.type),
 		["WatchNow", "Grevy", "Library"],
