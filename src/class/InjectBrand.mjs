@@ -57,7 +57,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
 /**
  * Apple TV Brand 注入器，按各方法入参原地修改 UTS 正文。
  * @author VirgilClyne
- * @version 1.3.1
+ * @version 1.3.2
  */
 export default class InjectBrand {
 	/**
@@ -67,7 +67,7 @@ export default class InjectBrand {
 	 */
 	constructor({ settings, pfm }) {
 		this.Name = "InjectBrand";
-		this.Version = "1.3.1";
+		this.Version = "1.3.2";
 		this.#Config.brands = this.#Config.brands.filter(({ id, brandType }) => settings.Brands.includes(id) && (brandType !== "App" || (pfm && pfm !== "desktop")));
 		Console.log(`🟧 ${this.Name} v${this.Version}`);
 	}
@@ -410,11 +410,11 @@ export default class InjectBrand {
 				shouldTrackPlayActivity: false,
 				images: {
 					shelfItemImage: {
-						width: 4320,
-						height: 1080,
-						url: "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/{w}x{h}sr.{f}",
-						supportsLayeredImage: true,
-						joeColor: "b:rgb(16,13,7) p:rgb(216,182,144) s:rgb(202,177,146) t:rgb(176,148,116) q:rgb(165,144,118)",
+						width: 1000,
+						height: 1500,
+						url: "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=1000&h=1500&fit=pad&bg=rgb:000000&fm=png",
+						supportsLayeredImage: false,
+						joeColor: "b:rgb(0,0,0) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)",
 					},
 					appIcon: {
 						height: 768,

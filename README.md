@@ -1,132 +1,41 @@
 #  iRingo: 📺 TV
 
-全面自定义「TV app」功能。使用说明见 [ iRingo 文档](https://NSRingo.github.io/guide/apple-tv)。
+全面自定义「TV app」功能。安装与使用说明见 [ iRingo 文档](https://NSRingo.github.io/guide/apple-tv)。
 
-## 开发与构建
+支持 Surge、Loon、Quantumult X、Stash、Shadowrocket 和 Egern。
 
-使用 Node.js 22.18 或更新版本；CI 固定使用已验证的 Node.js 26。
+## 常用设置
 
-```sh
-npm ci
-node node_modules/puppeteer/install.mjs
-npm run dev
-```
+可通过模块参数或 BoxJs 修改设置，具体可用选项以所用版本的设置界面为准。
 
-`npm run dev` 在本地同时生成 dev 脚本和模块。CI 分别使用 `build:dev`、`build:dev-args`，两个 job 固定检出同一触发提交；手动运行 Dev 时选择 dev 分支。正式版构建及验证：
-
-```sh
-npm run build
-npm run build:args
-npm run dts
-npm test
-npx tsc --noEmit
-npm run verify:artifacts -- release
-```
-
-Egern 转换通过 Puppeteer 运行，需要已安装的 Chrome。GitHub Actions 使用共享 setup-node action 安装 Node 和依赖。Build、Dev 各自并行运行脚本构建和模块生成，全部成功后汇总为 artifact；只有正式模块生成 job 安装 Chrome、调整 AppArmor。测试、类型与云端入口构建检查在脚本 job 执行。
-
-| 命令 | 用途 |
+| 参数 | 用途 |
 | --- | --- |
-| `build:dev` / `build` | 可读 dev bundle / 压缩正式 bundle |
-| `build:dev-args` | dev 模块及完整 dev BoxJs 设置 |
-| `build:release-args` | 精简参数的正式模块 |
-| `build:full-args` | 完整 BoxJs 设置 |
-| `build:args:rewrite` | 云端 Rewrite 模块 |
-| `build:args` | 顺序构建正式模块、完整 BoxJs 设置、Rewrite 模块 |
-| `dts` | 从 full 参数配置生成 Settings 类型 |
+| `ThirdParty` | 启用受支持的第三方 App 关联功能。 |
+| `isWorkaroundSSLPinning` | 配合 DualSubs 使用双语字幕。 |
+| `Brands` | 选择 F1、MLS、MLB、Lumen、Netflix，默认全部启用。 |
+| `CountryCode` | 为不同内容选择国家或地区；`AUTO` 保持当前地区。 |
+| `CountryCode.Netflix` | Netflix 内容地区，默认 `US`，可选择其他地区或 `AUTO`。 |
+| `Locale` | 内容语言，默认 `AUTO`，跟随 App 语言。 |
+| `LumenKey` | Lumen 提供的密钥；留空时不启用 Lumen 影视搜索。 |
+| `Storage` | 选择设置来源，默认 `PersistentStore`。 |
+| `LogLevel` | 调整日志输出等级。 |
 
-## 入口、参数与产物
+`Brands` 控制额外的品牌入口和卡片，取消选择会停止添加对应品牌，原有内容仍保留。`Brands=[]` 或在 BoxJs 中全部取消选择，可关闭全部额外品牌。旧 `Tabs` 设置已停用，请使用 `Brands`。
 
-代理入口为 `src/request.js`、`src/response.js` 及其 `.dev.js` 版本。业务逻辑分别位于 `src/process/Request.mjs`、`Response.mjs` 及对应 dev 文件，保留两套既有行为。
+Netflix 入口面向 iPhone、iPad 和 Apple TV。地区和语言可以分别设置。
 
-参数由 `arguments-builder.full.config.ts` 统一定义：release 提供 ThirdParty、isWorkaroundSSLPinning、Locale、LumenKey、Storage、LogLevel；full/dev 额外提供 Brands 和 CountryCode 的全部现有字段。默认值来自数据库，View 是按优先顺序排列的地区列表。BoxJs 设置继续使用 `@iRingo.TV.Settings`，生成到 `template/boxjs.settings.json`；dev 设置生成到 `dist/iRingo.TV.dev.boxjs.json`。
+例如，只启用 F1 和 MLB，并选择简体中文：
 
-`Brands` 替代已废除的 `Tabs`，只接受 `F1`、`MLS`、`MLB`、`Lumen`、`Netflix`，默认全部启用，Netflix 仅在明确的非 desktop 平台补入。已有明确的 Brands 选择保持原意，不自动追加新品牌。品牌数组只控制补入，不删除原站已有导航或卡片，也不决定排序；旧 `Tabs` 设置不再生效。Apple TV（Originals）的导航、品牌元数据和卡片完全沿用原站，不参与品牌选择或补入。`Brands=[]` 或 BoxJs 全不选会关闭全部补入。`WatchNow`、`Sports`、`Store`、`Movies`、`TV`、`ChannelsAndApps`、`Library`、`Search` 等普通导航保持服务器提供的内容与相对顺序，不再按设置筛选、补建、补写 id 或切换版本模板。`CountryCode` 的地区选择继续独立生效；`CountryCode.Netflix` 默认美服，支持手动选择地区和 AUTO。
-
-例如 `Brands=F1,MLB` 只补入 F1 与 MLB；MLB 沿用 Friday Night Baseball 的 Room 入口。F1 的原生导航类型为 `Grevy`、品牌 ID 为 `tvs.sbd.241000`，与其他体育内容共用 `CountryCode.Sports`。
-
-Watch Now 的官方体育行包含 F1、MLS 和 Friday Night Baseball（MLB）。已有行原位补齐；缺行时在“热门电影”前创建，没有该定位行的分页保持原样。Brands 的 F1、MLS、MLB 分别控制三项补入，原站已有卡片保留；F1/MLB 使用 Sports 地区，MLS 沿用 Originals。
-
-F1、MLS 的导航模板直接采用原站 configurations 的完整 tab 对象，包含官方标题、目标地址、背景色、通用链接和四组侧栏 SVG；服务器已有的 tab 整体保留。提取样本与原始响应哈希记录在 `tests/fixtures/us-tabs.json`。
-
-地区设置只切换内容地区。`Locale` 默认 `AUTO`，原样保留 App 提供的语言参数和请求头，不添加、截断或按地区覆盖语言代码；手动选择语言时，仅覆盖 UTS 接口的 `locale` 参数。
-
-响应入口将确定后的 `locale` 放入 `brandContext`，Inject 原样传给 Build。构造器只筛选品牌和平台，配置保留原文；Build 先组装对象，再调用 `#Localize(object, ["name", "title"], locale)`，由便捷方法统一按字段路径取值、查表并写回。缺省语言使用英文，没有译文的字段保持原状，不创建缺失字段。品牌子导航、频道卡片和搜索结果行复用 `channel.title`；导航 Build 复制目标、通用链接或子项数组，避免响应之间共享可变导航对象。
-
-映射范围仍为品牌及入口名称、“频道和 App”分组名和体育 Brick 标题，不扩展 Browse、Top Results 或停用官网外链的翻译。F1 的简体名称为“一级方程式锦标赛”，繁体为“一級方程式賽車”，粤语繁体为“一級方程式”；同时提供官方日文、韩文名称，MLS、Lumen 保留原名。日区体育 Brick 的 MLB Room 卡片 `title` 为“Apple TV フライデーナイト ベースボール”。新增体育行标题按英文原文译写：简繁中文为“探索 F1、MLS 和 MLB”，日文为“F1、MLS、MLBをチェック”，并覆盖粤语繁体和韩文。服务器已有的导航、品牌、卡片和本地化行标题仍保留；体育行的已知英文标题在 Build 中通过同一取值方法转换，其他说明文字不参与映射。官方配置、搜索及体育 shelf 响应的文字投影见 `tests/fixtures/brand-localization.json`；体育行标题的译文不作为官方抓包文案，也不代表真机显示验证。
-
-F1、MLS、MLB、Lumen、Netflix 的身份和素材保存在 `InjectBrand.#Config` 的 brands、bricks 数组。`database.TV.Configs.Brand` 将品牌名称映射为 ID；`setENV` 合并配置后一次性将 `Settings.Brands` 转为 ID 数组。构造器从 `brandContext` 接收 `{ settings, pfm? }`，按转换后的 `settings.Brands` 和平台裁剪品牌配置；App 类型在 desktop 或缺少 pfm 时不补入。以原站 Apple TV、F1、MLS 的固定顺序定位导航和卡片；各方法按需使用同一 `{ pfm, region, locale, settings }` 上下文。正式与 dev 入口共用品牌选择与注入；Lumen 资源修复入口只处理数组中已启用的 Lumen，不补入其他品牌。
-
-Lumen 资源 response 按请求 `v` 区分行头部协议：`v<84` 保留后端顶层 `shelf.title` 和已有字段，`v>=84` 为普通行补 `shelf.header.title` / 查看更多导航，并为 epicStage 补完整 Brand header；缺少 `v` 时沿用现有现代 header 修复。顶层 title、内容与分页继续保留。分界来自原站 v83/v84 的 iPhone、iPad、tvOS 与独立 shelf 对照，详见 [TVKit 版本调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/shelf-header-version-investigation.md)；本地回放与测试不代表真机显示验证。
-
-第三方子导航使用 `type=Brand`，`brandType` 统一取自 `InjectBrand.#Config`。Channel 与 App 共用品牌构造，身份和公开能力逐字段优先取 Config，缺少时采用原站值或默认值；`isApSubscription`、`isFirstParty` 的缺省值由 switch 按 Channel=true / App=false 确定，显式 false 不会被覆盖。Lumen 配置为 `Channel`，Netflix 配置为 `App` 并提供真实 App 身份；缺少身份配置时采用对应平台的 Apple TV 宿主。安装、订阅、同意和固定状态保留原站值。所有注入入口和 Lumen 资源脚本共用品牌定义。子项自身提供 `isPinned`、`canBeHiddenFromNavigation` 和 `images.defaultImage`。固定状态优先保留已有子项值，缺少时采用 Brand 状态；已有隐藏状态、其他侧栏字段和扩展图像保留，默认侧栏图复用品牌 appIcon。原始 Brand 不手填 `channelType`，该值由客户端按品牌标志派生，页面的 `canvasType=Channel` 保留。
-
-Netflix 使用真实 `tvs.sbd.9000`、App Store ID `363590051` 和 bundle ID `com.netflix.Netflix`，沿用品牌的正常导航、首页和 Browse 卡片注入路径。安装、订阅、同意状态缺失时保持缺失；侧栏偏好仅补缺失的 `{isHidden:false,isPinned:false}`，不生成或改写 App 同意记录。ATV/appletv 使用官方 1280×768 分层 appIcon，iPhone/iPad 使用 1024×1024 PNG；公开字段投影保存在 `tests/fixtures/netflix-brand.json`，来源与限制见 [Netflix 集成调查](https://github.com/NSRingo/apple.TVKit/blob/main/docs/netflix-integration-investigation.md)。
-
-Netflix 首页和 Browse 卡片另提供必需的 `shelfItemImage`，回填已取证的旧版 Brand `heroImage` 原始地址、尺寸和颜色字段；图片服务已验证可返回 600×900 JPEG，moretv 和 Browse 的竖版卡片按 2:3 裁切显示。素材来源与下载验证保存在 `tests/fixtures/netflix-brand-artwork.json`。源素材为 4320×1080 横幅，此处复用原图补齐卡片，并非恢复出的 2025 年专用竖版封面；App 图标继续用于 App 身份和侧栏。
-
-Netflix 入口导航到 `https://tv.apple.com/us/channel/netflix/tvs.sbd.9000`，接受当前原站空 fallback 页面。单品牌查询、频道画布、对应 Up Next shelf，以及默认路由中带 `ctx_brand=tvs.sbd.9000` 的内容或 shelf 请求归入 Netflix 分类，使用 `CountryCode.Netflix`，默认 `US`；手动选择地区时采用对应 storefront，AUTO 保留原请求地区。地区设置独立于 Brands、平台和请求方法；App 入口仍仅在非 desktop 补入。各分类共用地区处理，调整 sf、已有 sfh、region/country 和 storefront 请求头并保留后缀，语言沿用 Locale；公共 configurations、channels 全集、user/settings 和搜索等已分类接口继续使用各自设置。此阶段不新增节目编排、影视搜索后端、App 直开动作或观看同步。tvOS、iPhone/iPad 的入口、图标、点击和固定/隐藏后重开的真机验收仍待完成。
-
-| 频道 | 导航 | 首页已有结构 | 搜索落地页 |
-| --- | --- | --- | --- |
-| F1 / MLS | Grevy / MLS 根 tab | channelLockup / brandLockup、uts.col.tv-plus-sports-nav-brick | 官方 Browse 网格 |
-| MLB | 无一级导航 | uts.col.tv-plus-sports-nav-brick 中的 Room 卡片 | 不补入 |
-| Lumen | ChannelsAndApps 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
-| Netflix | 非 desktop 的 ChannelsAndApps App 子项 | channelLockup / brandLockup、uts.shlfsect.moretv | Browse 网格；缺少时创建第三方网格 |
-
-`InjectBrand` 自行决定品牌注入位置：已有苹果导航整体保留，缺少 F1、MLS 时按 Apple TV → F1 → MLS 顺序，以已有品牌、主页和资料库定位补入，不重排原导航。iPhone 不补入缺少的 F1、MLS 一级导航，但保留服务器已有入口，且不影响首页和搜索卡片。缺少苹果导航容器时不创建；Lumen、Netflix 在已有 `ChannelsAndApps` 中按 Config 数组的自然顺序补入，排列为 Lumen → Netflix → 原有其他子项，单独启用任意一个也可注入。缺少分组时在 Library 前创建，没有 Library 时追加。
-
-首页频道卡片只补入已有行，体育行沿用“热门电影”定位点；Lumen、Netflix 可补入已有 moretv 分组，App 类型不限制卡片注入。搜索落地页覆盖 `/uts/v3/search/landing`、`/uts/v3/canvases/Roots/tahoma_searchlanding`，按 Lumen → Netflix → 原站已有 Apple TV → F1 → MLS 的相对顺序补入，保留其他卡片和分页；Channel 与 App 均可在缺少 Browse 网格时创建第三方网格。卡片直接使用原站或配置 URL，脚本不补写或覆盖 `ctx_proot`。已有苹果卡片及品牌对象保持原样，缺少品牌元数据时不虚构订阅、安装或同意状态。官网行注入仍停用。原站样本与回放不代表真机 UI 或播放验证。
-
-所有参数入口均提供可选的 `LumenKey`，填写 Lumen 官方模块中 `X-Lumen-Key` 的值，例如在 script argument 中添加 `&LumenKey=你的值`。只有 `Brands` 包含 Lumen 且密钥非空时，`InjectSearch` 才查询 Lumen 并合并频道入口和影视结果；留空或只填空白时跳过搜索注入。该设置遵循下表的 BoxJs / Storage 合并顺序，不写入品牌或响应正文。
-
-Storage 控制设置来源，优先级从高到低：
-
-| Storage | 优先级 |
-| --- | --- |
-| `PersistentStore`（默认） | BoxJs → 模块参数 → 数据库默认值 |
-| `Argument` | 模块参数 → BoxJs → 数据库默认值 |
-| `database` | 仅数据库默认值 |
-
-正式产物保留 `request.bundle.js`、`response.bundle.js` 和 `iRingo.TV` 前缀，支持 Surge、Loon `.plugin`、Quantumult X、Stash、Shadowrocket、Egern。正式发布时由标签填写 package 版本，分支构建用于验证。dev 使用 `.dev` 文件名，通过 dev 推送工作流发布两个脚本和四个平台模块到 [TV Gist](https://gist.github.com/VirgilClyne/fa7b08c6994b555b82b6d22df89f8a31)。
-
-Rewrite 提供 Surge、Loon `.lpx`、Shadowrocket、Stash 和 Egern 版本。生成文件位于 `dist`，供直接引用的副本位于 `modules`。更新 Rewrite 模板后运行 `build:args:rewrite`，同步这五个副本。
-
-## Pages、Workers 与 Vercel
-
-云端名称对应 Apple 上游 `uts-api.itunes.apple.com`：
-
-| 用途 | 配置目标 |
-| --- | --- |
-| Pages 项目 / Worker 名称 | `uts-api-itunes` |
-| Pages 正式版 | `uts-api-itunes.pages.dev` |
-| Pages dev 预览版 | `dev.uts-api-itunes.pages.dev` |
-| Worker 自定义域名 | `uts-api-itunes.nanocat.cloud` |
-
-这些是仓库的部署目标；加入配置和构建成功不代表服务已上线。Pages 使用 `wrangler.jsonc`，Workers 使用 `wrangler.workers.jsonc`。两者复用 Hono 和正式处理函数，无需 MapKit 的 KV 绑定。
-
-- `/` 返回健康检查 `OK`。
-- `/uts/v1/*`、`/uts/v2/*`、`/uts/v3/*` 转发到 UTS。
-- `/v1/*`、`/v2/*`、`/v3/*` 转发到 UMC。
-- 也支持 `/uts-api.itunes.apple.com/…` 和 `/umc-tempo-api.apple.com/…` 前缀。
-
-运行参数可通过 `$argument` 请求头或 URL 查询参数传入；请求头优先。首字母大写的配置查询参数会在转发前移除，原有 `sf`、`pfm` 等 Apple 参数保留。参数和可变配置按请求隔离，媒体域名继续使用现有重写规则。
-
-```sh
-npm run dev:pages
-npm run dev:workers
-npm run dev:vercel
+```text
+Brands=F1,MLB&Locale=zh-Hans
 ```
 
-只构建、不部署的检查：
+## 设置来源
 
-```sh
-npx wrangler pages functions build functions --outdir .wrangler/pages-build
-npx wrangler deploy --dry-run --outdir .wrangler/worker-build --config wrangler.workers.jsonc
-```
+同一设置存在多个值时，按下表从左到右取值：
 
-`deploy:pages`、`deploy:workers`、`deploy:vercel` 会执行实际部署。GitHub Actions 只构建产物和发布 Gist，不执行 Cloudflare 部署；云端沿用 Cloudflare 端已有的 Git 自动部署配置，dev 推送可能触发对应的自动构建。
-
-## 回归基线
-
-`tests/fixtures/runtime-baseline.json` 保存原提交 `084eff9` 配合 util 1.8.9、URL 1.2.4 的 52 个行为结果。请求与播放处理继续对照历史基线；导航回放改为验证 `Brands=[]` 时完整保留上游输入。品牌测试验证 iPhone 不补入 F1、MLS，其他平台按位置补入，以及未选品牌的已有导航对象仍完整保留。`apple-search-landing.json`、`us-tabs.json`、`us-f1-home.json` 保存裁剪后的原站结构，验证频道位置、搜索专用素材、已有对象/状态保留、分页和重复注入；另覆盖 Storage、云端路由、请求体和交错请求参数隔离。
+| `Storage` | 优先级 |
+| --- | --- |
+| `PersistentStore`（默认） | BoxJs → 模块参数 → 默认设置 |
+| `Argument` | 模块参数 → BoxJs → 默认设置 |
+| `database` | 仅使用默认设置 |

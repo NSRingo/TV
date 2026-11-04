@@ -1,20 +1,22 @@
 {
-	"note": "Original Netflix Brand heroImage from apple.TVKit verification/netflix/legacy-observations.json (2026-11-03), reused as shelfItemImage to fill missing card artwork. The source is 4320x1080; portrait card views crop it to 2:3. This is not a recovered 2025 portrait-card response.",
-	"source": "https://uts-api.itunes.apple.com/uts/v2/brands/tvs.sbd.9000?caller=js&sf=143441&pfm=iphone&v=54&locale=en-US",
-	"heroImage": {
-		"width": 4320,
-		"height": 1080,
-		"url": "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/{w}x{h}sr.{f}",
-		"supportsLayeredImage": true,
-		"joeColor": "b:rgb(16,13,7) p:rgb(216,182,144) s:rgb(202,177,146) t:rgb(176,148,116) q:rgb(165,144,118)"
+	"note": "Netflix wordmark from the official Company Assets Logo thumbnail. The official image CDN pads the complete logo with black to a 1000x1500 PNG; no title artwork or historical Apple portrait-card origin is claimed. joeColor specifies the black background and readable default foreground colors; this palette is a display configuration, not an upstream Netflix palette.",
+	"source": "https://about.netflix.com/en/company-assets",
+	"sourceImage": "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png",
+	"shelfItemImage": {
+		"width": 1000,
+		"height": 1500,
+		"url": "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=1000&h=1500&fit=pad&bg=rgb:000000&fm=png",
+		"supportsLayeredImage": false,
+		"joeColor": "b:rgb(0,0,0) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
 	},
 	"portraitProbe": {
 		"observed_date": "2026-11-04",
-		"url": "https://is1-ssl.mzstatic.com/image/thumb/Features71/v4/1f/0b/22/1f0b22ac-333c-e4e1-ab8c-07bcd21921dc/pr_source.lsr/600x900sr.jpg",
+		"url": "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=1000&h=1500&fit=pad&bg=rgb:000000&fm=png",
 		"status": 200,
-		"width": 600,
-		"height": 900,
-		"bytes": 158632,
-		"sha256": "36e3d7df2854338ed3d0e41a06306556eb347c2a71f99843ced1c1bb93e5db36"
+		"contentType": "image/png",
+		"width": 1000,
+		"height": 1500,
+		"bytes": 24713,
+		"sha256": "db55a7c5d0fe7d3b96a97cb3c4db2b50b5a511b1619dcd00f51eaa402c6a255a"
 	}
 }

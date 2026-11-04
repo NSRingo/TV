@@ -50,7 +50,7 @@ for (const [variant, processResponse, processRequest] of [
 				for (const path of ["/uts/v3/search/landing", "/uts/v3/canvases/Roots/tahoma_searchlanding"]) containers.push((await replay(t, processResponse, path, {}, pfm, brands)).data.canvas.shelves[0]);
 				for (const container of containers) {
 					const card = container.items.find(item => item.id === id);
-					assert.deepEqual(card.images.shelfItemImage, artwork.heroImage);
+					assert.deepEqual(card.images.shelfItemImage, artwork.shelfItemImage);
 					assert.deepEqual(card.images.appIcon, samples[["iphone", "ipad"].includes(pfm) ? "iphone" : "atv"].images.appIcon);
 					assert.deepEqual(
 						container.items.map(item => item.id),
@@ -78,7 +78,7 @@ for (const [variant, processResponse, processRequest] of [
 			if (enabled) {
 				const brand = actual.data.channels[id];
 				const sample = samples[["iphone", "ipad"].includes(pfm) ? "iphone" : "atv"];
-				assert.deepEqual(Object.fromEntries(Object.keys(sample).map(key => [key, brand[key]])), { ...sample, images: { ...sample.images, shelfItemImage: artwork.heroImage } });
+				assert.deepEqual(Object.fromEntries(Object.keys(sample).map(key => [key, brand[key]])), { ...sample, images: { ...sample.images, shelfItemImage: artwork.shelfItemImage } });
 				assert.equal(tabs[1].subTabs[1].type, "Brand");
 				assert.equal(tabs[1].subTabs[1].brandType, "App");
 				assert.equal(tabs[1].subTabs[1].destinationType, "Target");
@@ -117,7 +117,7 @@ for (const [variant, processResponse, processRequest] of [
 			const tab = { type: "Brand", target: brand, isPinned: flag, isHidden: flag, extension: "sidebar" };
 			const body = { data: { applicationProps: { tabs: [{ type: "ChannelsAndApps", title: "Original group", subTabs: [{ target: { id: "other" } }, tab] }] }, channels: { [id]: brand, other: { id: "other" } } } };
 			const actual = await replay(t, processResponse, "/uts/v3/configurations", body, "ipad");
-			assert.deepEqual(actual.data.channels[id], { ...brand, images: { ...brand.images, shelfItemImage: artwork.heroImage }, url: samples.iphone.url, flavor: "FullBleed", intents: ["NAVIGATE"], isAppleMusicImmersiveBrand: false, isMountainBrand: false, isStaging: false, isWatchlistEnabled: false });
+			assert.deepEqual(actual.data.channels[id], { ...brand, images: { ...brand.images, shelfItemImage: artwork.shelfItemImage }, url: samples.iphone.url, flavor: "FullBleed", intents: ["NAVIGATE"], isAppleMusicImmersiveBrand: false, isMountainBrand: false, isStaging: false, isWatchlistEnabled: false });
 			const group = actual.data.applicationProps.tabs[0];
 			assert.equal(group.title, "Original group");
 			assert.deepEqual(
