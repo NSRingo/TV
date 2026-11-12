@@ -421,7 +421,7 @@ export default class InjectBrand {
 					shelfItemImage: {
 						width: 1000,
 						height: 1500,
-						url: "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=1000&h=1500&fit=pad&bg=rgb:000000&fm=png",
+						url: "https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w={w}&h={h}&fit=pad&bg=rgb:000000&fm={f}",
 						supportsLayeredImage: false,
 						joeColor: "b:rgb(0,0,0) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)",
 					},
