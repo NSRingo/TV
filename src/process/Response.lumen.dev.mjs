@@ -79,6 +79,12 @@ export async function Response($request, $response) {
 												case true:
 													body.data.channels ??= {};
 													injectBrand.InjectChannels(body.data.channels, brandContext);
+													switch (url.pathname) {
+														case "/api/appletv/v1/uts/v3/canvases/Channels/tvs.sbd.lumen":
+															body.data.channels["tvs.sbd.lumen"].isWatchlistEnabled = true;
+															body.data.channels["tvs.sbd.lumen"].shouldTrackPlayActivity = true;
+															break;
+													}
 													for (const shelf of body.data.canvas.shelves ?? []) {
 														setShelfHeader(shelf, body.data.channels["tvs.sbd.lumen"], Version);
 														removeEmptyGenres(shelf);

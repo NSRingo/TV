@@ -100,12 +100,12 @@ for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
 		const brandId = "tvs.sbd.lumen";
 		const body = structuredClone(fixtures.channel);
 		const state = { isSubscribed: false, isInstalled: false, isConsented: false, isPinned: true };
-		Object.assign(body.data.channels[brandId], state);
+		Object.assign(body.data.channels[brandId], state, { isWatchlistEnabled: false, shouldTrackPlayActivity: false });
 		body.data.channels.other = { id: "other", isApSubscription: false, isFirstParty: false };
-		for (const [path, input] of [
-			["/uts/v3/canvases/Channels/tvs.sbd.lumen", body],
-			["/uts/v3/canvases/Rooms/edt.item.lumen", body],
-			["/uts/v3/shelves/edt.shelf.lumen-hero", { data: { shelf: body.data.canvas.shelves[0], channels: body.data.channels } }],
+		for (const [path, input, activityEnabled] of [
+			["/uts/v3/canvases/Channels/tvs.sbd.lumen", body, true],
+			["/uts/v3/canvases/Rooms/edt.item.lumen", body, false],
+			["/uts/v3/shelves/edt.shelf.lumen-hero", { data: { shelf: body.data.canvas.shelves[0], channels: body.data.channels } }, false],
 		]) {
 			const actual = await replay(t, path, input, undefined, platform);
 			const brand = actual.data.channels[brandId];
@@ -115,6 +115,8 @@ for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
 			assert.equal(brand.isTvAppBrand, false);
 			assert.equal(brand.isAppleTvPlus, false);
 			assert.equal(brand.isItunes, false);
+			assert.equal(brand.isWatchlistEnabled, activityEnabled);
+			assert.equal(brand.shouldTrackPlayActivity, activityEnabled);
 			const mobile = platform === "iphone" || platform === "ipad";
 			assert.deepEqual(brand.appBundleIds, [mobile ? "com.apple.tv" : "com.apple.TVWatchList"]);
 			assert.deepEqual(brand.appAdamIds, [mobile ? "1174078549" : "1171145244"]);
@@ -128,7 +130,10 @@ for (const platform of ["atv", "appletv", "iphone", "ipad", "desktop"]) {
 	});
 }
 
-for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases/Rooms/edt.item.lumen"]) {
+for (const [path, activityEnabled] of [
+	["/uts/v3/canvases/Channels/tvs.sbd.lumen", true],
+	["/uts/v3/canvases/Rooms/edt.item.lumen", false],
+]) {
 	test(`Lumen ${path}: repairs header hierarchy and reuses the complete Brand`, async t => {
 		const actual = await replay(t, path, fixtures.channel);
 		const [hero, row] = actual.data.canvas.shelves;
@@ -143,6 +148,8 @@ for (const path of ["/uts/v3/canvases/Channels/tvs.sbd.lumen", "/uts/v3/canvases
 		assert.deepEqual(hero.header.images.headerImage, actual.data.channels["tvs.sbd.lumen"].images.appIcon);
 		const expected = structuredClone(fixtures.channel);
 		new InjectBrand({ settings }).InjectChannels(expected.data.channels, { pfm: "iphone", region: "tw", settings });
+		expected.data.channels["tvs.sbd.lumen"].isWatchlistEnabled = activityEnabled;
+		expected.data.channels["tvs.sbd.lumen"].shouldTrackPlayActivity = activityEnabled;
 		assert.deepEqual(actual.data.channels, JSON.parse(JSON.stringify(expected.data.channels)));
 		for (const [index, shelf] of actual.data.canvas.shelves.entries()) {
 			const { header, ...unchanged } = shelf;
@@ -266,6 +273,8 @@ test("Room without a backend Brand receives the configured Brand while unknown r
 	body.data.canvas.shelves[1].displayType = "unknown";
 	const actual = await replay(t, "/uts/v3/canvases/Rooms/edt.item.lumen", body);
 	assert.equal(actual.data.channels["tvs.sbd.lumen"].type, "Brand");
+	assert.equal(actual.data.channels["tvs.sbd.lumen"].isWatchlistEnabled, false);
+	assert.equal(actual.data.channels["tvs.sbd.lumen"].shouldTrackPlayActivity, false);
 	assert.deepEqual(actual.data.canvas.shelves[0].header.entity, actual.data.channels["tvs.sbd.lumen"]);
 	assert.deepEqual(actual.data.canvas.shelves[1], body.data.canvas.shelves[1]);
 });
