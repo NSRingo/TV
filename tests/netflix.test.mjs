@@ -61,7 +61,7 @@ for (const [variant, processResponse, processRequest] of [
 		});
 	}
 
-	for (const pfm of ["atv", "appletv", "iphone", "ipad", "desktop", undefined]) {
+	for (const pfm of ["atv", "appletv", "iphone", "ipad", "desktop", "web", undefined]) {
 		test(`${variant}: Netflix navigation, dictionary and sidebar preferences follow platform ${pfm}`, async t => {
 			const enabled = pfm !== "desktop" && pfm !== undefined;
 			const body = { data: { applicationProps: { tabs: [{ type: "WatchNow" }, { type: "Library" }] } } };
@@ -77,7 +77,7 @@ for (const [variant, processResponse, processRequest] of [
 			);
 			if (enabled) {
 				const brand = actual.data.channels[id];
-				const sample = samples[["iphone", "ipad"].includes(pfm) ? "iphone" : "atv"];
+				const sample = samples[["atv", "appletv"].includes(pfm) ? "atv" : "iphone"];
 				assert.deepEqual(Object.fromEntries(Object.keys(sample).map(key => [key, brand[key]])), { ...sample, images: { ...sample.images, shelfItemImage: artwork.shelfItemImage } });
 				assert.equal(tabs[1].subTabs[1].type, "Brand");
 				assert.equal(tabs[1].subTabs[1].brandType, "App");

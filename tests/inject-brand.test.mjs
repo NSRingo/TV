@@ -230,6 +230,30 @@ for (const isPinned of [false, true]) {
 	});
 }
 
+for (const [variant, response] of [["release", ResponseRelease], ["dev", ResponseDev]]) {
+	for (const [pfm, width, height, source] of [
+		["iphone", 1024, 1024, "square"],
+		["ipad", 1024, 1024, "square"],
+		["atv", 1280, 768, "icon"],
+		["appletv", 1280, 768, "icon"],
+		["desktop", 1024, 1024, "square"],
+		["web", 1024, 1024, "square"],
+	]) {
+		test(`${variant}: Lumen Brand and sidebar use the ${pfm} App icon`, async t => {
+			const actual = await replay(t, "/uts/v3/configurations", {}, `caller=wlk&pfm=${pfm}&sf=143441&v=101`, response, "Brands=Lumen&LogLevel=OFF");
+			const expected = {
+				width,
+				height,
+				url: `https://www.lumen.ax/api/appletv/pub/brand/v1/${source}/{w}x{h}.{f}`,
+				supportsLayeredImage: false,
+			};
+			const subTab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0];
+			assert.deepEqual(actual.data.channels[brandId].images.appIcon, expected);
+			assert.deepEqual(subTab.images.defaultImage, expected);
+		});
+	}
+}
+
 for (const body of [{}, { data: { applicationProps: {} } }]) {
 	test(`configuration creates missing paths: ${JSON.stringify(body)}`, async t => {
 		const actual = await replay(t, "/uts/v3/configurations", body, "caller=wlk&pfm=desktop&v=100");

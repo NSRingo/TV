@@ -25,8 +25,9 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string} [tab.hexColor] - 官方导航背景色。
  * @property {Record<string, Object>} [tab.images] - 官方侧栏图像。
  * @property {boolean} [tab.canBeHiddenFromNavigation] - 第三方子导航是否允许隐藏。
- * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等官方字段为键的品牌图片。
- * @property {Object} [mobileAppIcon] - iPhone/iPad 的官方 App 图标 / Official App icon for iPhone and iPad.
+ * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等字段为键的品牌图片 / Brand images keyed by fields such as appIcon and shelfItemImage.
+ * @property {Object} images.appIcon - 默认方形 App 图标，用于 tvOS 以外的平台 / Default square App icon for platforms other than tvOS.
+ * @property {Object} [images.tvOSAppIcon] - tvOS 专用横版 App 图标，省略时使用 images.appIcon / Rectangular tvOS App icon override, defaulting to images.appIcon when omitted.
  * @property {string[]} [appAdamIds] - 外部 App 的真实商店 ID / Actual App Store IDs of the external App.
  * @property {string[]} [appBundleIds] - 外部 App 的真实 bundle ID / Actual bundle IDs of the external App.
  * @property {string} [appName] - 外部 App 名称 / External App name.
@@ -353,6 +354,14 @@ export default class InjectBrand {
 				hexColor: "#080809",
 				images: {
 					appIcon: {
+						width: 1024,
+						height: 1024,
+						// square 图源在非正方形缩略图请求下仍返回方形 App 图标。
+						// The square source preserves the square App icon for non-square thumbnail requests.
+						url: "https://www.lumen.ax/api/appletv/pub/brand/v1/square/{w}x{h}.{f}",
+						supportsLayeredImage: false,
+					},
+					tvOSAppIcon: {
 						width: 1280,
 						height: 768,
 						url: "https://www.lumen.ax/api/appletv/pub/brand/v1/icon/{w}x{h}.{f}",
@@ -417,6 +426,12 @@ export default class InjectBrand {
 						joeColor: "b:rgb(0,0,0) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)",
 					},
 					appIcon: {
+						height: 1024,
+						supportsLayeredImage: false,
+						url: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/49/40/c4/4940c495-d5d5-00ac-0d3b-65945eb7e4a2/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/{w}x{h}.{f}",
+						width: 1024,
+					},
+					tvOSAppIcon: {
 						height: 768,
 						supportsLayeredImage: true,
 						url: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/00/13/44/00134444-de00-232a-57e5-baa75ce19cbf/App_Icon-marketing.lsr/{w}x{h}.{f}",
@@ -428,12 +443,6 @@ export default class InjectBrand {
 						url: "https://is1-ssl.mzstatic.com/image/thumb/zkkWXoJCcF9mZkak44N6-A/{w}x{h}.{f}",
 						width: 110,
 					},
-				},
-				mobileAppIcon: {
-					height: 1024,
-					supportsLayeredImage: false,
-					url: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/49/40/c4/4940c495-d5d5-00ac-0d3b-65945eb7e4a2/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/{w}x{h}.{f}",
-					width: 1024,
 				},
 				tab: {
 					type: "Brand",
@@ -1049,20 +1058,26 @@ export default class InjectBrand {
 	 * @see https://github.com/NSRingo/apple.TVKit/blob/main/docs/channels-apps-brand-taxonomy.md
 	 */
 	#BuildBrand(config, { pfm, region, locale, settings }, state) {
-		// Config 的 App 身份优先，缺少时采用官方平台宿主；移动端图标逐字段回退。
-		// Configured App identity takes precedence over the platform host; mobile icons fall back field by field.
+		// Config 的 App 身份优先，缺少时采用官方平台宿主，tvOS 图标优先取 images.tvOSAppIcon。
+		// Configured App identity takes precedence over the platform host, and tvOS icons prefer images.tvOSAppIcon.
 		const images = { ...config.images };
+		switch (pfm) {
+			case "atv":
+			case "appletv":
+				images.appIcon = images.tvOSAppIcon ?? images.appIcon;
+				break;
+		}
 		let appHost, defaults;
 		switch (pfm) {
 			case "iphone":
 			case "ipad":
 				appHost = { appAdamIds: ["1174078549"], appBundleIds: ["com.apple.tv"], appName: "Apple TV" };
-				images.appIcon = config.mobileAppIcon ?? images.appIcon;
 				break;
 			default:
 				appHost = { appAdamIds: ["1171145244"], appBundleIds: ["com.apple.TVWatchList"], appName: "TV" };
 				break;
 		}
+		delete images.tvOSAppIcon;
 		switch (config.brandType) {
 			case "Channel":
 				defaults = { isApSubscription: true, isFirstParty: true, isConsented: true, isInstalled: true, isSubscribed: true };
