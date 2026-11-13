@@ -7,10 +7,42 @@ import { Request, RequestDev, Response, ResponseDev } from "./host.mjs";
 
 const samples = JSON.parse(readFileSync(new URL("fixtures/netflix-brand.json", import.meta.url)));
 const artwork = JSON.parse(readFileSync(new URL("fixtures/netflix-brand-artwork.json", import.meta.url)));
+const episodeFixtures = JSON.parse(readFileSync(new URL("fixtures/episode-images.json", import.meta.url)));
 const id = "tvs.sbd.9000";
 const lumen = "tvs.sbd.lumen";
 const paths = ["/uts/v3/channels/tvs.sbd.9000", "/uts/v3/canvases/Channels/tvs.sbd.9000", "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.9000", "/uts/v3/shelves/edt.col.netflix?ctx_brand=tvs.sbd.9000", "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m?ctx_brand=tvs.sbd.9000"];
 Console.logLevel = "OFF";
+
+for (const platform of ["iphone", "iPhone", "ipad"]) {
+	test(`dev: Netflix ${platform} episode list uses the platform's original landscape artwork`, async t => {
+		const input = platform === "ipad" ? episodeFixtures.netflixIpad : episodeFixtures.netflix;
+		const expected = structuredClone(input);
+		for (const episode of expected.data.episodes) episode.images.contentImage = { ...episode.images.posterArt };
+		const path = "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m/episodes";
+		const actual = await replay(t, ResponseDev, path, input, platform);
+		assert.deepEqual(actual, expected);
+		assert.deepEqual(
+			actual.data.episodes.map(episode => [episode.images.contentImage.width, episode.images.contentImage.height]),
+			[
+				[3840, 2160],
+				[1920, 1080],
+			],
+		);
+		assert.equal(actual.data.episodes[0].images.contentImage.url, "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}.{f}");
+		assert.deepEqual(await replay(t, ResponseDev, path, actual, platform), actual);
+	});
+}
+
+for (const platform of ["atv", "appletv", "desktop", "web", undefined]) {
+	test(`dev: Netflix ${platform} episode images retain the upstream model`, async t => {
+		assert.deepEqual(await replay(t, ResponseDev, "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m/episodes", episodeFixtures.netflix, platform), episodeFixtures.netflix);
+	});
+}
+
+test("dev: episode image comparison respects Netflix selection and the response Brand", async t => {
+	for (const brands of ["Lumen", "[]"]) assert.deepEqual(await replay(t, ResponseDev, "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m/episodes", episodeFixtures.netflix, "iphone", brands), episodeFixtures.netflix);
+	assert.deepEqual(await replay(t, ResponseDev, "/uts/v3/shows/umc.cmc.2szz3fdt71tl1ulnbp8utgq5o/episodes", episodeFixtures.official, "iphone"), episodeFixtures.official);
+});
 
 async function replay(t, processResponse, path, body, pfm, brands = "Netflix,Lumen") {
 	t.mock.method(Storage, "getItem", () => ({}));

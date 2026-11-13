@@ -6,8 +6,21 @@ import InjectBrand from "../src/class/InjectBrand.mjs";
 import { ResponseLumen as Response } from "./host.mjs";
 
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/lumen-resources.json", import.meta.url)));
+const episodeFixture = JSON.parse(readFileSync(new URL("fixtures/episode-images.json", import.meta.url))).lumen;
 const settings = { Brands: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
+
+test("Surge dev module loads the Lumen response body for show and episode-list paths", () => {
+	const source = readFileSync(new URL("../template/surge.dev.handlebars", import.meta.url), "utf8");
+	const line = source.split("\n").find(line => line.startsWith("📺 TV.lumen.response ="));
+	assert.ok(line);
+	assert.ok(line.includes("requires-body=1"));
+	assert.ok(line.includes("/raw/response.lumen.dev.bundle.js"));
+	const pattern = new RegExp(line.match(/pattern=(.*?), requires-body=/)[1]);
+	for (const path of ["shows/umc.cmc.lumen1718603", "shows/umc.cmc.lumen1718603/episodes"]) assert.ok(pattern.test(`https://www.lumen.ax/api/appletv/v1/uts/v3/${path}?pfm=iphone&v=100`));
+	for (const path of ["movies/umc.cmc.lumen1580066", "shows/umc.cmc.lumen1718603/episodes/extra", "shows/umc.cmc.lumen1718603/similar"]) assert.equal(pattern.test(`https://www.lumen.ax/api/appletv/v1/uts/v3/${path}?pfm=iphone`), false);
+	assert.match(source, /^hostname = %APPEND% .*www\.lumen\.ax$/m);
+});
 
 test("deselected Lumen leaves backend resources unchanged", async t => {
 	t.mock.method(Storage, "getItem", () => ({}));
@@ -16,6 +29,7 @@ test("deselected Lumen leaves backend resources unchanged", async t => {
 			["canvases/Channels/tvs.sbd.lumen", fixtures.channel],
 			["shelves/edt.col.lumen-lib-284", { data: { shelf: fixtures.channel.data.canvas.shelves[0] } }],
 			["movies/umc.cmc.lumen1580066", fixtures.movie],
+			["shows/umc.cmc.lumen1718603/episodes", episodeFixture],
 		]) {
 			const response = { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 			await Response({ url: `https://www.lumen.ax/api/appletv/v1/uts/v3/${path}`, $argument: `Brands=${brands}&LogLevel=OFF` }, response);
@@ -23,6 +37,31 @@ test("deselected Lumen leaves backend resources unchanged", async t => {
 		}
 	}
 });
+
+for (const platform of ["iphone", "iPhone", "ipad", "desktop"]) {
+	test(`Lumen ${platform}: episode list requests preserve the original image ratio`, async t => {
+		const expected = structuredClone(episodeFixture);
+		expected.data.episodes[0].images.contentImage.url = "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x0.{f}";
+		expected.data.episodes[1].images.contentImage.url = "https://www.lumen.ax/api/appletv/i/fixture/img/1834012/Primary/79f2031d4126ce0e089cb99c326013bd/{w}x0.{f}";
+		const path = "/uts/v3/shows/umc.cmc.lumen1718603/episodes";
+		const actual = await replay(t, path, episodeFixture, undefined, platform);
+		assert.deepEqual(actual, expected);
+		assert.deepEqual(
+			actual.data.episodes.map(episode => [episode.images.contentImage.width, episode.images.contentImage.height]),
+			[
+				[1280, 720],
+				[1280, 720],
+			],
+		);
+		assert.deepEqual(await replay(t, path, actual, undefined, platform), actual);
+	});
+}
+
+for (const platform of ["atv", "appletv", "web", ""]) {
+	test(`Lumen ${platform || "missing"}: episode list retains the upstream model`, async t => {
+		assert.deepEqual(await replay(t, "/uts/v3/shows/umc.cmc.lumen1718603/episodes", episodeFixture, undefined, platform), episodeFixture);
+	});
+}
 
 async function replay(t, path, body, origin = "https://www.lumen.ax/api/appletv/v1", platform = "iphone", version = "101") {
 	t.mock.method(Storage, "getItem", () => ({}));

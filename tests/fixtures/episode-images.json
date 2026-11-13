@@ -1,0 +1,365 @@
+{
+	"source": {
+		"date": "2026-11-13",
+		"method": "UTS parameter replays with caller=js, v=100, sf=143441 and the named platform",
+		"scope": "Episode list projections with image metadata and pagination. Lumen image token replaced with fixture. Account and playback dictionaries omitted.",
+		"netflixSHA256": "d2a4ddbcb76fedd91fda9e13556ab8ba69fc39a6b2ea3152eba565114c1626cd",
+		"netflixIpadSHA256": "7131fc5de955b6c0a7b3e0747e4d8ecaff984c88ac7a47b4a911979d2b098085",
+		"lumenSHA256": "721ac6c5a5d9f7d547679218d70b2f1a0c88baedb6269d650611f2d892086219",
+		"officialSHA256": "72b2d10bc0203c3ddc40ff963164cce2be3a15af07422b41e8d675927ce99621"
+	},
+	"netflix": {
+		"data": {
+			"channels": {
+				"tvs.sbd.9000": {
+					"id": "tvs.sbd.9000",
+					"title": "Netflix",
+					"type": "Brand"
+				}
+			},
+			"episodes": [
+				{
+					"id": "umc.cmc.3fti8821924vq96ls2ub8g1y6",
+					"type": "Episode",
+					"title": "Red Light, Green Light",
+					"description": "Hoping to win easy money, a desperate Gi-hun agrees to take part in an enigmatic game; not long into the first round, unforeseen horrors unfold.",
+					"episodeNumber": 1,
+					"episodeIndex": 0,
+					"seasonId": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m",
+					"images": {
+						"contentImage": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(223,205,172) p:rgb(0,36,35) s:rgb(0,53,51) t:rgb(45,70,62) q:rgb(44,84,75)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}{c}.{f}?color=DFCDAC",
+							"width": 3840
+						},
+						"posterArt": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(223,205,172) p:rgb(0,36,35) s:rgb(0,53,51) t:rgb(45,70,62) q:rgb(44,84,75)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}.{f}",
+							"width": 3840
+						},
+						"showPosterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(6,3,1) p:rgb(232,147,91) s:rgb(222,145,100) t:rgb(187,118,73) q:rgb(178,116,80)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/50aZ_XifkcrrUvGQL_2MAQ/{w}x{h}.{f}",
+							"width": 1920
+						}
+					}
+				},
+				{
+					"id": "umc.cmc.630nzr2nf77w0ky4gzj4v4o8u",
+					"type": "Episode",
+					"title": "Hell",
+					"description": "Split on whether to continue or quit, the group holds a vote; their realities in the outside world may prove to be just as unforgiving as the game.",
+					"episodeNumber": 2,
+					"episodeIndex": 1,
+					"seasonId": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m",
+					"images": {
+						"contentImage": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(27,16,11) p:rgb(241,183,118) s:rgb(231,168,107) t:rgb(198,150,96) q:rgb(190,138,87)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/No0ltgapZqGjRmI3plJMvw/{w}x{h}{c}.{f}?color=1B100B",
+							"width": 1920
+						},
+						"posterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(27,16,11) p:rgb(241,183,118) s:rgb(231,168,107) t:rgb(198,150,96) q:rgb(190,138,87)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/No0ltgapZqGjRmI3plJMvw/{w}x{h}.{f}",
+							"width": 1920
+						},
+						"showPosterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(6,3,1) p:rgb(232,147,91) s:rgb(222,145,100) t:rgb(187,118,73) q:rgb(178,116,80)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/50aZ_XifkcrrUvGQL_2MAQ/{w}x{h}.{f}",
+							"width": 1920
+						}
+					}
+				}
+			],
+			"totalEpisodeCount": 22,
+			"selectedEpisodeIndex": 0,
+			"seasonSummaries": [
+				{
+					"episodeCount": 9,
+					"id": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"title": "Season 1"
+				},
+				{
+					"episodeCount": 7,
+					"id": "umc.cmc.4q76b9bsoldd77gl3psygxctu",
+					"seasonNumber": 2,
+					"title": "Season 2"
+				},
+				{
+					"episodeCount": 6,
+					"id": "umc.cmc.4ffvod9gaqrkl4h7obykyp605",
+					"seasonNumber": 3,
+					"title": "Season 3"
+				}
+			]
+		}
+	},
+	"netflixIpad": {
+		"data": {
+			"channels": {
+				"tvs.sbd.9000": {
+					"id": "tvs.sbd.9000",
+					"title": "Netflix",
+					"type": "Brand"
+				}
+			},
+			"episodes": [
+				{
+					"id": "umc.cmc.3fti8821924vq96ls2ub8g1y6",
+					"type": "Episode",
+					"title": "Red Light, Green Light",
+					"description": "Hoping to win easy money, a desperate Gi-hun agrees to take part in an enigmatic game; not long into the first round, unforeseen horrors unfold.",
+					"episodeNumber": 1,
+					"episodeIndex": 0,
+					"seasonId": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m",
+					"images": {
+						"contentImage": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(223,205,172) p:rgb(0,36,35) s:rgb(0,53,51) t:rgb(45,70,62) q:rgb(44,84,75)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}KF.TVALC02.{f}?color=DFCDAC",
+							"width": 3840
+						},
+						"posterArt": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(223,205,172) p:rgb(0,36,35) s:rgb(0,53,51) t:rgb(45,70,62) q:rgb(44,84,75)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}.{f}",
+							"width": 3840
+						},
+						"showPosterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(6,3,1) p:rgb(232,147,91) s:rgb(222,145,100) t:rgb(187,118,73) q:rgb(178,116,80)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/50aZ_XifkcrrUvGQL_2MAQ/{w}x{h}.{f}",
+							"width": 1920
+						}
+					}
+				},
+				{
+					"id": "umc.cmc.630nzr2nf77w0ky4gzj4v4o8u",
+					"type": "Episode",
+					"title": "Hell",
+					"description": "Split on whether to continue or quit, the group holds a vote; their realities in the outside world may prove to be just as unforgiving as the game.",
+					"episodeNumber": 2,
+					"episodeIndex": 1,
+					"seasonId": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m",
+					"images": {
+						"contentImage": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(27,16,11) p:rgb(241,183,118) s:rgb(231,168,107) t:rgb(198,150,96) q:rgb(190,138,87)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/No0ltgapZqGjRmI3plJMvw/{w}x{h}KF.TVALC02.{f}?color=1B100B",
+							"width": 1920
+						},
+						"posterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(27,16,11) p:rgb(241,183,118) s:rgb(231,168,107) t:rgb(198,150,96) q:rgb(190,138,87)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/No0ltgapZqGjRmI3plJMvw/{w}x{h}.{f}",
+							"width": 1920
+						},
+						"showPosterArt": {
+							"height": 1080,
+							"isP3": false,
+							"joeColor": "b:rgb(6,3,1) p:rgb(232,147,91) s:rgb(222,145,100) t:rgb(187,118,73) q:rgb(178,116,80)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/50aZ_XifkcrrUvGQL_2MAQ/{w}x{h}.{f}",
+							"width": 1920
+						}
+					}
+				}
+			],
+			"totalEpisodeCount": 22,
+			"selectedEpisodeIndex": 0,
+			"seasonSummaries": [
+				{
+					"episodeCount": 9,
+					"id": "umc.cmc.3jy58al10343zicywhqcz8u17",
+					"seasonNumber": 1,
+					"title": "Season 1"
+				},
+				{
+					"episodeCount": 7,
+					"id": "umc.cmc.4q76b9bsoldd77gl3psygxctu",
+					"seasonNumber": 2,
+					"title": "Season 2"
+				},
+				{
+					"episodeCount": 6,
+					"id": "umc.cmc.4ffvod9gaqrkl4h7obykyp605",
+					"seasonNumber": 3,
+					"title": "Season 3"
+				}
+			]
+		}
+	},
+	"lumen": {
+		"data": {
+			"channels": {
+				"tvs.sbd.4000": {
+					"id": "tvs.sbd.4000",
+					"title": "Lumen",
+					"type": "Brand"
+				}
+			},
+			"episodes": [
+				{
+					"id": "umc.cmc.lumen1718605",
+					"type": "Episode",
+					"title": "学前篇 敬请期待……",
+					"description": "",
+					"episodeNumber": 41,
+					"episodeIndex": 0,
+					"seasonId": "umc.cmc.lumen1718603s1",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.lumen1718603",
+					"images": {
+						"contentImage": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						},
+						"posterArt": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						},
+						"showPosterArt": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1718603/Backdrop/b5c7492cdb02b2151d2bf9a009d8024c/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						}
+					}
+				},
+				{
+					"id": "umc.cmc.lumen1834012",
+					"type": "Episode",
+					"title": "龙游的风在轻轻的吹",
+					"description": "",
+					"episodeNumber": 42,
+					"episodeIndex": 1,
+					"seasonId": "umc.cmc.lumen1718603s1",
+					"seasonNumber": 1,
+					"showId": "umc.cmc.lumen1718603",
+					"images": {
+						"contentImage": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1834012/Primary/79f2031d4126ce0e089cb99c326013bd/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						},
+						"posterArt": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1834012/Primary/79f2031d4126ce0e089cb99c326013bd/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						},
+						"showPosterArt": {
+							"url": "https://www.lumen.ax/api/appletv/i/fixture/img/1718603/Backdrop/b5c7492cdb02b2151d2bf9a009d8024c/{w}x{h}.{f}",
+							"width": 1280,
+							"height": 720,
+							"isP3": false,
+							"supportsLayeredImage": false,
+							"joeColor": "b:rgb(40,40,40) p:rgb(255,255,255) s:rgb(220,220,220) t:rgb(210,210,210) q:rgb(190,190,190)"
+						}
+					}
+				}
+			],
+			"totalEpisodeCount": 3
+		}
+	},
+	"official": {
+		"data": {
+			"channels": {
+				"tvs.sbd.4000": {
+					"id": "tvs.sbd.4000",
+					"title": "Apple TV",
+					"type": "Brand"
+				}
+			},
+			"episodes": [
+				{
+					"id": "umc.cmc.72legmwolm5ytctyq637r6x0",
+					"type": "Episode",
+					"title": "Failure’s Contagious",
+					"images": {
+						"contentImage": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(18,33,28) p:rgb(204,221,209) s:rgb(195,211,189) t:rgb(167,183,173) q:rgb(159,175,157)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/pdG3FXzfpw0lUn1WOc7Q9g/{w}x{h}{c}.{f}?color=12211C",
+							"width": 3840
+						},
+						"posterArt": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(18,33,28) p:rgb(204,221,209) s:rgb(195,211,189) t:rgb(167,183,173) q:rgb(159,175,157)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/pdG3FXzfpw0lUn1WOc7Q9g/{w}x{h}.{f}",
+							"width": 3840
+						},
+						"showPosterArt": {
+							"height": 2160,
+							"isP3": false,
+							"joeColor": "b:rgb(240,239,217) p:rgb(6,12,17) s:rgb(45,46,43) t:rgb(53,57,57) q:rgb(84,85,78)",
+							"supportsLayeredImage": false,
+							"url": "https://is1-ssl.mzstatic.com/image/thumb/x5JjmiSD75wN12-HmmZRcg/{w}x{h}.{f}",
+							"width": 3840
+						}
+					},
+					"episodeNumber": 1,
+					"seasonNumber": 1,
+					"showId": "umc.cmc.2szz3fdt71tl1ulnbp8utgq5o"
+				}
+			],
+			"totalEpisodeCount": 36
+		}
+	}
+}

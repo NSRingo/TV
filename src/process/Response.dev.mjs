@@ -159,6 +159,17 @@ export async function Response($request, $response) {
 												case "episodes": // uts/v3/episodes/
 												case "sporting-events": {
 													// uts/v3/sporting-events/
+													switch (Platform) {
+														case "iphone":
+														case "iPhone":
+														case "ipad":
+															if (PATHs[2] === "shows" && Settings.Brands.includes("tvs.sbd.9000") && body.data?.channels?.["tvs.sbd.9000"]) {
+																for (const episode of body.data.episodes ?? []) {
+																	if (episode.images?.posterArt) episode.images.contentImage = { ...episode.images.posterArt };
+																}
+															}
+															break;
+													}
 													if (Settings?.isWorkaroundSSLPinning) {
 														let shelves = body?.data?.canvas?.shelves;
 														let backgroundVideo = body?.data?.content?.backgroundVideo;
