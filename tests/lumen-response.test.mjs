@@ -10,16 +10,12 @@ const episodeFixture = JSON.parse(readFileSync(new URL("fixtures/episode-images.
 const settings = { Brands: ["tvs.sbd.lumen"] };
 Console.logLevel = "OFF";
 
-test("Surge dev module loads the Lumen response body for show and episode-list paths", () => {
+test("TV Surge dev module keeps the temporary Lumen response in its local module", () => {
 	const source = readFileSync(new URL("../template/surge.dev.handlebars", import.meta.url), "utf8");
-	const line = source.split("\n").find(line => line.startsWith("📺 TV.lumen.response ="));
-	assert.ok(line);
-	assert.ok(line.includes("requires-body=1"));
-	assert.ok(line.includes("/raw/response.lumen.dev.bundle.js"));
-	const pattern = new RegExp(line.match(/pattern=(.*?), requires-body=/)[1]);
-	for (const path of ["shows/umc.cmc.lumen1718603", "shows/umc.cmc.lumen1718603/episodes"]) assert.ok(pattern.test(`https://www.lumen.ax/api/appletv/v1/uts/v3/${path}?pfm=iphone&v=100`));
-	for (const path of ["movies/umc.cmc.lumen1580066", "shows/umc.cmc.lumen1718603/episodes/extra", "shows/umc.cmc.lumen1718603/similar"]) assert.equal(pattern.test(`https://www.lumen.ax/api/appletv/v1/uts/v3/${path}?pfm=iphone`), false);
-	assert.match(source, /^hostname = %APPEND% .*www\.lumen\.ax$/m);
+	assert.doesNotMatch(source, /response\.lumen\.dev\.bundle\.js/);
+	assert.doesNotMatch(source, /TV\.lumen\.response/);
+	assert.doesNotMatch(source, /www\\\.lumen\\\.ax|www\.lumen\.ax/);
+	assert.match(source, /raw\/response\.dev\.bundle\.js/);
 });
 
 test("deselected Lumen leaves backend resources unchanged", async t => {
