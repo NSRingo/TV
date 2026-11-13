@@ -163,9 +163,16 @@ export async function Response($request, $response) {
 														case "iphone":
 														case "iPhone":
 														case "ipad":
+														case "atv":
+														case "appletv":
 															if (PATHs[2] === "shows" && Settings.Brands.includes("tvs.sbd.9000") && body.data?.channels?.["tvs.sbd.9000"]) {
 																for (const episode of body.data.episodes ?? []) {
-																	if (episode.images?.posterArt) episode.images.contentImage = { ...episode.images.posterArt };
+																	for (const image of [episode.images?.contentImage, episode.images?.posterArt]) {
+																		if (image) {
+																			image.width = 3840;
+																			image.height = 2160;
+																		}
+																	}
 																}
 															}
 															break;

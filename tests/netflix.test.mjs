@@ -13,11 +13,16 @@ const lumen = "tvs.sbd.lumen";
 const paths = ["/uts/v3/channels/tvs.sbd.9000", "/uts/v3/canvases/Channels/tvs.sbd.9000", "/uts/v3/shelves/uts.col.ChannelUpNext.tvs.sbd.9000", "/uts/v3/shelves/edt.col.netflix?ctx_brand=tvs.sbd.9000", "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m?ctx_brand=tvs.sbd.9000"];
 Console.logLevel = "OFF";
 
-for (const platform of ["iphone", "iPhone", "ipad"]) {
-	test(`dev: Netflix ${platform} episode list uses the platform's original landscape artwork`, async t => {
+for (const platform of ["iphone", "iPhone", "ipad", "atv", "appletv"]) {
+	test(`dev: Netflix ${platform} episode list uses the sampled Apple image dimensions`, async t => {
 		const input = platform === "ipad" ? episodeFixtures.netflixIpad : episodeFixtures.netflix;
 		const expected = structuredClone(input);
-		for (const episode of expected.data.episodes) episode.images.contentImage = { ...episode.images.posterArt };
+		for (const episode of expected.data.episodes) {
+			for (const image of [episode.images.contentImage, episode.images.posterArt]) {
+				image.width = 3840;
+				image.height = 2160;
+			}
+		}
 		const path = "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m/episodes";
 		const actual = await replay(t, ResponseDev, path, input, platform);
 		assert.deepEqual(actual, expected);
@@ -25,15 +30,18 @@ for (const platform of ["iphone", "iPhone", "ipad"]) {
 			actual.data.episodes.map(episode => [episode.images.contentImage.width, episode.images.contentImage.height]),
 			[
 				[3840, 2160],
-				[1920, 1080],
+				[3840, 2160],
 			],
 		);
-		assert.equal(actual.data.episodes[0].images.contentImage.url, "https://is1-ssl.mzstatic.com/image/thumb/SoH80pl2XmBNOC9jFl1u6Q/{w}x{h}.{f}");
+		assert.deepEqual(
+			actual.data.episodes.map(episode => episode.images.contentImage.url),
+			input.data.episodes.map(episode => episode.images.contentImage.url),
+		);
 		assert.deepEqual(await replay(t, ResponseDev, path, actual, platform), actual);
 	});
 }
 
-for (const platform of ["atv", "appletv", "desktop", "web", undefined]) {
+for (const platform of ["desktop", "web", undefined]) {
 	test(`dev: Netflix ${platform} episode images retain the upstream model`, async t => {
 		assert.deepEqual(await replay(t, ResponseDev, "/uts/v3/shows/umc.cmc.3qvhpqcspdkzmwmwyptyj9v0m/episodes", episodeFixtures.netflix, platform), episodeFixtures.netflix);
 	});

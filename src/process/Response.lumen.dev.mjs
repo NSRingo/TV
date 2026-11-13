@@ -106,6 +106,25 @@ export async function Response($request, $response) {
 											break;
 									}
 									break;
+								case "shows":
+									switch (Platform) {
+										case "iphone":
+										case "iPhone":
+										case "ipad":
+										case "desktop":
+										case "atv":
+										case "appletv":
+											for (const episode of body.data?.episodes ?? []) {
+												for (const image of [episode.images?.contentImage, episode.images?.posterArt]) {
+													if (image) {
+														image.width = 3840;
+														image.height = 2160;
+													}
+												}
+											}
+											break;
+									}
+									break;
 								case "movies":
 									switch (Boolean(body.data?.canvas && body.data?.content)) {
 										case true:

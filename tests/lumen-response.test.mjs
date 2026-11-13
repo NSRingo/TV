@@ -38,24 +38,31 @@ test("deselected Lumen leaves backend resources unchanged", async t => {
 	}
 });
 
-for (const platform of ["iphone", "iPhone", "ipad", "desktop"]) {
-	test(`Lumen ${platform}: episode images retain the native width and height placeholders`, async t => {
+for (const platform of ["iphone", "iPhone", "ipad", "desktop", "atv", "appletv"]) {
+	test(`Lumen ${platform}: episode images use sampled Apple dimensions with native URL placeholders`, async t => {
+		const expected = structuredClone(episodeFixture);
+		for (const episode of expected.data.episodes) {
+			for (const image of [episode.images.contentImage, episode.images.posterArt]) {
+				image.width = 3840;
+				image.height = 2160;
+			}
+		}
 		const path = "/uts/v3/shows/umc.cmc.lumen1718603/episodes";
 		const actual = await replay(t, path, episodeFixture, undefined, platform);
-		assert.deepEqual(actual, episodeFixture);
+		assert.deepEqual(actual, expected);
 		assert.equal(actual.data.episodes[0].images.contentImage.url, "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x{h}.{f}");
 		assert.deepEqual(
 			actual.data.episodes.map(episode => [episode.images.contentImage.width, episode.images.contentImage.height]),
 			[
-				[1280, 720],
-				[1280, 720],
+				[3840, 2160],
+				[3840, 2160],
 			],
 		);
 		assert.deepEqual(await replay(t, path, actual, undefined, platform), actual);
 	});
 }
 
-for (const platform of ["atv", "appletv", "web", ""]) {
+for (const platform of ["web", ""]) {
 	test(`Lumen ${platform || "missing"}: episode list retains the upstream model`, async t => {
 		assert.deepEqual(await replay(t, "/uts/v3/shows/umc.cmc.lumen1718603/episodes", episodeFixture, undefined, platform), episodeFixture);
 	});
