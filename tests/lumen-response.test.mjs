@@ -39,13 +39,11 @@ test("deselected Lumen leaves backend resources unchanged", async t => {
 });
 
 for (const platform of ["iphone", "iPhone", "ipad", "desktop"]) {
-	test(`Lumen ${platform}: episode list requests preserve the original image ratio`, async t => {
-		const expected = structuredClone(episodeFixture);
-		expected.data.episodes[0].images.contentImage.url = "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x0.{f}";
-		expected.data.episodes[1].images.contentImage.url = "https://www.lumen.ax/api/appletv/i/fixture/img/1834012/Primary/79f2031d4126ce0e089cb99c326013bd/{w}x0.{f}";
+	test(`Lumen ${platform}: episode images retain the native width and height placeholders`, async t => {
 		const path = "/uts/v3/shows/umc.cmc.lumen1718603/episodes";
 		const actual = await replay(t, path, episodeFixture, undefined, platform);
-		assert.deepEqual(actual, expected);
+		assert.deepEqual(actual, episodeFixture);
+		assert.equal(actual.data.episodes[0].images.contentImage.url, "https://www.lumen.ax/api/appletv/i/fixture/img/1718605/Primary/f4b384c7712c61b18f23a54abb6c3df8/{w}x{h}.{f}");
 		assert.deepEqual(
 			actual.data.episodes.map(episode => [episode.images.contentImage.width, episode.images.contentImage.height]),
 			[

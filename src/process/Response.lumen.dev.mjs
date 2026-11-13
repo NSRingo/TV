@@ -106,21 +106,6 @@ export async function Response($request, $response) {
 											break;
 									}
 									break;
-								case "shows":
-									switch (Platform) {
-										case "iphone":
-										case "iPhone":
-										case "ipad":
-										case "desktop":
-											for (const episode of body.data?.episodes ?? []) {
-												const image = episode.images?.contentImage;
-												// 高度 0 按原图比例缩放，保留客户端请求的动态宽度。
-												// A zero height preserves the source aspect ratio at the requested dynamic width.
-												if (image?.url) image.url = image.url.replace("{w}x{h}", "{w}x0");
-											}
-											break;
-									}
-									break;
 								case "movies":
 									switch (Boolean(body.data?.canvas && body.data?.content)) {
 										case true:
