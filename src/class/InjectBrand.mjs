@@ -23,7 +23,7 @@ import { Lodash as _, Console, fetch } from "@nsnanocat/util";
  * @property {string[]} [tab.universalLinks] - 苹果根 tab 的通用链接。
  * @property {Object} [tab.target] - 苹果根 tab 的 Brand 目标。
  * @property {string} [tab.hexColor] - 官方导航背景色。
- * @property {Record<string, Object>} [tab.images] - 官方侧栏图像。
+ * @property {Record<string, Object>} [tab.images] - 侧栏图像，defaultImage 可覆盖平台 App 图标 / Sidebar images, with defaultImage overriding the platform App icon.
  * @property {boolean} [tab.canBeHiddenFromNavigation] - 第三方子导航是否允许隐藏。
  * @property {Record<string, Object>} images - 以 appIcon、shelfItemImage 等字段为键的品牌图片 / Brand images keyed by fields such as appIcon and shelfItemImage.
  * @property {Object} images.appIcon - 默认方形 App 图标，用于 tvOS 以外的平台 / Default square App icon for platforms other than tvOS.
@@ -399,6 +399,14 @@ export default class InjectBrand {
 					type: "Brand",
 					destinationType: "Target",
 					canBeHiddenFromNavigation: true,
+					images: {
+						defaultImage: {
+							width: 1024,
+							height: 1024,
+							url: "https://www.lumen.ax/api/appletv/pub/brand/v1/circle/{w}x{h}.{f}",
+							supportsLayeredImage: false,
+						},
+					},
 				},
 			},
 			{
@@ -955,7 +963,7 @@ export default class InjectBrand {
 			brandType: config.brandType,
 			title: channel.title,
 			isPinned: state?.isPinned ?? channel.isPinned,
-			images: { ...state?.images, defaultImage: { ...channel.images.appIcon } },
+			images: { ...state?.images, ...config.tab.images, defaultImage: { ...(config.tab.images?.defaultImage ?? channel.images.appIcon) } },
 			target: channel,
 			universalLinks: [channel.url],
 		};

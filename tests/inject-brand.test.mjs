@@ -9,6 +9,12 @@ import { Response as ResponseRelease } from "./host.mjs";
 const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-responses.json", import.meta.url)));
 const channelTypes = JSON.parse(readFileSync(new URL("fixtures/channel-types.json", import.meta.url)));
 const brandId = "tvs.sbd.lumen";
+const lumenSidebarImage = {
+	width: 1024,
+	height: 1024,
+	url: "https://www.lumen.ax/api/appletv/pub/brand/v1/circle/{w}x{h}.{f}",
+	supportsLayeredImage: false,
+};
 const lumenKey = "test-lumen-key";
 const movies = [
 	{ id: "umc.cmc.lumen1", type: "Movie", title: "Lumen movie" },
@@ -196,7 +202,7 @@ test("configuration prepends a shared complete Brand target and preserves unrela
 	assert.equal(tab.subTabs[0].destinationType, "Target");
 	assert.equal(tab.subTabs[0].isPinned, false);
 	assert.equal(tab.subTabs[0].canBeHiddenFromNavigation, true);
-	assert.deepEqual(tab.subTabs[0].images.defaultImage, body.data.channels[brandId].images.appIcon);
+	assert.deepEqual(tab.subTabs[0].images.defaultImage, lumenSidebarImage);
 	assert.notEqual(tab.subTabs[0].images.defaultImage, body.data.channels[brandId].images.appIcon);
 	assert.deepEqual(tab.subTabs[0].universalLinks, ["https://tv.apple.com/us/channel/lumen/tvs.sbd.lumen"]);
 	assert.equal(tab.subTabs[0].target, body.data.channels[brandId]);
@@ -224,7 +230,7 @@ for (const isPinned of [false, true]) {
 		assert.equal(subTab.brandType, "Channel");
 		assert.equal(subTab.isPinned, isPinned);
 		assert.equal(subTab.canBeHiddenFromNavigation, true);
-		assert.equal(subTab.images.defaultImage.url, actual.data.channels[brandId].images.appIcon.url);
+		assert.deepEqual(subTab.images.defaultImage, lumenSidebarImage);
 		assert.equal(actual.data.channels[brandId].isPinned, !isPinned);
 		assert.deepEqual(await replay(t, "/uts/v3/configurations", actual, "caller=wlk&pfm=atv&sf=143441&v=101"), actual);
 	});
@@ -239,7 +245,7 @@ for (const [variant, response] of [["release", ResponseRelease], ["dev", Respons
 		["desktop", 1024, 1024, "square"],
 		["web", 1024, 1024, "square"],
 	]) {
-		test(`${variant}: Lumen Brand and sidebar use the ${pfm} App icon`, async t => {
+		test(`${variant}: Lumen ${pfm} sidebar uses the circular icon`, async t => {
 			const actual = await replay(t, "/uts/v3/configurations", {}, `caller=wlk&pfm=${pfm}&sf=143441&v=101`, response, "Brands=Lumen&LogLevel=OFF");
 			const expected = {
 				width,
@@ -249,7 +255,10 @@ for (const [variant, response] of [["release", ResponseRelease], ["dev", Respons
 			};
 			const subTab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0];
 			assert.deepEqual(actual.data.channels[brandId].images.appIcon, expected);
-			assert.deepEqual(subTab.images.defaultImage, expected);
+			assert.deepEqual(subTab.images.defaultImage, lumenSidebarImage);
+			const previous = structuredClone(actual);
+			previous.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0].images.defaultImage = expected;
+			assert.deepEqual(await replay(t, "/uts/v3/configurations", previous, `caller=wlk&pfm=${pfm}&sf=143441&v=101`, response, "Brands=Lumen&LogLevel=OFF"), actual);
 		});
 	}
 }
