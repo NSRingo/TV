@@ -10,10 +10,10 @@ const fixtures = JSON.parse(readFileSync(new URL("fixtures/channel-responses.jso
 const channelTypes = JSON.parse(readFileSync(new URL("fixtures/channel-types.json", import.meta.url)));
 const brandId = "tvs.sbd.lumen";
 const lumenSidebarImage = {
-	width: 1024,
-	height: 1024,
-	url: "https://www.lumen.ax/api/appletv/pub/brand/v1/circle/{w}x{h}.{f}",
-	supportsLayeredImage: false,
+	embeddedData:
+		"PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSItNjkuMTg2NTYxIC0zNTcuMjIyNjQ2IDEzODMuNzMxNDYzIDEzODMuNzMxNDYzIiBmaWxsPSIjRkZGRkZGIj48ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLC0yMjUuNzU2NTkxLDE3MDMuMjIwNzU0KSI+PHBhdGggdHJhbnNmb3JtPSJtYXRyaXgoMTEuNDIwNDg2LDAsMCwxMS40MjA0ODYsMTAyNC41MDUzOTMsLTEzOTkuNTg0Mjg5KSIgZD0iTTAsNS40M0MzLjA4NCw1Ljg0MiA2LjEyOCw2LjM3NyA5LjEzLDcuMDI5QzEwLjU2Myw3LjM0MSAxMS45ODksNy42OCAxMy40MDQsOC4wNDRDMjIuNDUxLDEwLjM3NiAzMS4wNjUsMTMuNzgxIDM5LjEwNiwxOC4xMTRDMzEuNjIyLDEyLjA0NCAyMy4xMDcsNy4yIDEzLjg2NCwzLjg4M0MxMy44NzksMy40OTUgMTMuODg3LDMuMTA2IDEzLjg4NywyLjcxNEMxMy44ODcsLTQuMjg4IDExLjQzMSwtMTAuNzE3IDcuMzMyLC0xNS43NTdDMS45NjEsLTIyLjM2NSAtNi4yMzUsLTI2LjU4NyAtMTUuNDE0LC0yNi41ODdDLTI3LjEyMiwtMjYuNTg3IC0zNy4yMjYsLTE5LjcyIC00MS45MTksLTkuNzk0Qy00My4zMzMsLTYuODAzIC00NC4yNTYsLTMuNTM1IC00NC41ODEsLTAuMDkyQy00My45NjQsLTAuNTI3IC00My4zNDEsLTAuOTUzIC00Mi43MTMsLTEuMzY3Qy00Mi4xNDEsLTQuMzAzIC00MS4wOCwtNy4wNjUgLTM5LjYxNywtOS41NjJDLTM1LjA1OSwtMTcuMzUgLTI2LjYwNSwtMjIuNTgxIC0xNi45MjksLTIyLjU4MUMtMTAuMDg3LC0yMi41ODEgLTMuODU0LC0xOS45NjQgMC44MjEsLTE1LjY3N0M1Ljc2MSwtMTEuMTQ4IDguOTYyLC00Ljc1NSA5LjMwOSwyLjM4OUMyLjg0LDAuNDY4IC0zLjk0NiwtMC43MjEgLTEwLjk1MSwtMS4wNzZDLTEyLjQyOSwtMS4xNTIgLTEzLjkxNywtMS4xODkgLTE1LjQxNCwtMS4xODlDLTI1LjEzMiwtMS4xODkgLTM0LjQ3NywwLjQxMSAtNDMuMTk4LDMuMzYxQy00My42OTcsMy41MzEgLTQ0LjE5NywzLjcwNCAtNDQuNjkzLDMuODgzQy00OC4xMjksNS4xMTYgLTUxLjQ2NCw2LjU2IC01NC42ODIsOC4yMDFMLTU0LjY4NCw4LjIwMkMtNjAuMTI3LDEwLjk3MyAtNjUuMjM4LDE0LjMwMyAtNjkuOTQsMTguMTE2Qy02Ni41NDQsMTYuMjg2IC02My4wNDQsMTQuNjIxIC01OS40NTMsMTMuMTMyQy01NC41NDIsMTEuMDk2IC00OS40NTgsOS4zOSAtNDQuMjMyLDguMDQ0Qy00MS43MjcsMjEuNjgzIC0yOS43NzYsMzIuMDE3IC0xNS40MTQsMzIuMDE3Qy0zLjU0OCwzMi4wMTcgNi42NzEsMjQuOTYzIDExLjI4LDE0LjgxN0MxMC4yMzQsMTMuNzg0IDkuMTYyLDEyLjc3OCA4LjA2NCwxMS44MDJDNC42NDYsMjIuMzQxIC01LjI1MiwyOS45NTkgLTE2LjkyOSwyOS45NTlDLTMwLjA3MiwyOS45NTkgLTQwLjk1OSwyMC4zMDkgLTQyLjg5NCw3LjcwOEMtMzQuMDg3LDUuNTUgLTI0Ljg4NSw0LjQwNyAtMTUuNDE0LDQuNDA3Qy0xMC4xODcsNC40MDcgLTUuMDQyLDQuNzU2IDAsNS40MyIvPjwvZz48L3N2Zz4=",
+	format: "embeddedSvg",
+	weight: "regular",
 };
 const lumenKey = "test-lumen-key";
 const movies = [
@@ -202,6 +202,7 @@ test("configuration prepends a shared complete Brand target and preserves unrela
 	assert.equal(tab.subTabs[0].destinationType, "Target");
 	assert.equal(tab.subTabs[0].isPinned, false);
 	assert.equal(tab.subTabs[0].canBeHiddenFromNavigation, true);
+	assert.equal(tab.subTabs[0].hexColor, "#080809");
 	assert.deepEqual(tab.subTabs[0].images.defaultImage, lumenSidebarImage);
 	assert.notEqual(tab.subTabs[0].images.defaultImage, body.data.channels[brandId].images.appIcon);
 	assert.deepEqual(tab.subTabs[0].universalLinks, ["https://tv.apple.com/us/channel/lumen/tvs.sbd.lumen"]);
@@ -230,6 +231,7 @@ for (const isPinned of [false, true]) {
 		assert.equal(subTab.brandType, "Channel");
 		assert.equal(subTab.isPinned, isPinned);
 		assert.equal(subTab.canBeHiddenFromNavigation, true);
+		assert.equal(subTab.hexColor, "#080809");
 		assert.deepEqual(subTab.images.defaultImage, lumenSidebarImage);
 		assert.equal(actual.data.channels[brandId].isPinned, !isPinned);
 		assert.deepEqual(await replay(t, "/uts/v3/configurations", actual, "caller=wlk&pfm=atv&sf=143441&v=101"), actual);
@@ -245,7 +247,7 @@ for (const [variant, response] of [["release", ResponseRelease], ["dev", Respons
 		["desktop", 1024, 1024, "square"],
 		["web", 1024, 1024, "square"],
 	]) {
-		test(`${variant}: Lumen ${pfm} sidebar uses the circular icon`, async t => {
+		test(`${variant}: Lumen ${pfm} sidebar uses the transparent symbol and brand background`, async t => {
 			const actual = await replay(t, "/uts/v3/configurations", {}, `caller=wlk&pfm=${pfm}&sf=143441&v=101`, response, "Brands=Lumen&LogLevel=OFF");
 			const expected = {
 				width,
@@ -255,7 +257,8 @@ for (const [variant, response] of [["release", ResponseRelease], ["dev", Respons
 			};
 			const subTab = actual.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0];
 			assert.deepEqual(actual.data.channels[brandId].images.appIcon, expected);
-			assert.deepEqual(subTab.images.defaultImage, lumenSidebarImage);
+			assert.equal(subTab.hexColor, "#080809");
+		assert.deepEqual(subTab.images.defaultImage, lumenSidebarImage);
 			const previous = structuredClone(actual);
 			previous.data.applicationProps.tabs.find(({ type }) => type === "ChannelsAndApps").subTabs[0].images.defaultImage = expected;
 			assert.deepEqual(await replay(t, "/uts/v3/configurations", previous, `caller=wlk&pfm=${pfm}&sf=143441&v=101`, response, "Brands=Lumen&LogLevel=OFF"), actual);
